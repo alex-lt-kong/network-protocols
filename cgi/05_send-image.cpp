@@ -1,20 +1,9 @@
-/*
-C++ is a language that long-predates JSON, but is still relevant for many projects.
-There's no native support for JSON in C++ but there are a number of libraries
-that provide support for working with JSON. Perhaps the most widely used is
-JsonCpp, available from GitHub at https://github.com/open-source-parsers/jsoncpp
-*/
 #include<iostream>
 #include<chrono>
 #include<cstring>
 #include <ctime>
 #include <fstream>
 #include "json/json.h"
-/* 
-To make #include "json/json.h" work on Debian, need the following statements
-apt install libjsoncpp-dev
-ln -s /usr/include/jsoncpp/json/ /usr/include/json
-*/
 
 using namespace std;
 
@@ -46,7 +35,6 @@ int handleGET() {
     }
     return 0;
 }
-
 
 int main(){
 
