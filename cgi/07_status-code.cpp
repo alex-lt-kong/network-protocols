@@ -23,19 +23,21 @@ vector<string> split(string str, string token){
     return result;
 }
 
-int handleGET() {
+int handleGET404Status() {
 
-    cout << "Content-Type: video/mp4;\n"
-         << "Accept-Ranges: bytes;\n"
-         << "Content-Length: none;" << "\n" << endl;
-    ifstream is;
-    is.open("./06_send-video.mp4", ios::in | ios::binary);
-    if (is.is_open())
-    {
-        cout << is.rdbuf();
-        // basically we read the image as bytes and directly send to cout
-    }
-    return 0;
+    cout << "Content-Type: text/plain;\n"
+         << "Status: 404\n" << endl;
+    cout << "Not found" << endl;
+    return 0; 
+}
+
+
+int handleGET202Status() {
+
+    cout << "Content-Type: text/plain;\n"
+         << "Status: 202 Accepted\n" << endl;
+    cout << "Good" << endl;
+    return 0; 
 }
 
 int main(){
@@ -54,6 +56,10 @@ int main(){
         cout << "Method [" << getenv("REQUEST_METHOD") << "] not supported";
         return 1;
     }
+    string query = getenv("QUERY_STRING") == NULL ? "" : getenv("QUERY_STRING");
 
-    return handleGET();
+    if (strcmp(query.c_str(), "404") == 0) {
+        return handleGET404Status();
+    } else 
+        return handleGET202Status();
 }
