@@ -53,19 +53,34 @@ int handleGET() {
         string range = getenv("HTTP_RANGE");
         range.erase(0, 6);
         range.pop_back();
-        pos = stoi(range);
+        /*
+        a hack to handle strings like "bytes=12321424-"--according to the
+        HTTP specficiation, a lot more formats are valid and should be 
+        supported by a proper CGI program. However, given the experimental
+        nature of this script, let's just keep it this way...
+        */
+        try{
+            pos = stoi(range);
+        }
+        catch(exception &err)
+        {
+            cout << "Exception: Failed to parse HTTP_RANGE" << pos << "\n";
+            pos = 0;
+        }
     }
-    size_t bufferSize = 1 * 1024 * 1024;    
+    cout << "Video-Start-Position: " << pos << "\n";
+    size_t bufferSize = 1 * 1024 * 1024;       
+    if (pos + bufferSize > fileSize) 
+        bufferSize = fileSize - pos;
+    char *buffer = new char[bufferSize];
+    in.seekg(pos, ios::beg);
+    in.read(buffer, bufferSize);
+    
     cout << "Status: 206 Partial Content\n"
          << "Content-Range: bytes " << pos << "-" << pos + bufferSize  << "/" << fileSize << "\n"
          << "Content-Length: " << bufferSize  << "\n\n";
     
-    char *buffer = new char[bufferSize];
-    if (pos + bufferSize > fileSize) 
-        bufferSize = fileSize - pos - 1;
-    in.seekg(pos, ios::beg);
-    
-    in.read(buffer, bufferSize);
+
     cout.write(buffer, bufferSize);
     
     return 0; 
