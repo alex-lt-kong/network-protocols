@@ -46,7 +46,7 @@ int handleGET() {
     cout << "Content-Type: video/mp4\n"
          << "Accept-Ranges: bytes\n";
 
-    int pos = 0;
+    long pos = 0;
     if (getenv("HTTP_RANGE") == NULL)  {
         pos = 0;
     } else {
@@ -68,10 +68,11 @@ int handleGET() {
             pos = 0;
         }
     }
-    cout << "Video-Start-Position: " << pos << "\n";
+    cout << "File-Start-Position: " << pos << "\n";
     size_t bufferSize = 1 * 1024 * 1024;       
     if (pos + bufferSize > fileSize) 
         bufferSize = fileSize - pos;
+    cout << "pos-plus-bufferSize: " << pos + bufferSize << "\n";
     char *buffer = new char[bufferSize];
     in.seekg(pos, ios::beg);
     in.read(buffer, bufferSize);
