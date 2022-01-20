@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "rY1szLSopqqz+UrLKEZYSRyZ9cuwmZduAVzGOEbwjTjnYGuDDtrnTL4NF+OmvbcZ3cueeGJbTb7zANoY7h0mzw==",
+  "success": true,
+  "projectFilePath": "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\akong_yin\\.nuget\\packages\\confluent.kafka\\1.8.2\\confluent.kafka.1.8.2.nupkg.sha512",
+    "C:\\Users\\akong_yin\\.nuget\\packages\\librdkafka.redist\\1.8.2\\librdkafka.redist.1.8.2.nupkg.sha512",
+    "C:\\Users\\akong_yin\\.nuget\\packages\\system.memory\\4.5.0\\system.memory.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

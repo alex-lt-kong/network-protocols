@@ -1,0 +1,72 @@
+{
+  "format": 1,
+  "restore": {
+    "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj": {}
+  },
+  "projects": {
+    "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj",
+        "projectName": "kafka-producer",
+        "projectPath": "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj",
+        "packagesPath": "C:\\Users\\akong_yin\\.nuget\\packages\\",
+        "outputPath": "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\akong_yin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "P:\\prod\\NuGetPacks\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Confluent.Kafka": {
+              "target": "Package",
+              "version": "[1.8.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
