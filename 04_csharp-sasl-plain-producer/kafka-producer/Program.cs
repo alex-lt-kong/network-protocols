@@ -26,6 +26,10 @@ class TestClass
              * as long as there is one server available in the list, bootstrap can work.
              */
             MessageSendMaxRetries = 5,
+            SaslMechanism = SaslMechanism.Plain,
+            SecurityProtocol = SecurityProtocol.SaslPlaintext,
+            SaslUsername = "admin",
+            SaslPassword = "admin-sec2ret",
         };
 
         var producer = new ProducerBuilder<Null, string>(config).Build();
@@ -34,7 +38,7 @@ class TestClass
             while (Console.ReadKey().Key != ConsoleKey.Escape)
             {
                 Task<DeliveryResult<Null, string>> t = producer.ProduceAsync(
-                    "ak-new",
+                    "als-alert-topic",
                     new Message<Null, string> { Value = $"Message from C# producer, timestamp: {DateTime.Now.ToString("yyyyMMdd-HHmmss")}" }
                 );
                 t.ContinueWith(result => continueWithThis(result));

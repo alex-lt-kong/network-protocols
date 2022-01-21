@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj": {}
+    "W:\\my-repos\\kafka-poc\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj": {}
   },
   "projects": {
-    "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj": {
+    "W:\\my-repos\\kafka-poc\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj",
+        "projectUniqueName": "W:\\my-repos\\kafka-poc\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj",
         "projectName": "kafka-producer",
-        "projectPath": "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj",
+        "projectPath": "W:\\my-repos\\kafka-poc\\01_csharp-producer\\kafka-producer\\kafka-producer.csproj",
         "packagesPath": "C:\\Users\\akong_yin\\.nuget\\packages\\",
-        "outputPath": "W:\\my-repos\\kafka-demos\\01_csharp-producer\\kafka-producer\\obj\\",
+        "outputPath": "W:\\my-repos\\kafka-poc\\01_csharp-producer\\kafka-producer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
