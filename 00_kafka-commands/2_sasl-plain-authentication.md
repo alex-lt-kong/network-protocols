@@ -46,23 +46,31 @@ You can save these files to wherever you like
 Server {
 org.apache.zookeeper.server.auth.DigestLoginModule required
   user_super="zookeeper"
-  user_admin="admin-secret";
+  user_admin="admin-secret"
+  user_zkadmin="zkpwd";
 };
+# username is zkadmin and password is zkpwd
 ```
 
 ### kafka_server_jaas.conf
 
 ```
+# KafkaServer section defines the credentials that used by clients 
+# (i.e., producers and consumers) to connect to brokers
+# Client section defines the credentials that used by brokers to connect
+# zookeepers
 KafkaServer {
   org.apache.kafka.common.security.plain.PlainLoginModule required
   username="admin"
   password="admin-secret"
-  user_admin="admin-secret";
+  user_admin="admin-secret"
+  user_admin1="password666"
+  user_helloyou="lol";
 };
 Client {
   org.apache.zookeeper.server.auth.DigestLoginModule required
-  username="admin"
-  password="admin-secret";
+  username="zkadmin"
+  password="zkpwd";
 };
 ```
 
@@ -71,15 +79,12 @@ Client {
 This conf file is only needed if you want to run
 `./bin/kafka-console-consumer.sh` as a test consumer
 ```
+# KafkaClient section defines the credentials that used by clients to connect
+# to brokers.
 KafkaClient {
   org.apache.kafka.common.security.plain.PlainLoginModule required
-  username="admin"
-  password="admin-secret";
-};
-Client {
-  org.apache.zookeeper.server.auth.DigestLoginModule required
-  username="admin"
-  password="admin-secret";
+  username="helloyou"
+  password="lol";
 };
 ```
 
@@ -102,5 +107,41 @@ KAFKA_OPTS="-Djava.security.auth.login.config=./jaas/kafka_server_jaas.conf" bin
 ### Consumer
 
 ```
-KAFKA_OPTS="-Djava.security.auth.login.config=./jaas/kafka_client_jaas.conf" ./bin/kafka-console-consumer.sh --topic test-topic --from-beginning config/consumer.properties --bootstrap-server=localhost:9092,localhost:9093,localhost:9094
+KAFKA_OPTS="-Djava.security.auth.login.config=./jaas/kafka_client_jaas.conf" ./bin/kafka-console-consumer.sh --topic ak-topic --from-beginning --consumer.config=config/consumer.properties --bootstrap-server=172.16.0.2:9092,172.16.0.2:9093,172.16.0.2:9094
+```
+
+## Common operations (with SASL Plain Authentication enabled)
+
+Enabling authentication breaks almost everything that documented in `0_basic.md` and `1_multiple-brokers.md`...
+
+### Common config file `config/config.properties`
+
+```
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=PLAIN
+```
+
+### List topics
+
+According to my test, no `KAFKA_OPTS` is needed
+
+```
+./bin/kafka-topics.sh --list --bootstrap-server 172.16.0.2:9092,172.16.0.2:9093,172.16.0.2:9094 --command-config config/config.properties
+```
+
+### Check details of a topic
+
+According to my test, no `KAFKA_OPTS` is needed
+
+```
+./bin/kafka-topics.sh --describe --topic ak-topic --bootstrap-server 172.16.0.2:9094 --command-config config/config.properties
+```
+
+### Create a topic for multiple brokers
+
+According to my test, no `KAFKA_OPTS` is needed
+
+```
+./bin/kafka-topics.sh --create --partitions 1 --replication-factor 3 --topic ak-topic --bootstrap-server 172.16.0.2:9092,172.16.0.2:9093,172.16.0.2:9094 --command-config config/config.properties
 ```
