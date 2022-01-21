@@ -2,7 +2,7 @@
 
 ## Start the Kafka Environment
 
-Enter Kafka directory (make sure JRE is installed and $JAVA_HOME correct set)
+Enter Kafka directory (make sure JRE is installed and $JAVA_HOME correctly set)
 
 ```
 cd kafka_2.13-3.0.0
