@@ -20,7 +20,7 @@ class TestClass
 
         ProducerConfig config = new()
         {
-            BootstrapServers = "debian:9092,debian:9093",
+            BootstrapServers = "172.16.0.2:9092,172.16.0.2:9093",
             /* according to this page:
              * https://stackoverflow.com/questions/68002959/kafka-producer-is-not-able-to-update-broker-after-one-of-the-broker-is-up,
              * as long as there is one server available in the list, bootstrap can work.
@@ -29,7 +29,7 @@ class TestClass
             SaslMechanism = SaslMechanism.Plain,
             SecurityProtocol = SecurityProtocol.SaslPlaintext,
             SaslUsername = "admin",
-            SaslPassword = "admin-sec2ret",
+            SaslPassword = "admin-secret",
         };
 
         var producer = new ProducerBuilder<Null, string>(config).Build();
@@ -38,7 +38,7 @@ class TestClass
             while (Console.ReadKey().Key != ConsoleKey.Escape)
             {
                 Task<DeliveryResult<Null, string>> t = producer.ProduceAsync(
-                    "als-alert-topic",
+                    "ak-topic",
                     new Message<Null, string> { Value = $"Message from C# producer, timestamp: {DateTime.Now.ToString("yyyyMMdd-HHmmss")}" }
                 );
                 t.ContinueWith(result => continueWithThis(result));
