@@ -4,13 +4,16 @@
 
 Make a copy of `config/server.properties` and change the following items
 ```
-broker.id=1 // or 2, 3...
-listeners=PLAINTEXT://localhost:9093 // or 9094, 9095...
-log.dirs=/tmp/kafka-logs-1 // or kafka-logs-2, kafka-logs-3...
+broker.id=1
+# or 2, 3...
+listeners=PLAINTEXT://localhost:9093
+# or 9094, 9095...
+log.dirs=/tmp/kafka-logs-1
+# or kafka-logs-2, kafka-logs-3...
 
 offsets.topic.replication.factor=3
 transaction.state.log.replication.factor=3
-// the above two items are said to make sure the even if a broker is down, Kafka can still be operational
+# the above two items are said to make sure the even if a broker is down, Kafka can still be operational
 
 auto.create.topics.enable=false (optional)
 ```
@@ -27,8 +30,8 @@ setting is a replication factor of 3, i.e., there will always be three copies of
 ```
 bin/kafka-topics.sh --create --partitions 1 --replication-factor 3 --topic latest-topic --bootstrap-server localhost:9092,localhost:9093
 
-// --bootstrap-server as long as one of these brokers are up, Kafka should work
-// --config min.insync.replicas=2: the minimum number of brokers that must be up, if it is unset, seems the default value is 1
+# --bootstrap-server as long as one of these brokers are up, Kafka should work
+# --config min.insync.replicas=2: the minimum number of brokers that must be up, if it is unset, seems the default value is 1
 ```
 
 

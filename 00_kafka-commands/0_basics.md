@@ -46,6 +46,7 @@ bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --boots
 bin/kafka-topics.sh --list --bootstrap-server localhost:9093
 ```
 
+
 ## Check details of a topic
 
 ```
