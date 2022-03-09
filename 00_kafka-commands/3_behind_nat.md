@@ -3,12 +3,13 @@
 * Kafka runs well on Linux, but what if you are given only a Windows server? It turns out that Kafka has issues here and there on Windows platform. Therefore, running
 Kafka inside a Linux virtual machine on top of a Windows host can be considered.
 
-* It would be easier if you can select bridged network mode. Unfortunately, it is usually not pracitcal in a corporate network... 
+* It would be easier if you can select bridged network mode since you can treat the Linux VM as a separate machine.
+Unfortunately, it is usually not pracitcal in a corporate network... 
 
 * So we document the more challenging approach, i.e., the NAT network mode, in thie page.
 
 * The settings are pretty tricky--you need to get everything just right to make it work. However, when something is 
-not working, the cause is mostly obscure and hard to debug...
+broken, the cause is mostly obscure...
 
 ## `Hyper-V` NAT settings
 
@@ -18,12 +19,14 @@ not working, the cause is mostly obscure and hard to debug...
 
 * Right click the virtual switch just created -> `Internet Protocol Version 4 (TCP/IPv4)` -> `Use the following IP address` -> `IP address: 192.168.137.1` (example) -> `Subnet mask: 255.255.255.0` -> Seems we can leave DNS addresses empty.
 
-* Install Linux in `Hyper-V` as usual -> sometimes its DHCP works -> if not, you pick an IP in the same network, e.g., `192.168.137.7`
+* Install Linux in `Hyper-V` as usual -> sometimes Linux's DHCP auto-configuration works -> if not, you pick an IP in the same network, e.g., `192.168.137.7`
 
 ## Port forwarding on Windows Host with `PowerShell`
 
-* Add a record, the example opens `2222` on Host and redirect the traffic to `22` on Guest. Note that this example is selected for
-a reason, you can check if port forwarding is really working by SSH'ing to the guest system.
+* The idea is that you need to expose some Liunx port to the Internet so that other computers can access the service on it.
+
+* Add a record, the example opens `2222` on Host and redirects traffic to `22` on Guest. Note that this example is selected for
+a reason--you can check if port forwarding is really working by SSH'ing to the guest system.
 ```
 netsh interface portproxy add v4tov4 listenport=2222 listenaddress=[Host IP] connectport=22 connectaddress=192.168.137.7
 ```
