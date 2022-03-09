@@ -41,7 +41,7 @@ netsh interface portproxy show all
 netsh interface portproxy delete v4tov4 listenport=2222 listenaddress=[Host IP]
 ```
 
-## `Kafak`'s special settings on Linux Guest
+## `Kafka`'s special settings on Linux Guest
 
 * First, you make sure the `Kafka` instance is 100% working within the Linux environment, and then
 we focus on making it work beyond NAT.
