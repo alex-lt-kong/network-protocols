@@ -35,9 +35,16 @@ bin/kafka-topics.sh --create --partitions 1 --replication-factor 3 --topic lates
 ```
 
 
-## List active brokers
+## Check broker status
 
+* List active brokers (`localhost`: zookeeper address, `2181`: zookeeper port)
 ```
 ./bin/zookeeper-shell.sh localhost:2181 ls /brokers/ids
+```
+
+* Show detailed status of a broker by `id` (`localhost`: zookeeper address, `2181`: zookeeper port, `0`: broker ID)
+
+```
+./bin/zookeeper-shell.sh localhost:2181  get /brokers/ids/0
 ```
 

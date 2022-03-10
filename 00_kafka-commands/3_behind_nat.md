@@ -41,6 +41,21 @@ netsh interface portproxy show all
 netsh interface portproxy delete v4tov4 listenport=2222 listenaddress=[Host IP]
 ```
 
+* Typically, you need to forward two sets of ports. The reason is that, say the hostname of Windows host is `my.superserver.com`, if you resolve
+`my.superserver.com` on another computer, the result is usually the IP of the host's WAN interface. However, if you resolve `my.superserver.com`
+on Windows host itself, the result could be `192.168.137.1` (i.e., the Windows host's LAN interface's IP), which will not be redirected to Linux
+host if you only have the first set of ports.
+```
+# Windows host's WAN address:port to Linux guest's address
+netsh interface portproxy add v4tov4 listenport=9092 listenaddress=[Host IP of WAN interface] connectport=9092 connectaddress=192.168.137.7
+netsh interface portproxy add v4tov4 listenport=9093 listenaddress=[Host IP of WAN interface] connectport=9093 connectaddress=192.168.137.7
+netsh interface portproxy add v4tov4 listenport=9094 listenaddress=[Host IP of WAN interface] connectport=9094 connectaddress=192.168.137.7
+# Windows host's LAN address:port to Linux guest's address
+netsh interface portproxy add v4tov4 listenport=9092 listenaddress=192.168.137.1 connectport=9092 connectaddress=192.168.137.7
+netsh interface portproxy add v4tov4 listenport=9093 listenaddress=192.168.137.1 connectport=9093 connectaddress=192.168.137.7
+netsh interface portproxy add v4tov4 listenport=9094 listenaddress=192.168.137.1 connectport=9094 connectaddress=192.168.137.7
+```
+
 ## `Kafka`'s special settings on Linux Guest
 
 * First, you make sure the `Kafka` instance is 100% working within the Linux environment, and then
