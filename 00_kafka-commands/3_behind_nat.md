@@ -56,5 +56,9 @@ listener.security.protocol.map: LISTENER_LAN:PLAINTEXT,LISTENER_WAN:PLAINTEXT
 inter.broker.listener.name=LISTENER_LAN
 ```
 
+* How about we only keep `LISTENER_WAN` and remove `LISTENER_LAN` so that all traffic is through the `WAN` interface
+of the Windows host? It does not work due to the fact that, somehow, Linux guest does *NOT* have the access to the 
+`WAN` IP of the Windows host for some reason.
+
 * It basically follows this link: https://stackoverflow.com/questions/61101236/accessing-kafka-broker-from-outside-my-lan
 
