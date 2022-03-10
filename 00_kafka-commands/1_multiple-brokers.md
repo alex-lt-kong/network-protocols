@@ -4,12 +4,12 @@
 
 Make a copy of `config/server.properties` and change the following items
 ```
-broker.id=1
-# or 2, 3...
+broker.id=0
+# or 1, 2...
 listeners=PLAINTEXT://localhost:9093
 # or 9094, 9095...
-log.dirs=/tmp/kafka-logs-1
-# or kafka-logs-2, kafka-logs-3...
+log.dirs=/tmp/kafka-logs-0
+# or kafka-logs-1, kafka-logs-2...
 
 offsets.topic.replication.factor=3
 transaction.state.log.replication.factor=3
