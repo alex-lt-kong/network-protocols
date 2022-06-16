@@ -4,6 +4,8 @@
 #include <signal.h>
 #include <librdkafka/rdkafka.h>
 
+#define MAX_PRINT 64
+
 static volatile int keep_running = 1;
 
 static size_t iso_dt_len = sizeof("1970-01-01T00:00:00Z");
@@ -36,7 +38,7 @@ int main(int argc, char **argv) {
     char errstr[512];
 
     if (argc != 4) {
-        fprintf(stderr, "Usage: %s <broker1,broker2...brokerN> <src_topic> <dst_topic>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <broker1:port1,broker2:port2,...,brokerN::portN> <src_topic> <dst_topic>\n", argv[0]);
         return 1;
     }
     if (strcmp(argv[2], argv[3]) == 0) {
@@ -95,7 +97,7 @@ int main(int argc, char **argv) {
 
         consumer_message = rd_kafka_consumer_poll(consumer, 3 * 1000);
         if (consumer_message == NULL) {
-            if (count++ % 10 == 0) { 
+            if (count++ % 20 == 0) { 
                 printf("[%s] Waiting...\n", get_iso_datetime(iso_dt));
             }
             continue;
@@ -128,7 +130,12 @@ int main(int argc, char **argv) {
                     get_iso_datetime(iso_dt), src_topic, rd_kafka_err2str(err)
                 );
             } else {
-                printf("[%s] PRODUCED event to dst_topic [%s]: %s\n", get_iso_datetime(iso_dt), src_topic, consumer_message->payload);
+                printf("[%s] PRODUCED event to dst_topic [%s]: ", get_iso_datetime(iso_dt), src_topic);
+                for (int i = 0; i < strlen((char*)consumer_message->payload) && i < MAX_PRINT; ++i) {
+                    printf("%c", ((char*)(consumer_message->payload))[i]);
+                }
+                if (strlen((char*)consumer_message->payload) < MAX_PRINT) { printf("\n"); }
+                else { printf("...[truncated at %d]\n", MAX_PRINT); }
             }
         }
 
