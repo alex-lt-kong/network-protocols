@@ -1,92 +1,86 @@
-#include <glib.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
+#include <signal.h>
 #include <librdkafka/rdkafka.h>
 
-#include "common.c"
+static volatile int keep_running = 1;
 
-static volatile sig_atomic_t run = 1;
+static size_t iso_dt_len = sizeof("1970-01-01T00:00:00Z");
 
-/**
- * @brief Signal termination of program
- */
-static void stop(int sig) {
-    run = 0;
+char* get_iso_datetime(char* buf) {
+    time_t now;
+    time(&now);
+    strftime(buf, iso_dt_len, "%Y-%m-%dT%H:%M:%SZ", gmtime(&now));
+    return buf;
 }
 
+void signal_handler(int dummy) {
+    keep_running = 0;
+}
 /**
  * @brief  when a message has been successfully delivered or permanently failed delivery (after retries).
  */
 static void dr_msg_cb (rd_kafka_t *kafka_handle, const rd_kafka_message_t *rkmessage, void *opaque) {
     if (rkmessage->err) {
-        g_error("Message delivery failed: %s", rd_kafka_err2str(rkmessage->err));
+        fprintf(stderr, "Message delivery failed: %s\n", rd_kafka_err2str(rkmessage->err));
     }
 }
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
     rd_kafka_t *consumer;
     rd_kafka_t *producer;
     rd_kafka_conf_t *conf;
     rd_kafka_resp_err_t err;
+    char iso_dt[iso_dt_len];
     char errstr[512];
 
-    if (argc != 3) {
-        g_error("Usage: %s src_topic dst_topic", argv[0]);
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s <broker1,broker2...brokerN> <src_topic> <dst_topic>\n", argv[0]);
         return 1;
     }
-    if (strcmp(argv[1], argv[2]) == 0) {
-        g_error("src_topic and dst_topic canNOT be the same!");
+    if (strcmp(argv[2], argv[3]) == 0) {
+        fprintf(stderr, "src_topic and dst_topic canNOT be the same--the result will be DISASTROUS!\n");
         return 1;
     }
-    
-    // Parse the configuration.
-    // See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
-    const char *config_file = "config.ini";
+    const char *src_topic = argv[2];
+    const char *dst_topic = argv[3];
 
-    g_autoptr(GError) error = NULL;
-    g_autoptr(GKeyFile) key_file = g_key_file_new();
-    if (!g_key_file_load_from_file (key_file, config_file, G_KEY_FILE_NONE, &error)) {
-        g_error ("Error loading config file: %s", error->message);
-        return 1;
-    }
-
-    // Load the relevant configuration sections.
     conf = rd_kafka_conf_new();
-    load_config_group(conf, key_file, "default");
-    load_config_group(conf, key_file, "consumer");
-    // Create the Consumer instance.
+    // See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
+    rd_kafka_conf_set(conf, "bootstrap.servers", argv[1], errstr, sizeof(errstr));
+    rd_kafka_conf_set(conf, "group.id", "forwarder", errstr, sizeof(errstr));
+    rd_kafka_conf_set(conf, "auto.offset.reset", "latest", errstr, sizeof(errstr));
+
     consumer = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr));
     if (!consumer) {
-        g_error("Failed to create new consumer: %s", errstr);
+        fprintf(stderr, "[%s] Failed to create new consumer: %s", get_iso_datetime(iso_dt), errstr);
         return 1;
     }
-    
     rd_kafka_poll_set_consumer(consumer);
+    conf = NULL;// Configuration object is now owned, and freed, by the rd_kafka_t instance.
 
-    // Load the relevant configuration sections.
     conf = rd_kafka_conf_new();
-    load_config_group(conf, key_file, "default");    
+    rd_kafka_conf_set(conf, "bootstrap.servers", argv[1], errstr, sizeof(errstr));
     rd_kafka_conf_set_dr_msg_cb(conf, dr_msg_cb);
     // Create the Producer instance.
     producer = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
     if (!producer) {
-        g_error("Failed to create new producer: %s", errstr);
+        fprintf(stderr, "[%s] Failed to create new producer: %s", get_iso_datetime(iso_dt), errstr);
         return 1;
-    }
-    // Configuration object is now owned, and freed, by the rd_kafka_t instance.
-    conf = NULL;
-
-    // Convert the list of topics to a format suitable for librdkafka.
-    const char *src_topic = argv[1];//"als-prod-app-alert-topic";
-    const char *dst_topic = argv[2];//"als-uat-app-alert-topic";
-    g_message("Forwarding messages from topic [%s] to [%s]", src_topic, dst_topic);
+    }    
+    conf = NULL;// Configuration object is now owned, and freed, by the rd_kafka_t instance.
+    
+    printf("[%s] Start forwarding messages from topic [%s] to [%s]\n", get_iso_datetime(iso_dt), src_topic, dst_topic);
     rd_kafka_topic_partition_list_t *subscription = rd_kafka_topic_partition_list_new(1);
     rd_kafka_topic_partition_list_add(subscription, src_topic, RD_KAFKA_PARTITION_UA);
-
     // Subscribe to the list of topics.
     err = rd_kafka_subscribe(consumer, subscription);
     if (err) {
-        g_error("Failed to subscribe to %d topics: %s", subscription->cnt, rd_kafka_err2str(err));
+        fprintf(
+            stderr, "[%s] Failed to subscribe to [%d] topics: %s",
+            get_iso_datetime(iso_dt), subscription->cnt, rd_kafka_err2str(err)
+        );
         rd_kafka_topic_partition_list_destroy(subscription);
         rd_kafka_destroy(consumer);
         return 1;
@@ -94,17 +88,16 @@ int main (int argc, char **argv) {
 
     rd_kafka_topic_partition_list_destroy(subscription);
 
-
-    // Install a signal handler for clean shutdown.
-    signal(SIGINT, stop);
-    srand(time(NULL));
-    // Start polling for messages.
-    while (run) {
+    int count = 0;
+    signal(SIGINT, signal_handler);
+    while (keep_running) {
         rd_kafka_message_t *consumer_message;
 
-        consumer_message = rd_kafka_consumer_poll(consumer, 5 * 1000);
+        consumer_message = rd_kafka_consumer_poll(consumer, 3 * 1000);
         if (consumer_message == NULL) {
-            if (rand() % 10 == 0) { g_message("Waiting..."); }
+            if (count++ % 10 == 0) { 
+                printf("[%s] Waiting...\n", get_iso_datetime(iso_dt));
+            }
             continue;
         }
 
@@ -112,13 +105,13 @@ int main (int argc, char **argv) {
             if (consumer_message->err == RD_KAFKA_RESP_ERR__PARTITION_EOF) {
                 // We can ignore this error - it just means we've read everything and are waiting for more data.
             } else {
-                g_message("Consumer error: %s", rd_kafka_message_errstr(consumer_message));
+                fprintf(stderr, "[%s] Consumer error: %s\n", get_iso_datetime(iso_dt), rd_kafka_message_errstr(consumer_message));
                 return 1;
             }
         } else {
-            g_message(
-                "Consumed event from src_topic [%s]: %s",
-                rd_kafka_topic_name(consumer_message->rkt), (char*)consumer_message->payload
+            printf(
+                "[%s] CONSUMED event from src_topic [%s]\n",
+                get_iso_datetime(iso_dt), rd_kafka_topic_name(consumer_message->rkt)
             );
             err = rd_kafka_producev(
                 producer,
@@ -130,9 +123,12 @@ int main (int argc, char **argv) {
                 RD_KAFKA_V_END
             );
             if (err) {
-                g_error("Failed to produce to dst_topic [%s]: %s", src_topic, rd_kafka_err2str(err));
+                fprintf(
+                    stderr, "[%s] FAILED to produce to dst_topic [%s]: %s\n",
+                    get_iso_datetime(iso_dt), src_topic, rd_kafka_err2str(err)
+                );
             } else {
-                g_message("Produced event to dst_topic [%s]: value = %s", src_topic, consumer_message->payload);
+                printf("[%s] PRODUCED event to dst_topic [%s]: %s\n", get_iso_datetime(iso_dt), src_topic, consumer_message->payload);
             }
         }
 
@@ -142,18 +138,16 @@ int main (int argc, char **argv) {
         rd_kafka_poll(producer, 0);
     }
     // Block until the messages are all sent.
-    g_message("Flushing final messages..");
+    printf("[%s] Flushing final messages..\n", get_iso_datetime(iso_dt));
     rd_kafka_flush(producer, 10 * 1000);
 
     if (rd_kafka_outq_len(producer) > 0) {
-        g_error("%d message(s) were not delivered", rd_kafka_outq_len(producer));
+        fprintf(stderr, "[%s] %d message(s) NOT delivered\n", get_iso_datetime(iso_dt), rd_kafka_outq_len(producer));
     }
 
-    g_message( "Closing consumer");    
+    printf("[%s] Closing consumer and producer\n", get_iso_datetime(iso_dt));
     rd_kafka_consumer_close(consumer);
     rd_kafka_destroy(consumer);
-
-    g_message( "Closing producer");
     rd_kafka_destroy(producer);
 
     return 0;
