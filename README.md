@@ -10,14 +10,14 @@
         <tr>
             <th>TCP/IP Model</th>
             <th>OSI Model</th>
-            <th>Protocols</th>
+            <th>Protocol:Type</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td rowspan=3>Application layer</td>
             <td>L7: Application layer</td>
-            <td>FTP,HTTP,Telnet</td>
+            <td>FTP,HTTP:text, gRPC, Kafka:binary</td>
         </tr>
         <tr>
             <td>L6: Presentation layer</td>
