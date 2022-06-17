@@ -1,7 +1,7 @@
 # Network Protocols
 
-* Implementing a few common network protocols from scratch.
-* "Scratch" generally means from L3 upwards in OSI model.
+* Implementing/testing a few common network protocols from scratch.
+* "From scratch" generally means from L3 upwards as defined in OSI model.
 
 ### Review of OSI and TCP/IP models
 
@@ -17,20 +17,20 @@
         <tr>
             <td rowspan=3>Application layer</td>
             <td>L7: Application layer</td>
-            <td>FTP,HTTP:text, gRPC, Kafka:binary</td>
+            <td>FTP:binary/text,HTTP:text, Protobuf:binary, Kafka:binary</td>
         </tr>
         <tr>
             <td>L6: Presentation layer</td>
-            <td>JPEG,MPEG</td>
+            <td>&#60;no common examples...&#62;</td>
         </tr>
         <tr>
             <td>L5: Session layer</td>
-            <td>NFS,SQL</td>
+            <td>L2TP</td>
         </tr>
         <tr>
             <td>Transport layer</td>
             <td>L4: Transport layer</td>
-            <td>TCP, UDP</td>
+            <td>TCP:binary, UDP</td>
         </tr>
         <tr>
             <td>Internet layer</td>

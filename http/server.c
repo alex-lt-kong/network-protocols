@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #define READ_BUF_SIZE 2048
+#define HTTP_PORT 8081
 
 static volatile int keep_running = 1;
 
@@ -40,8 +41,7 @@ int main() {
      * actual format is determined on the address family (type of network) you're using.
      */
     int addrlen = sizeof(address);
-    char *resp = "Hello from server";
-    const int PORT = 8080; //Where the clients can reach at
+    char *resp = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 
     /* htonl converts a long integer (e.g. address) to a network representation */
     memset((char*)&address, 0, sizeof(address)); 
@@ -49,7 +49,7 @@ int main() {
     // sin_family is always set to AF_INET.  This is required. sin stands for sockaddr_in.
     address.sin_addr.s_addr = htonl(INADDR_ANY); 
     // It does NOT "generate a random IP". It binds the socket to all available interfaces, i.e., binds to 0.0.0.0.
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(HTTP_PORT);
     // port in network byte order. htons() translates a short integer from host byte order to network byte order
 
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) { 
@@ -72,7 +72,7 @@ int main() {
         perror("In listen()");
         exit(EXIT_FAILURE);
     }
-    printf("[%s] Listening on 0.0.0.0:%d\n", get_iso_datetime(iso_dt), PORT);
+    printf("[%s] Listening on 0.0.0.0:%d\n", get_iso_datetime(iso_dt), HTTP_PORT);
     int new_socket;
     while(1) {
         new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
