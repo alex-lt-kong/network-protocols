@@ -17,7 +17,7 @@
         <tr>
             <td rowspan=3>Application layer</td>
             <td>L7: Application layer</td>
-            <td>FTP:binary/text,HTTP:text, Protobuf:binary, Kafka:binary</td>
+            <td>FTP:binary/text, HTTP:text, Protobuf:binary, Kafka:binary</td>
         </tr>
         <tr>
             <td>L6: Presentation layer</td>
@@ -30,7 +30,7 @@
         <tr>
             <td>Transport layer</td>
             <td>L4: Transport layer</td>
-            <td>TCP:binary, UDP</td>
+            <td>TCP:binary, UDP:binary</td>
         </tr>
         <tr>
             <td>Internet layer</td>
