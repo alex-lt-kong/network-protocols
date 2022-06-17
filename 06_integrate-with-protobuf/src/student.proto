@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package Protos;
+
+import "google/protobuf/timestamp.proto";
+
+message Student {
+	int32 id = 1;
+	string first_name = 2;
+	string last_name = 3;
+	google.protobuf.Timestamp dob = 4;
+	repeated Course courses = 5;
+}
+
+message Course {
+	string name = 1;
+	int32 score = 2;
+}
