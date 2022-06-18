@@ -13,7 +13,7 @@ config.ini
 *.user
 *.userosscache
 *.sln.docstates
-
+git merge --allow-unrelated-histories project-a/master
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
