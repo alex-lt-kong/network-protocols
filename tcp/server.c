@@ -86,7 +86,7 @@ int main() {
          * not for exchanging data. By default, socket operations are synchronous, and accept will block until
          * a connection is present on the queue.
          */
-        if (new_socket < 0) {            
+        if (new_socket < 0) {
             perror("In accept()");
             exit(EXIT_FAILURE);
         }

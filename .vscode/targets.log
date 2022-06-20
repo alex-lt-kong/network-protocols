@@ -1,4 +1,6 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+
 # GNU Make 4.3
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2020 Free Software Foundation, Inc.
@@ -6,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jun 20 11:38:29 2022
+# Make data base, printed on Mon Jun 20 17:33:37 2022
 
 # Variables
 
@@ -145,7 +147,7 @@ _ = /home/akong_yin/.vscode-server/bin/30d9c6cd9483b2cc586687151bcbcd635f373630/
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1000/vscode-ipc-86bbc589-3366-4167-b070-1d7318787b03.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1000/vscode-ipc-50fdc956-d652-40bc-ab54-161aad51a47b.sock
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -177,9 +179,9 @@ SSH_CONNECTION = 172.25.208.1 52304 172.25.217.245 22
 
 # Directories
 
-# . (device 2050, inode 399452): 12 files, no impossibilities.
+# . (device 2050, inode 399452): 13 files, no impossibilities.
 
-# 12 files, no impossibilities in 1 directories.
+# 13 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -229,14 +231,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 20 / storage = 160 B / avg = 8 B
-# current buf: size = 8162 B / used = 160 B / count = 20 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 21 / storage = 164 B / avg = 7 B
+# current buf: size = 8162 B / used = 164 B / count = 21 / avg = 7 B
 
-# strcache performance: lookups = 23 / hit rate = 13%
+# strcache performance: lookups = 24 / hit rate = 12%
 # hash-table stats:
-# Load=20/8192=0%, Rehash=0, Collisions=0/23=0%
-# Finished Make data base on Mon Jun 20 11:38:29 2022
+# Load=21/8192=0%, Rehash=0, Collisions=0/24=0%
+# Finished Make data base on Mon Jun 20 17:33:37 2022
 
  
-make: *** No rule to make target 'all'.  Stop.
-
