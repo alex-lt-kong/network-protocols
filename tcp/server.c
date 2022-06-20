@@ -24,7 +24,8 @@ int main() {
     char iso_dt[iso_dt_len];
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
     /*
-     * domain: AF_INET means the IP address family
+     * domain: AF_INET means the IP address family. AF means "Address Family". 
+               Some other common AFs include AF_UNIX (unix socket)  and AF_BLUETOOTH (bluetooth)
      * type: SOCK_STREAM to open a stream socket (TCP), SOCK_DGRAM to open a datagram socket (UDP), and SOCK_RAW (IP).
      * protocol: For TCP/IP sockets, there’s only one form of virtual circuit service, so the last argument, protocol, is zero.
      */
@@ -73,11 +74,14 @@ int main() {
         exit(EXIT_FAILURE);
     }
     printf("[%s] Listening on 0.0.0.0:%d\n", get_iso_datetime(iso_dt), PORT);
+    struct sockaddr_in from;
+    socklen_t fromlen = sizeof (from);
     int new_socket;
     while(1) {
-        new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
+        new_socket = accept(server_fd, (struct sockaddr*)&from, (socklen_t*)&fromlen);
         /* The accept system call grabs the first connection request on the queue of pending connections
          *  (set up in listen) and creates a new socket for that connection.
+         * from and fromlen doesnt appear to be a must.
          * The original socket that was set up for listening is used only for accepting connections,
          * not for exchanging data. By default, socket operations are synchronous, and accept will block until
          * a connection is present on the queue.
@@ -86,17 +90,20 @@ int main() {
             perror("In accept()");
             exit(EXIT_FAILURE);
         }
-        
+        /* write()/send() and read()/recv() are almost idenitical except that send() and recv() receive an extra
+         * paramter flag, giving us more flexibility
+         */
         char buffer[READ_BUF_SIZE] = {0};
-        if (read(new_socket, buffer, READ_BUF_SIZE) != -1) {
-            printf("[%s] Received: %s\n", get_iso_datetime(iso_dt), buffer);
-            if (write(new_socket, resp ,strlen(resp)) != -1) {
-                printf("[%s] Sent: %s\n", get_iso_datetime(iso_dt), resp);
-            } else {
-                perror("In write()");
-            }
+        if (recv(new_socket, buffer, READ_BUF_SIZE, 0) != -1) {
+            printf("[%s] Received: %s\n", get_iso_datetime(iso_dt), buffer);            
         } else {
             perror("In read()");
+        }
+
+        if (write(new_socket, resp ,strlen(resp)) != -1) {
+            printf("[%s] Sent: %s\n", get_iso_datetime(iso_dt), resp);
+        } else {
+            perror("In write()");
         }
         
         close(new_socket);
