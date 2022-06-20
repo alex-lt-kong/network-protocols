@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
                     get_iso_datetime(iso_dt), src_topic, rd_kafka_err2str(err)
                 );
             } else {
-                printf("[%s] PRODUCED event to dst_topic [%s]: ", get_iso_datetime(iso_dt), src_topic);
+                printf("[%s] PRODUCED event to dst_topic [%s]: ", get_iso_datetime(iso_dt), dst_topic);
                 for (int i = 0; i < strlen((char*)consumer_message->payload) && i < MAX_PRINT; ++i) {
                     printf("%c", ((char*)(consumer_message->payload))[i]);
                 }
