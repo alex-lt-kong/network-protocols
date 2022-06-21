@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define READ_BUF_SIZE 2048
+#include "common.h"
 
 static volatile int keep_running = 1;
 
@@ -41,8 +41,6 @@ int main() {
      * actual format is determined on the address family (type of network) you're using.
      */
     int addrlen = sizeof(address);
-    char *resp = "Hello from server";
-    const int PORT = 8080; //Where the clients can reach at
 
     /* htonl converts a long integer (e.g. address) to a network representation */
     memset((char*)&address, 0, sizeof(address)); 
@@ -77,8 +75,14 @@ int main() {
     struct sockaddr_in from;
     socklen_t fromlen = sizeof (from);
     int new_socket;
-    while(1) {
+    char resp[128] = "Acknowledged";
+    char buffer[READ_BUF_SIZE];
+    int bytes = -1;
+    FILE *f = NULL;
+    while(1) {        
+        
         new_socket = accept(server_fd, (struct sockaddr*)&from, (socklen_t*)&fromlen);
+        f = fopen("tcp-server-check-order.log", "w");
         /* The accept system call grabs the first connection request on the queue of pending connections
          *  (set up in listen) and creates a new socket for that connection.
          * from and fromlen doesnt appear to be a must.
@@ -90,24 +94,32 @@ int main() {
             perror("In accept()");
             exit(EXIT_FAILURE);
         }
+        printf("[%s] Connection accept()'ed\n", get_iso_datetime(iso_dt));
         /* write()/send() and read()/recv() are almost idenitical except that send() and recv() receive an extra
          * paramter flag, giving us more flexibility
-         */
-        char buffer[READ_BUF_SIZE] = {0};
-        if (recv(new_socket, buffer, READ_BUF_SIZE, 0) != -1) {
-            printf("[%s] Received: %s\n", get_iso_datetime(iso_dt), buffer);            
-        } else {
-            perror("In read()");
+         */        
+        do {
+            memset(buffer, 0, READ_BUF_SIZE);
+            bytes = recv(new_socket, buffer, READ_BUF_SIZE, 0); // recv() blocks the loop until any data is readable.
+            if (bytes > 0) {
+                printf("[%s] Received: [%s]\n", get_iso_datetime(iso_dt), buffer);
+                fprintf(f, "%s", buffer);
+            } else if (bytes == 0) {
+                break;
+                // If no messages are available to be received and the peer has
+                // performed an orderly shutdown, recv() shall return 0
+            }
+            else { perror("In recv()"); }
         }
-
-        if (write(new_socket, resp ,strlen(resp)) != -1) {
-            printf("[%s] Sent: %s\n", get_iso_datetime(iso_dt), resp);
-        } else {
-            perror("In write()");
-        }
+        while (1);
+        
+        printf("[%s] Connection close()'ed\n", get_iso_datetime(iso_dt));
+        
         
         close(new_socket);
+        fclose(f);
     }
     close(server_fd);
+    
     return 0;
 }

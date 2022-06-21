@@ -9,15 +9,16 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-#define PORT 8080
+#include "common.h"
 
 int main(int argc, char const *argv[])
 {
     struct timeval tp;
-    int sock = 0; long valread;
+    int sock = 0;
+    
     struct sockaddr_in serv_addr;
     char msg[64];// = "msg from client at %ld";
-    char buffer[1024] = {0};
+    char buffer[READ_BUF_SIZE] = {0};
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         printf("\n Socket creation error \n");
@@ -39,21 +40,19 @@ int main(int argc, char const *argv[])
         perror("In connect()");
         return -1;
     }
-    for (int i = 0; i < 10; ++i) {
+    long bytes = -1;
+    for (int i = 0; i < 10000; ++i) {
         gettimeofday(&tp, NULL);
-        snprintf(msg, sizeof(msg)-1, "msg from client at %d.%d", tp.tv_sec, tp.tv_usec);
-        if (send(sock , msg , strlen(msg) , MSG_MORE) != -1) {
+        snprintf(msg, MSG_BUF_SIZE, "%d.%06d: msg from client\n", tp.tv_sec, tp.tv_usec);
+        if (send(sock , msg , strlen(msg), 0) != -1) {
             // use send() instead of write() and use MSG_MORE to send messages in batches.
             // This, however, doesn't make much difference since we can accumulate the message and them
             // call send() once...
-            printf("Message sent: [%s]\n", msg);
+            sleep(0.1);
         } else {
             perror("In send():");
         }
     }
-
-    valread = read( sock , buffer, 1024);
-    printf("%s\n",buffer );
     close(sock);
     return 0;
 }
