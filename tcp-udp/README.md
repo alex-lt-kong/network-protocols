@@ -52,3 +52,7 @@ The basic building block for communication is the socket. A socket is an endpoin
   * Note that the lifetimes of these two types of state are very much independent of each other -- for example, you might decide that you don't want to accept any more incoming TCP connections and therefore you want to close the first (connections-accepting) socket while continuing to use the second (TCP-connection-specific) socket to communicate with the already-connected client. Or you might do the opposite, and decide that you don't want to continue the conversation with that particular client, so you close the second socket, but you do want to continue accepting more TCP connections, so you leave the first socket open.
 
   * UDP, on the other hand, has no notion of "accepting connections", so there is only one kind of state, and that is the set of buffered sent and/or received packets (regardless of their source and/or destination). As such, there is generally no need to have more than one socket.
+
+### Q: How to reuse an established TCP connection instead of closing it after only one `read()`/`recv()`?
+  A: Similar to `accept()`, `recv()` is blocking and it only returns when it receives something. Therefore, calling `recv()`
+  in an infinite loop allows us to re-use an established TCP connection.
