@@ -1,6 +1,0 @@
-make --dry-run --keep-going --print-directory
-make: Entering directory '/home/akong_yin/my-repos/network-protocols'
-make: Leaving directory '/home/akong_yin/my-repos/network-protocols'
- 
-make: *** No targets specified and no makefile found.  Stop.
-
