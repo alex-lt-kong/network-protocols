@@ -211,7 +211,8 @@ char* decode_domain_name(const unsigned char **buf, size_t len)
       *buf += i + 1;
       return domain;
     }
-    if (c <= '?') {
+    if (c < 64) {
+      // This magic number does NOT mean the ASCII code for @, it means a label can be up to 63 bytes long only.
       domain[i - 1] = '.';
       continue;
     }
@@ -219,6 +220,7 @@ char* decode_domain_name(const unsigned char **buf, size_t len)
       domain[i - 1] = c;
       continue;
     }
+    return NULL;
   }
 
   return NULL;
