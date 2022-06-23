@@ -1,7 +1,31 @@
 # DNS
 
+To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
+
 ## Format
-### Header format
+
+* The client/server information exchange in DNS is facilitated using query/response messaging. Both queries and responses have the same general format, containing up to five individual sections carrying information.
+
+* Of these, two are usually found in both queries and responses: the Header section and the Question section.
+
+<table>
+    <thead>
+        <tr>
+            <th>Section Name</th>
+            <th>Section Size (byte)</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Header</td>
+            <td>12</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+### Header section format
 
 <table>
     <thead>
@@ -73,6 +97,38 @@
             <td>ARCount</td>
             <td>2</td>
             <td>Additional Record Count: Specifies the number of resource records in the Additional section of the message.</td>
+        </tr>
+    </tbody>
+</table>
+
+### Question section format
+
+<table>
+    <thead>
+        <tr>
+            <th>Field Name</th>
+            <th>Field Size (byte)</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>QName</td>
+            <td>Variable</td>
+            <td>
+                Question Name: Contains the object, domain or zone name that is the subject of the query, encoded using standard DNS name notation.
+                The "standard DNS name notation" encodes www.google.com to 3www6google3com0.
+            </td>
+        </tr>
+        <tr>
+            <td>QType</td>
+            <td>2</td>
+            <td>Question Type, valid values are 251, 252, 253, 254 and 255</td>
+        </tr>
+        <tr>
+            <td>QClass</td>
+            <td>2</td>
+            <td>Question Class, specifies the class of the resource record being requested, normally the value 1 for Internet ("IN").</td>
         </tr>
     </tbody>
 </table>

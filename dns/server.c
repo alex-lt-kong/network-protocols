@@ -11,9 +11,6 @@
 
 #include "server.h"
 
-#define MIN(x, y) ((x) <= (y) ? (x) : (y))
-
-
 /*
 * To test start the program and issue a DNS request:
 *  dig @127.0.0.1 -p 9000 foo.bar.com 
@@ -197,19 +194,30 @@ void put32bits(uint8_t **buffer, uint32_t value)
 */
 
 // 3foo3bar3com0 => foo.bar.com (No full validation is done!)
-char *decode_domain_name(const uint8_t **buf, size_t len)
+/**
+ * @brief Implement the "standard DNS name notation"
+ * For example, it encodes "www.google.com" to "3www6google3com0".
+ * @param buf 
+ * @param len 
+ * @return char* Users are reminded to free() the pointer after use.
+ */
+char* decode_domain_name(const unsigned char **buf, size_t len)
 {
-  char domain[256];
-  for (int i = 1; i < MIN(256, len); i += 1) {
+  char* domain = (char*)calloc(len, sizeof(char));
+  for (int i = 1; i < len; ++i) {
     uint8_t c = (*buf)[i];
     if (c == 0) {
       domain[i - 1] = 0;
       *buf += i + 1;
-      return strdup(domain);
-    } else if (c <= 63) {
+      return domain;
+    }
+    if (c <= '?') {
       domain[i - 1] = '.';
-    } else {
+      continue;
+    }
+    if ('A' <= c <= 'Z' || 'a' <= c <= 'z' || c == '-') {
       domain[i - 1] = c;
+      continue;
     }
   }
 
@@ -301,19 +309,22 @@ void encode_header(struct Message *msg, uint8_t **buffer)
  */
 int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer_len)
 {
+  if (buffer_len < HEADER_SIZE) {
+    fprintf(stderr, "Data length incorrect\n");
+    return -1;
+  }
   parse_dns_query_header(msg, &buffer);
 
   if (msg->anCount != 0 || msg->nsCount != 0) {
-    printf("Only questions expected!\n");
+    fprintf(stderr, "The DNS message contains unsupported section\n");
     return -1;
   }
 
-  // parse questions
-  uint32_t qcount = msg->qdCount;
-  for (int i = 0; i < qcount; ++i) {
+  // parse questions one by one
+  for (int i = 0; i < msg->qdCount; ++i) {
     struct Question *q = malloc(sizeof(struct Question));
 
-    q->qName = decode_domain_name(&buffer, buffer_len);
+    q->qName = decode_domain_name(&buffer, buffer_len - HEADER_SIZE);
     q->qType = get16bits(&buffer);
     q->qClass = get16bits(&buffer);
 

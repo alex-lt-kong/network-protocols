@@ -1,6 +1,7 @@
 #include <stdint.h>
 
 #define READ_BUF_SIZE 2048
+#define HEADER_SIZE 12
 #define PORT 9000
 
 static const uint32_t RCODE_MASK = 0x000F;
