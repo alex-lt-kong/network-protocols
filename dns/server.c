@@ -296,9 +296,10 @@ void encode_header(struct Message *msg, uint8_t **buffer)
  * to msg
  * @param msg pointer to the struct where the parsed DNS message will be stored.
  * @param buffer pointer to bytes read from socket.
+ * @param buffer_len number of bytes in buffer
  * @returns 0 means okay
  */
-int parse_dns_query(struct Message *msg, const unsigned char* buffer, int size)
+int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer_len)
 {
   parse_dns_query_header(msg, &buffer);
 
@@ -312,7 +313,7 @@ int parse_dns_query(struct Message *msg, const unsigned char* buffer, int size)
   for (int i = 0; i < qcount; ++i) {
     struct Question *q = malloc(sizeof(struct Question));
 
-    q->qName = decode_domain_name(&buffer, size);
+    q->qName = decode_domain_name(&buffer, buffer_len);
     q->qType = get16bits(&buffer);
     q->qClass = get16bits(&buffer);
 

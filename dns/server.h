@@ -3,8 +3,6 @@
 #define READ_BUF_SIZE 2048
 #define PORT 9000
 
-static const uint32_t RD_MASK = 0x0100;
-static const uint32_t RA_MASK = 0x8000;
 static const uint32_t RCODE_MASK = 0x000F;
 
 /* Response Type */

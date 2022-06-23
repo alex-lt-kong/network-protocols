@@ -52,12 +52,27 @@
         <tr>
             <td>RCode</td>
             <td>1/2 (4 bits)</td>
-            <td>Response Code</td>
+            <td>Response Code: In a query, it should always be 0. In a response, valid values are from 1 to 10.</td>
         </tr>
         <tr>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>QDCount</td>
+            <td>2</td>
+            <td>Question Count: Specifies the number of questions in the Question section of the message.</td>
+        </tr>
+        <tr>
+            <td>ANCount</td>
+            <td>2</td>
+            <td>Answer Record Count: Specifies the number of resource records in the Answer section of the message.</td>
+        </tr>
+        <tr>
+            <td>NSCount</td>
+            <td>2</td>
+            <td>Authority Record Count: Specifies the number of resource records in the Authority section of the message. ("NS" stands for "name server")</td>
+        </tr>
+        <tr>
+            <td>ARCount</td>
+            <td>2</td>
+            <td>Additional Record Count: Specifies the number of resource records in the Additional section of the message.</td>
         </tr>
     </tbody>
 </table>
