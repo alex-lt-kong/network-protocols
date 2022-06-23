@@ -8,151 +8,16 @@
 #include <malloc.h>
 #include <errno.h>
 #include <string.h>
-#include <stdint.h>
 
-#define BUF_SIZE 2048
+#include "server.h"
+
 #define MIN(x, y) ((x) <= (y) ? (x) : (y))
 
 
 /*
-* This software is licensed under the CC0.
-*
-* This is a _basic_ DNS Server for educational use.
-* It does not prevent invalid packets from crashing
-* the server.
-*
 * To test start the program and issue a DNS request:
 *  dig @127.0.0.1 -p 9000 foo.bar.com 
 */
-
-
-/*
-* Masks and constants.
-*/
-
-static const uint32_t QR_MASK = 0x8000;
-static const uint32_t OPCODE_MASK = 0x7800;
-static const uint32_t AA_MASK = 0x0400;
-static const uint32_t TC_MASK = 0x0200;
-static const uint32_t RD_MASK = 0x0100;
-static const uint32_t RA_MASK = 0x8000;
-static const uint32_t RCODE_MASK = 0x000F;
-
-/* Response Type */
-enum {
-  Ok_ResponseType = 0,
-  FormatError_ResponseType = 1,
-  ServerFailure_ResponseType = 2,
-  NameError_ResponseType = 3,
-  NotImplemented_ResponseType = 4,
-  Refused_ResponseType = 5
-};
-
-/* Resource Record Types */
-enum {
-  A_Resource_RecordType = 1,
-  NS_Resource_RecordType = 2,
-  CNAME_Resource_RecordType = 5,
-  SOA_Resource_RecordType = 6,
-  PTR_Resource_RecordType = 12,
-  MX_Resource_RecordType = 15,
-  TXT_Resource_RecordType = 16,
-  AAAA_Resource_RecordType = 28,
-  SRV_Resource_RecordType = 33
-};
-
-/* Operation Code */
-enum {
-  QUERY_OperationCode = 0, /* standard query */
-  IQUERY_OperationCode = 1, /* inverse query */
-  STATUS_OperationCode = 2, /* server status request */
-  NOTIFY_OperationCode = 4, /* request zone transfer */
-  UPDATE_OperationCode = 5 /* change resource records */
-};
-
-/* Response Code */
-enum {
-  NoError_ResponseCode = 0,
-  FormatError_ResponseCode = 1,
-  ServerFailure_ResponseCode = 2,
-  NameError_ResponseCode = 3
-};
-
-/* Query Type */
-enum {
-  IXFR_QueryType = 251,
-  AXFR_QueryType = 252,
-  MAILB_QueryType = 253,
-  MAILA_QueryType = 254,
-  STAR_QueryType = 255
-};
-
-/*
-* Types.
-*/
-
-/* Question Section */
-struct Question {
-  char *qName;
-  uint16_t qType;
-  uint16_t qClass;
-  struct Question *next; // for linked list
-};
-
-/* Data part of a Resource Record */
-union ResourceData {
-  struct {
-    uint8_t txt_data_len;
-    char *txt_data;
-  } txt_record;
-  struct {
-    uint8_t addr[4];
-  } a_record;
-  struct {
-    uint8_t addr[16];
-  } aaaa_record;
-};
-
-/* Resource Record Section */
-struct ResourceRecord {
-  char *name;
-  uint16_t type;
-  uint16_t class;
-  uint32_t ttl;
-  uint16_t rd_length;
-  union ResourceData rd_data;
-  struct ResourceRecord *next; // for linked list
-};
-
-struct Message {
-  uint16_t id; /* Identifier */
-
-  /* Flags */
-  uint16_t qr; /* Query/Response Flag */
-  uint16_t opcode; /* Operation Code */
-  uint16_t aa; /* Authoritative Answer Flag */
-  uint16_t tc; /* Truncation Flag */
-  uint16_t rd; /* Recursion Desired */
-  uint16_t ra; /* Recursion Available */
-  uint16_t rcode; /* Response Code */
-
-  uint16_t qdCount; /* Question Count */
-  uint16_t anCount; /* Answer Record Count */
-  uint16_t nsCount; /* Authority Record Count */
-  uint16_t arCount; /* Additional Record Count */
-
-  /* At least one question; questions are copied to the response 1:1 */
-  struct Question *questions;
-
-  /*
-  * Resource records to be send back.
-  * Every resource record can be in any of the following places.
-  * But every place has a different semantic.
-  */
-  struct ResourceRecord *answers;
-  struct ResourceRecord *authorities;
-  struct ResourceRecord *additionals;
-};
 
 int get_A_Record(uint8_t addr[4], const char domain_name[])
 {
@@ -291,7 +156,12 @@ void print_message(struct Message *msg)
 * Basic memory operations.
 */
 
-size_t get16bits(const uint8_t **buffer)
+/**
+ * @brief Get 2 bytes(16 bits) from the pointer and move the pointer forward by 2 bytes.
+ * @param buffer pointer of pointer pointing to memory blocks where 2 bytes will be extracted
+ * @returns 2 bytes as uint16_t. The variable will be in host byte order.
+ */
+uint16_t get16bits(const uint8_t** buffer)
 {
   uint16_t value;
 
@@ -380,18 +250,24 @@ void encode_domain_name(uint8_t **buffer, const char *domain)
 }
 
 
-void decode_header(struct Message *msg, const uint8_t **buffer)
+void parse_dns_query_header(struct Message *msg, const unsigned char** buffer)
 {
   msg->id = get16bits(buffer);
 
   uint32_t fields = get16bits(buffer);
-  msg->qr = (fields & QR_MASK) >> 15;
-  msg->opcode = (fields & OPCODE_MASK) >> 11;
-  msg->aa = (fields & AA_MASK) >> 10;
-  msg->tc = (fields & TC_MASK) >> 9;
-  msg->rd = (fields & RD_MASK) >> 8;
-  msg->ra = (fields & RA_MASK) >> 7;
-  msg->rcode = (fields & RCODE_MASK) >> 0;
+  /*
+   * Endianness only matters for layout of data in memory. As soon as data is loaded by the processor to be operated on,
+   * endianness is completely irrelevent. Shifts, bitwise operations, and so on perform as you would expect
+   * (data logically laid out as low-order bit to high) regardless of endianness.
+   */
+  msg->qr     = (fields & 0b1000000000000000) >> 15;
+  msg->opcode = (fields & 0b0111100000000000) >> 11;
+  msg->aa     = (fields & 0b0000010000000000) >> 10;
+  msg->tc     = (fields & 0b0000001000000000) >> 9;
+  msg->rd     = (fields & 0b0000000100000000) >> 8;
+  msg->ra     = (fields & 0b0000000010000000) >> 7;
+  // three reserved bits are not used.
+  msg->rcode  = (fields & 0b0000000000001111) >> 0;
 
   msg->qdCount = get16bits(buffer);
   msg->anCount = get16bits(buffer);
@@ -404,7 +280,7 @@ void encode_header(struct Message *msg, uint8_t **buffer)
   put16bits(buffer, msg->id);
 
   int fields = 0;
-  fields |= (msg->qr << 15) & QR_MASK;
+  fields |= (msg->qr << 15) & 0b1000000000000000;
   fields |= (msg->rcode << 0) & RCODE_MASK;
   // TODO: insert the rest of the fields
   put16bits(buffer, fields);
@@ -416,13 +292,15 @@ void encode_header(struct Message *msg, uint8_t **buffer)
 }
 
 /**
+ * @brief Parse the incoming bytes as a DNS message and store the parsed message
+ * to msg
+ * @param msg pointer to the struct where the parsed DNS message will be stored.
+ * @param buffer pointer to bytes read from socket.
  * @returns 0 means okay
  */
-int decode_msg(struct Message *msg, const uint8_t *buffer, int size)
+int parse_dns_query(struct Message *msg, const unsigned char* buffer, int size)
 {
-  int i;
-
-  decode_header(msg, &buffer);
+  parse_dns_query_header(msg, &buffer);
 
   if (msg->anCount != 0 || msg->nsCount != 0) {
     printf("Only questions expected!\n");
@@ -431,7 +309,7 @@ int decode_msg(struct Message *msg, const uint8_t *buffer, int size)
 
   // parse questions
   uint32_t qcount = msg->qdCount;
-  for (i = 0; i < qcount; ++i) {
+  for (int i = 0; i < qcount; ++i) {
     struct Question *q = malloc(sizeof(struct Question));
 
     q->qName = decode_domain_name(&buffer, size);
@@ -638,23 +516,21 @@ void free_questions(struct Question *qq)
   }
 }
 
-int main()
-{
-  // buffer for input/output binary packet
-  uint8_t buffer[BUF_SIZE];
+int main() {
+  //buffer used to store bytes read from UDP socket
+  uint8_t read_buf[READ_BUF_SIZE];
   struct sockaddr_in client_addr;
   socklen_t addr_len = sizeof(struct sockaddr_in);
   struct sockaddr_in addr;
-  int nbytes, rc;
+  int nbytes;
   int sock;
-  int port = 9000;
 
   struct Message msg;
   memset(&msg, 0, sizeof(struct Message));
 
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = INADDR_ANY;
-  addr.sin_port = htons(port);
+  addr.sin_port = htons(PORT);
 
   sock = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -663,7 +539,7 @@ int main()
 		return 1;
   }
 
-  printf("Listening on port %u.\n", port);
+  printf("Listening on port %u.\n", PORT);
 
   while (1) {
     free_questions(msg.questions);
@@ -672,10 +548,9 @@ int main()
     free_resource_records(msg.additionals);
     memset(&msg, 0, sizeof(struct Message));
 
-    /* Receive DNS query */
-    nbytes = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr *) &client_addr, &addr_len);
+    nbytes = recvfrom(sock, read_buf, sizeof(read_buf), 0, (struct sockaddr *) &client_addr, &addr_len);
 
-    if (decode_msg(&msg, buffer, nbytes) != 0) {
+    if (parse_dns_query(&msg, read_buf, nbytes) != 0) {
       continue;
     }
 
@@ -688,13 +563,13 @@ int main()
     /* Print response */
     print_message(&msg);
 
-    uint8_t *p = buffer;
+    uint8_t *p = read_buf;
     if (encode_msg(&msg, &p) != 0) {
       continue;
     }
 
     /* Send DNS response */
-    int buflen = p - buffer;
-    sendto(sock, buffer, buflen, 0, (struct sockaddr*) &client_addr, addr_len);
+    int buflen = p - read_buf;
+    sendto(sock, read_buf, buflen, 0, (struct sockaddr*) &client_addr, addr_len);
   }
 }

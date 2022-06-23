@@ -14,7 +14,7 @@
 // Driver code 
 int main() { 
     int sockfd; 
-    char buffer[BUF_SIZE]; 
+    char buffer[READ_BUF_SIZE]; 
     char *hello = "Hello from server"; 
     struct sockaddr_in servaddr, cliaddr; 
         
@@ -45,7 +45,7 @@ int main() {
     len = sizeof(cliaddr);  //len is value/result 
     while (1) {
         memset(buffer, 0, sizeof(buffer));
-        n = recvfrom(sockfd, (char *)buffer, BUF_SIZE, MSG_WAITALL, ( struct sockaddr *) &cliaddr, &len); 
+        n = recvfrom(sockfd, (char *)buffer, READ_BUF_SIZE, MSG_WAITALL, ( struct sockaddr *) &cliaddr, &len); 
         buffer[n] = '\0'; 
         memset(int_buf, 0, sizeof(int_buf));
         memcpy(int_buf, buffer, strlen("1655712915.539565"));

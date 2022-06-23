@@ -18,7 +18,7 @@
 int main() { 
     struct timeval tp;
     int socket_fd; 
-    char msg[BUF_SIZE]; 
+    char msg[READ_BUF_SIZE]; 
     struct sockaddr_in     servaddr; 
     int msg_padding_lens[] = {0, 1024, 32767, 64500};
     srand(time(NULL));
@@ -47,7 +47,7 @@ int main() {
     for (int i = 0; i < MSG_COUNT; ++i) {
         gettimeofday(&tp, NULL);
         memset(msg, 0, sizeof(msg));
-        snprintf(msg, BUF_SIZE, "%d.%06d: msg from client", tp.tv_sec, tp.tv_usec);
+        snprintf(msg, READ_BUF_SIZE, "%d.%06d: msg from client", tp.tv_sec, tp.tv_usec);
         msg_len = strlen("1655714250.706089: msg from client");
         memset(msg + msg_len, 'a', msg_padding_lens[rand() % sizeof(msg_padding_lens) / sizeof(int)]);
         sendto(socket_fd, msg, strlen(msg), 0, (const struct sockaddr *) &servaddr, sizeof(servaddr)); 
