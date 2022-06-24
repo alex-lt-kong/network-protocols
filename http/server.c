@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define READ_BUF_SIZE 2048
+#define READ_BUF_SIZE 65535
 #define HTTP_PORT 8081
 
 static volatile int keep_running = 1;
@@ -57,7 +57,7 @@ int main() {
          * is a port number. In sockets, this operation is called binding an address.
          */
         perror("In bind()"); 
-        return 0; 
+        exit(EXIT_FAILURE); 
     }
 
     if (listen(server_fd, 10) < 0) {
@@ -74,32 +74,44 @@ int main() {
     }
     printf("[%s] Listening on 0.0.0.0:%d\n", get_iso_datetime(iso_dt), HTTP_PORT);
     int new_socket;
+    size_t bytes_read = -1;
+    FILE *fp;
     while(1) {
         new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
-        /* The accept system call grabs the first connection request on the queue of pending connections
-         *  (set up in listen) and creates a new socket for that connection.
-         * The original socket that was set up for listening is used only for accepting connections,
-         * not for exchanging data. By default, socket operations are synchronous, and accept will block until
-         * a connection is present on the queue.
-         */
+        printf("[%s] Connection accept()'ed\n", get_iso_datetime(iso_dt));
         if (new_socket < 0) {            
             perror("In accept()");
             exit(EXIT_FAILURE);
         }
         
         char buffer[READ_BUF_SIZE] = {0};
-        if (read(new_socket, buffer, READ_BUF_SIZE) != -1) {
-            printf("[%s] Received: %s\n", get_iso_datetime(iso_dt), buffer);
+        fp = fopen("./server.out.data", "w");
+        do {
+            bytes_read = read(new_socket, buffer, READ_BUF_SIZE);
+            if (bytes_read <= 0) {
+                if (bytes_read < 0) { perror("In read()"); }
+                break;
+            } 
+            printf(
+                "========== Data received (size: %d bytes) ==========\n%s\n---------- Received data ends (newline appended)----------\n\n",
+                 bytes_read, buffer
+            );
+            if(fp == NULL) { printf("Failed to open file\n"); }
+            else { fwrite(&buffer, 1, bytes_read, fp); }
+
             if (write(new_socket, resp ,strlen(resp)) != -1) {
-                printf("[%s] Sent: %s\n", get_iso_datetime(iso_dt), resp);
+                printf(
+                    "========== Data sent ==========\n%s\n---------- Sent data ends (newline appended)----------\n\n",
+                    resp
+                );
             } else {
                 perror("In write()");
             }
-        } else {
-            perror("In read()");
-        }
-        
+            
+        } while (1);
+        fclose(fp);
         close(new_socket);
+        printf("[%s] Connection close()'ed\n", get_iso_datetime(iso_dt));
     }
     close(server_fd);
     return 0;
