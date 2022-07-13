@@ -4,6 +4,8 @@ To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
 
 ## Format
 
+* A more detailed explanation of DNS message format can be found [here](http://www.tcpipguide.com/free/t_DNSMessageProcessingandGeneralMessageFormat.htm).
+
 * The client/server information exchange in DNS is facilitated using query/response messaging. Both queries and responses have the same general format, containing up to five individual sections carrying information.
 
 * Of these, two are usually found in both queries and responses: the Header section and the Question section.
@@ -81,7 +83,11 @@ To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
         <tr>
             <td>QDCount</td>
             <td>2</td>
-            <td>Question Count: Specifies the number of questions in the Question section of the message.</td>
+            <td>
+                Question Count: Specifies the number of questions in the Question section of the message. Theoretically,
+                DNS protocol supports multiple questions in one query. In reality, however, this seems to be not
+                supported by mainstream implementations as shown <a href="https://stackoverflow.com/questions/4082081/requesting-a-and-aaaa-records-in-single-dns-query/4083071">here</a>.
+            </td>
         </tr>
         <tr>
             <td>ANCount</td>
@@ -123,7 +129,7 @@ To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
         <tr>
             <td>QType</td>
             <td>2</td>
-            <td>Question Type, valid values are 251, 252, 253, 254 and 255</td>
+            <td>Question Type, a list of valid values can be found from its <a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types">Wikipedia entry</a></td>
         </tr>
         <tr>
             <td>QClass</td>

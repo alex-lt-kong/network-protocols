@@ -124,22 +124,27 @@ void print_message(struct Message *msg)
 {
   struct Question *q;
 
-  printf("QUERY { ID: %02x", msg->id);
-  printf(". FIELDS: [ QR: %u, OpCode: %u ]", msg->qr, msg->opcode);
-  printf(", QDcount: %u", msg->qdCount);
-  printf(", ANcount: %u", msg->anCount);
-  printf(", NScount: %u", msg->nsCount);
-  printf(", ARcount: %u,\n", msg->arCount);
+  printf("QUERY {\n");
+  printf("  ID:                                %02x,\n", msg->id);
+  printf("  QR (Query/Response flag):          %u,\n", msg->qr);
+  printf("  OpCode:                            %u,\n", msg->opcode);
+  printf("  QDcount (Question Count):          %u,\n", msg->qdCount);
+  printf("  ANcount (Answer Record Count):     %u,\n", msg->anCount);
+  printf("  NScount (Authority Record Count):  %u,\n", msg->nsCount);
+  printf("  ARcount (Additional Record Count): %u,\n", msg->arCount);
 
+  printf("  Questions: [\n");
   q = msg->questions;
   while (q) {
-    printf("  Question { qName '%s', qType %u, qClass %u }\n",
+    printf("    {qName: '%s', qType: %u, qClass: %u}",
       q->qName,
       q->qType,
       q->qClass
     );
     q = q->next;
+    q == NULL ? printf("\n") : printf(",\n");
   }
+  printf("  ]\n");
 
   print_resource_record(msg->answers);
   print_resource_record(msg->authorities);
@@ -155,10 +160,12 @@ void print_message(struct Message *msg)
 
 /**
  * @brief Get 2 bytes(16 bits) from the pointer and move the pointer forward by 2 bytes.
+ * The function does NOT have any mechanism to prevent the pointer from moving beyond
+ * its boundary.
  * @param buffer pointer of pointer pointing to memory blocks where 2 bytes will be extracted
  * @returns 2 bytes as uint16_t. The variable will be in host byte order.
  */
-uint16_t get16bits(const uint8_t** buffer)
+uint16_t get_and_move_by_2bytes(const uint8_t** buffer)
 {
   uint16_t value;
 
@@ -206,13 +213,15 @@ char* decode_domain_name(const unsigned char **buf, size_t len)
   char* domain = (char*)calloc(len, sizeof(char));
   for (int i = 1; i < len; ++i) {
     uint8_t c = (*buf)[i];
-    if (c == 0) {
+    if (c == 0) { // per "standard DNS name notation", 0 means the end of a domain name
       domain[i - 1] = 0;
       *buf += i + 1;
       return domain;
     }
     if (c < 64) {
-      // This magic number does NOT mean the ASCII code for @, it means a label can be up to 63 bytes long only.
+      // This magic number does NOT mean the ASCII code for @.
+      // it is from the specs that a label can be up to 63 bytes long only.
+      // Among A-Z and a-z, the character with the smallest ASCII-code is 'A' == 101 (0x41)
       domain[i - 1] = '.';
       continue;
     }
@@ -220,6 +229,9 @@ char* decode_domain_name(const unsigned char **buf, size_t len)
       domain[i - 1] = c;
       continue;
     }
+    // I believe this means on a subset of "more common" valid domain names will be correctly resolved.
+    // I should be possible that many valid domain names will slip through the above logic and triggers the return NULL
+    // statement.
     return NULL;
   }
 
@@ -262,9 +274,9 @@ void encode_domain_name(uint8_t **buffer, const char *domain)
 
 void parse_dns_query_header(struct Message *msg, const unsigned char** buffer)
 {
-  msg->id = get16bits(buffer);
+  msg->id = get_and_move_by_2bytes(buffer);
 
-  uint32_t fields = get16bits(buffer);
+  uint32_t fields = get_and_move_by_2bytes(buffer);
   /*
    * Endianness only matters for layout of data in memory. As soon as data is loaded by the processor to be operated on,
    * endianness is completely irrelevent. Shifts, bitwise operations, and so on perform as you would expect
@@ -279,10 +291,10 @@ void parse_dns_query_header(struct Message *msg, const unsigned char** buffer)
   // three reserved bits are not used.
   msg->rcode  = (fields & 0b0000000000001111) >> 0;
 
-  msg->qdCount = get16bits(buffer);
-  msg->anCount = get16bits(buffer);
-  msg->nsCount = get16bits(buffer);
-  msg->arCount = get16bits(buffer);
+  msg->qdCount = get_and_move_by_2bytes(buffer);
+  msg->anCount = get_and_move_by_2bytes(buffer);
+  msg->nsCount = get_and_move_by_2bytes(buffer);
+  msg->arCount = get_and_move_by_2bytes(buffer);
 }
 
 void encode_header(struct Message *msg, uint8_t **buffer)
@@ -327,15 +339,19 @@ int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer
     struct Question *q = malloc(sizeof(struct Question));
 
     q->qName = decode_domain_name(&buffer, buffer_len - HEADER_SIZE);
-    q->qType = get16bits(&buffer);
-    q->qClass = get16bits(&buffer);
-
     if (q->qName == NULL) {
       printf("Failed to decode domain name!\n");
       return -1;
     }
+    q->qType = get_and_move_by_2bytes(&buffer);
+    q->qClass = get_and_move_by_2bytes(&buffer);    
+    if (q->qClass != 1 && q->qClass != 255) {
+      printf("qClass is equal to %d, which is currently not supported\n", q->qClass);
+      return -1;
+    }
 
-    // prepend question to questions list
+    // prepend question to questions list: msg->questions is a pointer pointing
+    // to the first question in a linked list of q's.
     q->next = msg->questions;
     msg->questions = q;
   }
