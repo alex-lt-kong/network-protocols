@@ -1,10 +1,10 @@
 # DNS
 
 To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
-
+The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/mwarning/SimpleDNS)
 ## Format
 
-* A more detailed explanation of DNS message format can be found [here](http://www.tcpipguide.com/free/t_DNSMessageProcessingandGeneralMessageFormat.htm).
+* A more detailed explanation of DNS message format can be found from [The TCP/IP Guide](http://www.tcpipguide.com/free/t_DNSMessageProcessingandGeneralMessageFormat.htm).
 
 * The client/server information exchange in DNS is facilitated using query/response messaging. Both queries and responses have the same general format, containing up to five individual sections carrying information.
 
@@ -22,7 +22,31 @@ To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
         <tr>
             <td>Header</td>
             <td>12</td>
-            <td></td>
+            <td>
+                Contains fields that describe the type of message and provide important information about it.
+                Also contains fields that indicate the number of entries in the other sections of the message.
+            </td>
+        </tr>
+        <tr>
+            <td>Question</td>
+            <td>Variable</td>
+            <td>
+                Carries one or more “questions”, that is, queries for information being sent to a DNS name server.
+                Note that common DNS service implementations support one question per query only.
+            </td>
+        </tr>
+        <tr>
+            <td>Resource Record Sections: Answer, Authority and Additional</td>
+            <td>Variable</td>
+            <td>
+                 These sections share the same basic format, each carrying one or more resource records that
+                 use a common record format. The number of records in each section is indicated using the “count”
+                 fields in the message header. The sections differ only in terms of the types of records they
+                 carry. Answer records are directly related to the question asked, while Authority records carry
+                 resource records that identify other name servers. Authority records are thus the means by which
+                 name servers are hierarchically “linked” when the server doesn't have the information the client
+                 requested. The Additional section exists for the specific purpose of improving DNS efficiency. 
+            </td>
         </tr>
     </tbody>
 </table>
@@ -58,7 +82,20 @@ To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
         <tr>
             <td>AA</td>
             <td>1/8 (1 bit)</td>
-            <td>Truncation flag: Setting to 1 indicates that the message was truncated due to its length being longer than the maximum permitted for the type of transport mechanism used. Since TCP doesn't have a length limit, this option is applicable to UDP only</td>
+            <td>
+                Authoritative Answer Flag: This bit is set to 1 in a response to indicate that the server that created
+                the response is authoritative for the zone in which the domain name specified in the Question section is
+                located. If it is 0, the response is non-authoritative.
+            </td>
+        </tr>
+        <tr>
+            <td>TC</td>
+            <td>1/8 (1 bit)</td>
+            <td>
+                Truncation flag: Setting to 1 indicates that the message was truncated due to its length being longer
+                than the maximum permitted for the type of transport mechanism used. Since TCP doesn't have a length
+                limit, this option is applicable to UDP only
+            </td>
         </tr>
         <tr>
             <td>RD</td>
@@ -68,7 +105,10 @@ To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
         <tr>
             <td>RA</td>
             <td>1/8 (1 bit)</td>
-            <td>Recursion Available falg: Set to 1 or cleared to 0 in a response to indicate whether the server creating the response supports recursive queries.</td>
+            <td>
+                Recursion Available flag: Set to 1 or cleared to 0 in a response to indicate whether
+                the server creating the response supports recursive queries.
+            </td>
         </tr>
         <tr>
             <td>Z</td>
@@ -122,7 +162,39 @@ To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
             <td>QName</td>
             <td>Variable</td>
             <td>
-                Question Name: Contains the object, domain or zone name that is the subject of the query, encoded using standard DNS name notation.
+                Question Name: the queried domain name, encoded using standard DNS name notation.
+                The "standard DNS name notation" encodes www.google.com to 3www6google3com0.
+            </td>
+        </tr>
+        <tr>
+            <td>QType</td>
+            <td>2</td>
+            <td>Question Type, a list of valid values can be found from its <a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types">Wikipedia entry</a></td>
+        </tr>
+        <tr>
+            <td>QClass</td>
+            <td>2</td>
+            <td>Question Class, specifies the class of the resource record being requested, normally the value 1 for Internet ("IN").</td>
+        </tr>
+    </tbody>
+</table>
+
+###  Resource Record sections (Answer, Authority and Additional) format
+
+<table>
+    <thead>
+        <tr>
+            <th>Field Name</th>
+            <th>Field Size (byte)</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Domain Name</td>
+            <td>Variable</td>
+            <td>
+                The queried domain name, encoded using standard DNS name notation.
                 The "standard DNS name notation" encodes www.google.com to 3www6google3com0.
             </td>
         </tr>

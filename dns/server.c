@@ -202,11 +202,16 @@ void put32bits(uint8_t **buffer, uint32_t value)
 
 // 3foo3bar3com0 => foo.bar.com (No full validation is done!)
 /**
- * @brief Implement the "standard DNS name notation"
+ * @brief An improper implementation the "standard DNS name notation"
  * For example, it encodes "www.google.com" to "3www6google3com0".
  * @param buf 
  * @param len 
  * @return char* Users are reminded to free() the pointer after use.
+ * @note The implementation is flawed: For example,
+ * www.this-is-a-domain-that-is-exactly-45-char-long.com, being encoded to
+ * 3www45this-is-a-domain-that-is-exactly-45-char-long3com0,
+ * will be incorrectly parsed it to
+ * www-this-is-a-domain-that-is-exactly-45-char-long.com.
  */
 char* decode_domain_name(const unsigned char **buf, size_t len)
 {
@@ -229,9 +234,6 @@ char* decode_domain_name(const unsigned char **buf, size_t len)
       domain[i - 1] = c;
       continue;
     }
-    // I believe this means on a subset of "more common" valid domain names will be correctly resolved.
-    // I should be possible that many valid domain names will slip through the above logic and triggers the return NULL
-    // statement.
     return NULL;
   }
 
@@ -361,8 +363,12 @@ int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer
   return 0;
 }
 
-// For every question in the message add a appropiate resource record
-// in either section 'answers', 'authorities' or 'additionals'.
+/**
+ * @brief For every question in the message add an appropiate resource record
+ * in either section 'answers', 'authorities' or 'additionals'.
+ * 
+ * @param msg a DNS query message
+ */
 void resolve_query(struct Message *msg)
 {
   struct ResourceRecord *beg;
@@ -388,6 +394,11 @@ void resolve_query(struct Message *msg)
     memset(rr, 0, sizeof(struct ResourceRecord));
 
     rr->name = strdup(q->qName);
+    /*
+      The strdup() function returns a pointer to a new string which is
+      a duplicate of the string s.  Memory for the new string is
+      obtained with malloc(3), and can be freed with free(3).
+    */
     rr->type = q->qType;
     rr->class = q->qClass;
     rr->ttl = 60*60; // in seconds; 0 means no caching
