@@ -18,20 +18,25 @@
 
 int get_A_Record(uint8_t addr[4], const char domain_name[])
 {
-  if (strcmp("foo.bar.com", domain_name) == 0) {
+  char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'c', 'o', 'm', 0};
+  printf("in get_A_Record()\n");
+  if (strcmp(records, domain_name) == 0) {
+    printf("true\n");
     addr[0] = 1;
     addr[1] = 2;
     addr[2] = 3;
     addr[3] = 4;
     return 0;
   } else {
+    printf("false\n");
     return -1;
   }
 }
 
 int get_AAAA_Record(uint8_t addr[16], const char domain_name[])
 {
-  if (strcmp("foo.bar.com", domain_name) == 0) {
+  char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'c', 'o', 'm', 0};
+  if (strcmp(records, domain_name) == 0) {
     addr[0] = 0xfe;
     addr[1] = 0x80;
     addr[2] = 0x00;
@@ -56,7 +61,8 @@ int get_AAAA_Record(uint8_t addr[16], const char domain_name[])
 
 int get_TXT_Record(char **addr, const char domain_name[])
 {
-  if (strcmp("foo.bar.com", domain_name) == 0) {
+  char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'c', 'o', 'm', 0};
+  if (strcmp(records, domain_name) == 0) {
     *addr = "abcdefg";
     return 0;
   } else {
@@ -216,6 +222,10 @@ void put32bits(uint8_t **buffer, uint32_t value)
 char* decode_domain_name(const unsigned char **buf, size_t len)
 {
   char* domain = (char*)calloc(len, sizeof(char));
+  printf("buf since[1]: %c, %d\n", buf[1], len);
+  memcpy(domain, buf, len);
+  *buf += len;
+  return domain;
   for (int i = 1; i < len; ++i) {
     uint8_t c = (*buf)[i];
     if (c == 0) { // per "standard DNS name notation", 0 means the end of a domain name
@@ -243,6 +253,9 @@ char* decode_domain_name(const unsigned char **buf, size_t len)
 // foo.bar.com => 3foo3bar3com0
 void encode_domain_name(uint8_t **buffer, const char *domain)
 {
+  strcpy(*buffer, domain);
+  *buffer += (strlen(domain) + 1);
+  return;
   uint8_t *buf = *buffer;
   const char *beg = domain;
   const char *pos;
@@ -339,8 +352,13 @@ int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer
   // parse questions one by one
   for (int i = 0; i < msg->qdCount; ++i) {
     struct Question *q = malloc(sizeof(struct Question));
-
-    q->qName = decode_domain_name(&buffer, buffer_len - HEADER_SIZE);
+    
+    //q->qName = decode_domain_name(&buffer, buffer_len - HEADER_SIZE);
+    q->qName = calloc(strlen(buffer), sizeof(char));
+    printf("buffer before strcpy(): %s\n", buffer);
+    strcpy(q->qName, buffer);
+    printf("q->qName after strcpy(): %s\n", q->qName);
+    buffer += (strlen(q->qName) + 1);
     if (q->qName == NULL) {
       printf("Failed to decode domain name!\n");
       return -1;
