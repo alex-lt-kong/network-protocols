@@ -18,14 +18,14 @@ enum {
 
 /* Resource Record Types */
 enum {
-  A_Resource_RecordType = 1,
+  A_Resource_RecordType = 1,  /* IPv4 address */
   NS_Resource_RecordType = 2,
   CNAME_Resource_RecordType = 5,
   SOA_Resource_RecordType = 6,
   PTR_Resource_RecordType = 12,
   MX_Resource_RecordType = 15,
   TXT_Resource_RecordType = 16,
-  AAAA_Resource_RecordType = 28,
+  AAAA_Resource_RecordType = 28, /* IPv6 address */
   SRV_Resource_RecordType = 33
 };
 

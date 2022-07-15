@@ -19,20 +19,24 @@
 int get_A_Record(uint8_t addr[4], const char domain_name[])
 {
   char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'c', 'o', 'm', 0};
-  printf("in get_A_Record()\n");
   if (strcmp(records, domain_name) == 0) {
-    printf("true\n");
     addr[0] = 1;
     addr[1] = 2;
     addr[2] = 3;
     addr[3] = 4;
     return 0;
   } else {
-    printf("false\n");
     return -1;
   }
 }
 
+/**
+ * @brief Get the AAAA Record, which is the IPv6 address of a domain name
+ * 
+ * @param addr 
+ * @param domain_name 
+ * @return int 
+ */
 int get_AAAA_Record(uint8_t addr[16], const char domain_name[])
 {
   char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'c', 'o', 'm', 0};
@@ -194,101 +198,20 @@ void put16bits(uint8_t **buffer, uint16_t value)
   *buffer += 2;
 }
 
-void put32bits(uint8_t **buffer, uint32_t value)
-{
+void put32bits(uint8_t **buffer, uint32_t value) {
   value = htonl(value);
   memcpy(*buffer, &value, 4);
   *buffer += 4;
 }
 
-
-/*
-* Deconding/Encoding functions.
-*/
-
-// 3foo3bar3com0 => foo.bar.com (No full validation is done!)
-/**
- * @brief An improper implementation the "standard DNS name notation"
- * For example, it encodes "www.google.com" to "3www6google3com0".
- * @param buf 
- * @param len 
- * @return char* Users are reminded to free() the pointer after use.
- * @note The implementation is flawed: For example,
- * www.this-is-a-domain-that-is-exactly-45-char-long.com, being encoded to
- * 3www45this-is-a-domain-that-is-exactly-45-char-long3com0,
- * will be incorrectly parsed it to
- * www-this-is-a-domain-that-is-exactly-45-char-long.com.
- */
-char* decode_domain_name(const unsigned char **buf, size_t len)
-{
-  char* domain = (char*)calloc(len, sizeof(char));
-  printf("buf since[1]: %c, %d\n", buf[1], len);
-  memcpy(domain, buf, len);
-  *buf += len;
-  return domain;
-  for (int i = 1; i < len; ++i) {
-    uint8_t c = (*buf)[i];
-    if (c == 0) { // per "standard DNS name notation", 0 means the end of a domain name
-      domain[i - 1] = 0;
-      *buf += i + 1;
-      return domain;
-    }
-    if (c < 64) {
-      // This magic number does NOT mean the ASCII code for @.
-      // it is from the specs that a label can be up to 63 bytes long only.
-      // Among A-Z and a-z, the character with the smallest ASCII-code is 'A' == 101 (0x41)
-      domain[i - 1] = '.';
-      continue;
-    }
-    if ('A' <= c <= 'Z' || 'a' <= c <= 'z' || c == '-') {
-      domain[i - 1] = c;
-      continue;
-    }
-    return NULL;
-  }
-
-  return NULL;
-}
-
-// foo.bar.com => 3foo3bar3com0
-void encode_domain_name(uint8_t **buffer, const char *domain)
-{
+void encode_domain_name(uint8_t **buffer, const char *domain) {
   strcpy(*buffer, domain);
   *buffer += (strlen(domain) + 1);
   return;
-  uint8_t *buf = *buffer;
-  const char *beg = domain;
-  const char *pos;
-  int len = 0;
-  int i = 0;
-
-  while ((pos = strchr(beg, '.'))) {
-    len = pos - beg;
-    buf[i] = len;
-    i += 1;
-    memcpy(buf+i, beg, len);
-    i += len;
-
-    beg = pos + 1;
-  }
-
-  len = strlen(domain) - (beg - domain);
-
-  buf[i] = len;
-  i += 1;
-
-  memcpy(buf + i, beg, len);
-  i += len;
-
-  buf[i] = 0;
-  i += 1;
-
-  *buffer += i;
 }
 
 
-void parse_dns_query_header(struct Message *msg, const unsigned char** buffer)
-{
+void parse_dns_query_header(struct Message *msg, const unsigned char** buffer) {
   msg->id = get_and_move_by_2bytes(buffer);
 
   uint32_t fields = get_and_move_by_2bytes(buffer);
@@ -353,11 +276,13 @@ int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer
   for (int i = 0; i < msg->qdCount; ++i) {
     struct Question *q = malloc(sizeof(struct Question));
     
-    //q->qName = decode_domain_name(&buffer, buffer_len - HEADER_SIZE);
+
     q->qName = calloc(strlen(buffer), sizeof(char));
-    printf("buffer before strcpy(): %s\n", buffer);
     strcpy(q->qName, buffer);
-    printf("q->qName after strcpy(): %s\n", q->qName);
+    // This works because a valid query contains something like 
+    // 3www6google3com0, so it is null-terminated by default. Note that in
+    // this implementation we dont really protect against intentionally malformed
+    // query.
     buffer += (strlen(q->qName) + 1);
     if (q->qName == NULL) {
       printf("Failed to decode domain name!\n");
@@ -421,7 +346,7 @@ void resolve_query(struct Message *msg)
     rr->class = q->qClass;
     rr->ttl = 60*60; // in seconds; 0 means no caching
 
-    // We only can only answer two question types so far
+    // We only can only answer three question types so far
     // and the answer (resource records) will be all put
     // into the answers list.
     // This behavior is probably non-standard!
@@ -608,15 +533,16 @@ int main() {
     if (parse_dns_query(&msg, read_buf, nbytes) != 0) {
       continue;
     }
-
-    /* Print query */
+    printf("-----===== DNS request received =====-----\n");
+    printf("          ===== Question =====\n");
     print_message(&msg);
 
     /* Resolve query and put the answers into the query message */
     resolve_query(&msg);
 
-    /* Print response */
+    printf("\n          ===== Response =====\n");
     print_message(&msg);
+    printf("\n\n");
 
     uint8_t *p = read_buf;
     if (encode_msg(&msg, &p) != 0) {
