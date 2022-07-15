@@ -62,9 +62,8 @@ enum {
 /* Question Section */
 struct Question {
   /*
-  * Question Name: Contains the object, domain or zone name that is the subject of the query, 
-  * encoded using standard DNS name notation.
-  * The "standard DNS name notation" encodes www.google.com to 3www6google3com0.
+   * the queried domain name, encoded using standard DNS name notation. The "standard DNS name notation"
+   * encodes www.google.com to 3www6google3com0.
   */
   char *qName;
   uint16_t qType;
@@ -92,6 +91,7 @@ struct ResourceRecord {
   uint16_t type;
   uint16_t class;
   uint32_t ttl;
+  /* Resource Data Length: Indicates the size of the RData field, in bytes. */
   uint16_t rd_length;
   union ResourceData rd_data;
   struct ResourceRecord *next; // for linked list

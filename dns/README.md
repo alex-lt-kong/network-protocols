@@ -149,6 +149,8 @@ The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/m
 
 ### Question section format
 
+Question section is a subset of the Resource Record section.
+
 <table>
     <thead>
         <tr>
@@ -169,7 +171,10 @@ The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/m
         <tr>
             <td>QType</td>
             <td>2</td>
-            <td>Question Type, a list of valid values can be found from its <a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types">Wikipedia entry</a></td>
+            <td>
+                Question Type, such as 1 for A record and 5 for CNAME record. A list of valid values can be found
+                from its <a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types">Wikipedia entry</a>
+            </td>
         </tr>
         <tr>
             <td>QClass</td>
@@ -181,6 +186,8 @@ The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/m
 
 ###  Resource Record sections (Answer, Authority and Additional) format
 
+Resource Record section is a super-set of the Question section.
+
 <table>
     <thead>
         <tr>
@@ -191,22 +198,35 @@ The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/m
     </thead>
     <tbody>
         <tr>
-            <td>Domain Name</td>
+            <td>Name</td>
             <td>Variable</td>
+            <td>Same as QName under `Question` section</td>
+        </tr>
+        <tr>
+            <td>Type</td>
+            <td>2</td>
+            <td>Same as QType under `Question` section</td>
+        </tr>
+        <tr>
+            <td>Class</td>
+            <td>2</td>
+            <td>Same as QClass under `Question` section</td>
+        </tr>
+        <tr>
+            <td>TTL</td>
+            <td>2</td>
             <td>
-                The queried domain name, encoded using standard DNS name notation.
-                The "standard DNS name notation" encodes www.google.com to 3www6google3com0.
+                Time To Live: Specifies the number of seconds that the record
+                should be retained in the cache of the client. 0 means disabling
+                cache.
             </td>
         </tr>
         <tr>
-            <td>QType</td>
+            <td>RDLength</td>
             <td>2</td>
-            <td>Question Type, a list of valid values can be found from its <a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types">Wikipedia entry</a></td>
-        </tr>
-        <tr>
-            <td>QClass</td>
-            <td>2</td>
-            <td>Question Class, specifies the class of the resource record being requested, normally the value 1 for Internet ("IN").</td>
+            <td>
+                Resource Data Length: Indicates the size of the RData field, in bytes.
+            </td>
         </tr>
     </tbody>
 </table>

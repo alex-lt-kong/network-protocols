@@ -403,8 +403,6 @@ void resolve_query(struct Message *msg)
     rr->class = q->qClass;
     rr->ttl = 60*60; // in seconds; 0 means no caching
 
-    printf("Query for '%s'\n", q->qName);
-
     // We only can only answer two question types so far
     // and the answer (resource records) will be all put
     // into the answers list.
@@ -413,8 +411,7 @@ void resolve_query(struct Message *msg)
       case A_Resource_RecordType:
         rr->rd_length = 4;
         rc = get_A_Record(rr->rd_data.a_record.addr, q->qName);
-        if (rc < 0)
-        {
+        if (rc < 0) {
           free(rr->name);
           free(rr);
           goto next;
@@ -423,8 +420,7 @@ void resolve_query(struct Message *msg)
       case AAAA_Resource_RecordType:
         rr->rd_length = 16;
         rc = get_AAAA_Record(rr->rd_data.aaaa_record.addr, q->qName);
-        if (rc < 0)
-        {
+        if (rc < 0) {
           free(rr->name);
           free(rr);
           goto next;
