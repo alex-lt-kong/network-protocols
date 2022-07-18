@@ -71,20 +71,6 @@ struct Question {
   struct Question *next; // for linked list
 };
 
-/* Data part of a Resource Record */
-union ResourceData {
-  struct {
-    uint8_t txt_data_len;
-    char *txt_data;
-  } txt_record;
-  struct {
-    uint8_t addr[4];
-  } a_record;
-  struct {
-    uint8_t addr[16];
-  } aaaa_record;
-};
-
 /* Resource Record Section */
 struct ResourceRecord {
   char *name;
@@ -93,7 +79,7 @@ struct ResourceRecord {
   uint32_t ttl;
   /* Resource Data Length: Indicates the size of the RData field, in bytes. */
   uint16_t rd_length;
-  union ResourceData rd_data;
+  unsigned char* rd_data;
   struct ResourceRecord *next; // for linked list
 };
 

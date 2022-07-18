@@ -1,7 +1,12 @@
 # DNS
 
-To test the program, run `host -p 9000 foo.bar.com 127.0.0.1`
-The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/mwarning/SimpleDNS)
+* The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/mwarning/SimpleDNS)
+
+## Test:
+    
+* With `host`: `host -t [A|CNAME|TXT] -p 9000 foo.bar.lan 127.0.0.1`
+* With `dig`: `dig @127.0.0.1 -p 9000 foo.bar.lan [A|CNAME|TXT]`
+
 ## Format
 
 * A more detailed explanation of DNS message format can be found from [The TCP/IP Guide](http://www.tcpipguide.com/free/t_DNSMessageProcessingandGeneralMessageFormat.htm).
@@ -53,6 +58,8 @@ The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/m
 
 ### Header section format
 
+Reference: [DNS Message Header Format on The TCP/IP Guide](http://www.tcpipguide.com/free/t_DNSMessageHeaderandQuestionSectionFormat.htm)
+
 <table>
     <thead>
         <tr>
@@ -100,7 +107,11 @@ The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/m
         <tr>
             <td>RD</td>
             <td>1/8 (1 bit)</td>
-            <td>Recursion Desired flag: When set in a query, requests that the server receiving the query attempt to answer the query recursively, if the server supports recursive resolution. The value of this bit is not changed in the response.</td>
+            <td>
+                Recursion Desired flag: When set in a query, requests that the server receiving the query attempt
+                to answer the query recursively, if the server supports recursive resolution. The value of this
+                bit is not changed in the response.
+            </td>
         </tr>
         <tr>
             <td>RA</td>
@@ -137,19 +148,25 @@ The initial copy of the code is from [mwarning's SimpleDNS](https://github.com/m
         <tr>
             <td>NSCount</td>
             <td>2</td>
-            <td>Authority Record Count: Specifies the number of resource records in the Authority section of the message. ("NS" stands for "name server")</td>
+            <td>
+                Authority Record Count: Specifies the number of resource records in the Authority section of the
+                message. ("NS" stands for "name server")
+            </td>
         </tr>
         <tr>
             <td>ARCount</td>
             <td>2</td>
-            <td>Additional Record Count: Specifies the number of resource records in the Additional section of the message.</td>
+            <td>
+                Additional Record Count: Specifies the number of resource records in the Additional section of the message.
+            </td>
         </tr>
     </tbody>
 </table>
 
 ### Question section format
 
-Question section is a subset of the Resource Record section.
+* Reference: [DNS Question Section Format on The TCP/IP Guide](http://www.tcpipguide.com/free/t_DNSMessageHeaderandQuestionSectionFormat.htm)
+* Question section is a subset of the Resource Record section.
 
 <table>
     <thead>
@@ -162,7 +179,7 @@ Question section is a subset of the Resource Record section.
     <tbody>
         <tr>
             <td>QName</td>
-            <td>Variable</td>
+            <td>Variable, null-terminated</td>
             <td>
                 Question Name: the queried domain name, encoded using standard DNS name notation.
                 The "standard DNS name notation" encodes www.google.com to 3www6google3com0.
@@ -186,7 +203,8 @@ Question section is a subset of the Resource Record section.
 
 ###  Resource Record sections (Answer, Authority and Additional) format
 
-Resource Record section is a super-set of the Question section.
+* Reference: [DNS Common Resource Record Format on The TCP/IP Guide](http://www.tcpipguide.com/free/t_DNSMessageResourceRecordFieldFormats-2.htm)
+* Resource Record section is a super-set of the Question section.
 
 <table>
     <thead>
@@ -228,5 +246,18 @@ Resource Record section is a super-set of the Question section.
                 Resource Data Length: Indicates the size of the RData field, in bytes.
             </td>
         </tr>
+        <tr>
+            <td>RData</td>
+            <td>Variable, as defined by <code>RDLength</code></td>
+            <td>
+                Resource Data: The data portion of the resource record.
+            </td>
+        </tr>
     </tbody>
+	
+
+
+	
+
+
 </table>

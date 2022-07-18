@@ -11,80 +11,51 @@
 
 #include "server.h"
 
-/*
-* To test start the program and issue a DNS request:
-*  dig @127.0.0.1 -p 9000 foo.bar.com 
-*/
-
-int get_A_Record(uint8_t addr[4], const char domain_name[])
+int get_A_Record(unsigned char** addr, const char domain_name[])
 {
-  char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'c', 'o', 'm', 0};
+  char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'l', 'a', 'n', 0};
   if (strcmp(records, domain_name) == 0) {
-    addr[0] = 1;
-    addr[1] = 2;
-    addr[2] = 3;
-    addr[3] = 4;
+    *addr = malloc(4 * sizeof(unsigned char));
+    if (*addr == NULL) {
+      return -1;
+    }
+    (*addr)[0] = 192;
+    (*addr)[1] = 0;
+    (*addr)[2] = 33;
+    (*addr)[3] = 8;
+    // The IP of www.iana.org
     return 0;
   } else {
     return -1;
   }
 }
 
-/**
- * @brief Get the AAAA Record, which is the IPv6 address of a domain name
- * 
- * @param addr 
- * @param domain_name 
- * @return int 
- */
-int get_AAAA_Record(uint8_t addr[16], const char domain_name[])
+int get_CNAME_Record(unsigned char** cname, const char domain_name[])
 {
-  char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'c', 'o', 'm', 0};
+  char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'l', 'a', 'n', 0};
   if (strcmp(records, domain_name) == 0) {
-    addr[0] = 0xfe;
-    addr[1] = 0x80;
-    addr[2] = 0x00;
-    addr[3] = 0x00;
-    addr[4] = 0x00;
-    addr[5] = 0x00;
-    addr[6] = 0x00;
-    addr[7] = 0x00;
-    addr[8] = 0x00;
-    addr[9] = 0x00;
-    addr[10] = 0x00;
-    addr[11] = 0x00;
-    addr[12] = 0x00;
-    addr[13] = 0x00;
-    addr[14] = 0x00;
-    addr[15] = 0x01;
+    char tmp[] = {3, 'w', 'w', 'w', 7, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 3, 'c', 'o', 'm', 0};
+    size_t cname_len = sizeof(tmp) / sizeof(char);
+    *cname = malloc(cname_len);
+    if (*cname == NULL) {
+      return -1;
+    }
+    memcpy(*cname, tmp, cname_len);
     return 0;
   } else {
     return -1;
   }
 }
 
-int get_TXT_Record(char **addr, const char domain_name[])
+int get_TXT_Record(unsigned char** txt_data, const char domain_name[])
 {
   char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'c', 'o', 'm', 0};
   if (strcmp(records, domain_name) == 0) {
-    *addr = "abcdefg";
+    *txt_data = "Hello world! This is a dummy TXT record";
     return 0;
   } else {
     return -1;
   }
-}
-
-/*
-* Debugging functions.
-*/
-
-void print_hex(uint8_t *buf, size_t len)
-{
-  int i;
-  printf("%zu bytes:\n", len);
-  for (i = 0; i < len; ++i)
-    printf("%02x ", buf[i]);
-  printf("\n");
 }
 
 void print_resource_record(struct ResourceRecord *rr)
@@ -99,31 +70,24 @@ void print_resource_record(struct ResourceRecord *rr)
       rr->rd_length
    );
 
-    union ResourceData *rd = &rr->rd_data;
+    unsigned char* rd = rr->rd_data;
     switch (rr->type) {
       case A_Resource_RecordType:
         printf("Address Resource Record { address ");
 
         for (i = 0; i < 4; ++i)
-          printf("%s%u", (i ? "." : ""), rd->a_record.addr[i]);
+          printf("%s%u", (i ? "." : ""), rd[i]);
 
         printf(" }");
         break;
-      case AAAA_Resource_RecordType:
-        printf("AAAA Resource Record { address ");
-
-        for (i = 0; i < 16; ++i)
-          printf("%s%02x", (i ? ":" : ""), rd->aaaa_record.addr[i]);
-
-        printf(" }");
+      case CNAME_Resource_RecordType:
+        printf("CNAME Resource Record { cname_data '%s' }", rd);
         break;
       case TXT_Resource_RecordType:
-        printf("Text Resource Record { txt_data '%s' }",
-          rd->txt_record.txt_data
-        );
+        printf("Text Resource Record { txt_data '%s' }", rd);
         break;
       default:
-        printf("Unknown Resource Record { ??? }");
+        printf("Unknown Resource Record { type: %d }", rr->type);
     }
     printf("}\n");
     rr = rr->next;
@@ -185,20 +149,20 @@ uint16_t get_and_move_by_2bytes(const uint8_t** buffer)
   return ntohs(value);
 }
 
-void put8bits(uint8_t **buffer, uint8_t value)
+void set_and_move_by_1byte(uint8_t **buffer, uint8_t value)
 {
   memcpy(*buffer, &value, 1);
   *buffer += 1;
 }
 
-void put16bits(uint8_t **buffer, uint16_t value)
+void set_and_move_by_2bytes(uint8_t **buffer, uint16_t value)
 {
   value = htons(value);
   memcpy(*buffer, &value, 2);
   *buffer += 2;
 }
 
-void put32bits(uint8_t **buffer, uint32_t value) {
+void set_and_move_by_4bytes(uint8_t **buffer, uint32_t value) {
   value = htonl(value);
   memcpy(*buffer, &value, 4);
   *buffer += 4;
@@ -237,18 +201,18 @@ void parse_dns_query_header(struct Message *msg, const unsigned char** buffer) {
 
 void encode_header(struct Message *msg, uint8_t **buffer)
 {
-  put16bits(buffer, msg->id);
+  set_and_move_by_2bytes(buffer, msg->id);
 
   int fields = 0;
   fields |= (msg->qr << 15) & 0b1000000000000000;
   fields |= (msg->rcode << 0) & RCODE_MASK;
   // TODO: insert the rest of the fields
-  put16bits(buffer, fields);
+  set_and_move_by_2bytes(buffer, fields);
 
-  put16bits(buffer, msg->qdCount);
-  put16bits(buffer, msg->anCount);
-  put16bits(buffer, msg->nsCount);
-  put16bits(buffer, msg->arCount);
+  set_and_move_by_2bytes(buffer, msg->qdCount);
+  set_and_move_by_2bytes(buffer, msg->anCount);
+  set_and_move_by_2bytes(buffer, msg->nsCount);
+  set_and_move_by_2bytes(buffer, msg->arCount);
 }
 
 /**
@@ -277,12 +241,19 @@ int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer
     struct Question *q = malloc(sizeof(struct Question));
     
 
+    if (strlen(buffer) > 64 * 4 + 4) {
+      // This works because a valid query contains something like 
+      // 3www6google3com0, so it is null-terminated by default. Note that in
+      // this implementation we dont really protect against intentionally malformed
+      // query.
+      // But what if a malformed message intentionally excludes all '\0'? It seems
+      // to cause undefined behaviors!
+      printf("The qName section appears to be longer than it should: %s\n", buffer);
+      return -1;
+    }
     q->qName = calloc(strlen(buffer), sizeof(char));
     strcpy(q->qName, buffer);
-    // This works because a valid query contains something like 
-    // 3www6google3com0, so it is null-terminated by default. Note that in
-    // this implementation we dont really protect against intentionally malformed
-    // query.
+    
     buffer += (strlen(q->qName) + 1);
     if (q->qName == NULL) {
       printf("Failed to decode domain name!\n");
@@ -317,7 +288,7 @@ void resolve_query(struct Message *msg)
   struct ResourceRecord *beg;
   struct ResourceRecord *rr;
   struct Question *q;
-  int rc;
+  int rc = -1; // should stand for return code
 
   // leave most values intact for response
   msg->qr = 1; // this is a response
@@ -353,32 +324,28 @@ void resolve_query(struct Message *msg)
     switch (q->qType) {
       case A_Resource_RecordType:
         rr->rd_length = 4;
-        rc = get_A_Record(rr->rd_data.a_record.addr, q->qName);
+        rc = get_A_Record(&rr->rd_data, q->qName);
         if (rc < 0) {
           free(rr->name);
           free(rr);
-          goto next;
         }
         break;
-      case AAAA_Resource_RecordType:
-        rr->rd_length = 16;
-        rc = get_AAAA_Record(rr->rd_data.aaaa_record.addr, q->qName);
+      case CNAME_Resource_RecordType:        
+        rc = get_CNAME_Record(&rr->rd_data, q->qName);        
         if (rc < 0) {
           free(rr->name);
           free(rr);
-          goto next;
         }
+        rr->rd_length = strlen(rr->rd_data) + 1;
         break;
       case TXT_Resource_RecordType:
-        rc = get_TXT_Record(&(rr->rd_data.txt_record.txt_data), q->qName);
+        rc = get_TXT_Record(&rr->rd_data, q->qName);
         if (rc < 0) {
           free(rr->name);
           free(rr);
-          goto next;
         }
-        int txt_data_len = strlen(rr->rd_data.txt_record.txt_data);
-        rr->rd_length = txt_data_len + 1;
-        rr->rd_data.txt_record.txt_data_len = txt_data_len;
+        rr->rd_length = strlen(rr->rd_data) + 1;
+        // extra one byte for length of txt string: https://en.wikipedia.org/wiki/TXT_record
         break;
       /*
       case NS_Resource_RecordType:
@@ -392,49 +359,51 @@ void resolve_query(struct Message *msg)
         free(rr);
         msg->rcode = NotImplemented_ResponseType;
         printf("Cannot answer question of type %d.\n", q->qType);
-        goto next;
     }
-
-    msg->anCount++;
-
-    // prepend resource record to answers list
-    beg = msg->answers;
-    msg->answers = rr;
-    rr->next = beg;
-
-    // jump here to omit question
-    next:
-
-    // process next question
+    if (rc == 0) {
+      msg->anCount++;
+      // prepend resource record to answers list
+      beg = msg->answers;
+      msg->answers = rr;
+      rr->next = beg;
+    }
     q = q->next;
   }
 }
 
-/* @return 0 upon failure, 1 upon success */
+/**
+ * @brief 
+ * 
+ * @param rr 
+ * @param buffer 
+ * @return int 0 means success; 1: failure
+ */
 int encode_resource_records(struct ResourceRecord *rr, uint8_t **buffer)
 {
   int i;
   while (rr) {
     // Answer questions by attaching resource sections.
     encode_domain_name(buffer, rr->name);
-    put16bits(buffer, rr->type);
-    put16bits(buffer, rr->class);
-    put32bits(buffer, rr->ttl);
-    put16bits(buffer, rr->rd_length);
+    set_and_move_by_2bytes(buffer, rr->type);
+    set_and_move_by_2bytes(buffer, rr->class);
+    set_and_move_by_4bytes(buffer, rr->ttl);
+    set_and_move_by_2bytes(buffer, rr->rd_length);
 
     switch (rr->type) {
       case A_Resource_RecordType:
-        for (i = 0; i < 4; ++i)
-          put8bits(buffer, rr->rd_data.a_record.addr[i]);
+        for (i = 0; i < rr->rd_length; ++i) {
+          set_and_move_by_1byte(buffer, rr->rd_data[i]);
+        }
         break;
-      case AAAA_Resource_RecordType:
-        for (i = 0; i < 16; ++i)
-          put8bits(buffer, rr->rd_data.aaaa_record.addr[i]);
+      case CNAME_Resource_RecordType:
+        for (i = 0; i < rr->rd_length; i++)
+          set_and_move_by_1byte(buffer, rr->rd_data[i]);
         break;
       case TXT_Resource_RecordType:
-        put8bits(buffer, rr->rd_data.txt_record.txt_data_len);
-        for (i = 0; i < rr->rd_data.txt_record.txt_data_len; i++)
-          put8bits(buffer, rr->rd_data.txt_record.txt_data[i]);
+        set_and_move_by_1byte(buffer, rr->rd_length - 1);
+        // minus one byte, which is for txt string length
+        for (i = 0; i < rr->rd_length; i++)
+          set_and_move_by_1byte(buffer, rr->rd_data[i]);
         break;
       default:
         fprintf(stderr, "Unknown type %u. => Ignore resource record.\n", rr->type);
@@ -447,7 +416,13 @@ int encode_resource_records(struct ResourceRecord *rr, uint8_t **buffer)
   return 0;
 }
 
-/* @return 0 upon failure, 1 upon success */
+/**
+ * @brief 
+ * 
+ * @param msg 
+ * @param buffer 
+ * @return int 0 means success, 1 means failure
+ */
 int encode_msg(struct Message *msg, uint8_t **buffer)
 {
   struct Question *q;
@@ -458,8 +433,8 @@ int encode_msg(struct Message *msg, uint8_t **buffer)
   q = msg->questions;
   while (q) {
     encode_domain_name(buffer, q->qName);
-    put16bits(buffer, q->qType);
-    put16bits(buffer, q->qClass);
+    set_and_move_by_2bytes(buffer, q->qType);
+    set_and_move_by_2bytes(buffer, q->qClass);
 
     q = q->next;
   }
@@ -478,8 +453,11 @@ void free_resource_records(struct ResourceRecord *rr)
 
   while (rr) {
     free(rr->name);
+    if (rr->rd_data != NULL) {
+      free(rr->rd_data);
+    }
     next = rr->next;
-    free(rr);
+    free(rr);    
     rr = next;
   }
 }
@@ -548,7 +526,6 @@ int main() {
     if (encode_msg(&msg, &p) != 0) {
       continue;
     }
-
     /* Send DNS response */
     int buflen = p - read_buf;
     sendto(sock, read_buf, buflen, 0, (struct sockaddr*) &client_addr, addr_len);
