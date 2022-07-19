@@ -4,8 +4,9 @@
 
 ## Test:
     
-* With `host`: `host -t [A|CNAME|TXT] -p 9000 foo.bar.lan 127.0.0.1`
-* With `dig`: `dig @127.0.0.1 -p 9000 foo.bar.lan [A|CNAME|TXT]`
+* With `host`: `host -t [A|CNAME|TXT] -p 9000 foo.bar.lan 127.0.0.1`.
+* With `dig`: `dig @127.0.0.1 -p 9000 foo.bar.lan [A|CNAME|TXT]`.
+* `foo.bar.lan` is pointed to `www.iana.org`.
 
 ## Format
 

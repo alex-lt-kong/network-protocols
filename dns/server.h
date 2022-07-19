@@ -4,16 +4,15 @@
 #define HEADER_SIZE 12
 #define PORT 9000
 
-static const uint32_t RCODE_MASK = 0x000F;
-
-/* Response Type */
+/* Response Code */
 enum {
-  Ok_ResponseType = 0,
-  FormatError_ResponseType = 1,
-  ServerFailure_ResponseType = 2,
-  NameError_ResponseType = 3,
-  NotImplemented_ResponseType = 4,
-  Refused_ResponseType = 5
+  NoError_ResponseCode = 0,
+  FormatError_ResponseCode = 1,
+  ServerFailure_ResponseCode = 2,
+  NameError_ResponseCode = 3,
+  NotImplemented_ResponseCode = 4,
+  Refused_ResponseCode = 5
+  // A few more "exotic" possible values are not listed.
 };
 
 /* Resource Record Types */
@@ -38,13 +37,6 @@ enum {
   UPDATE_OperationCode = 5 /* change resource records */
 };
 
-/* Response Code */
-enum {
-  NoError_ResponseCode = 0,
-  FormatError_ResponseCode = 1,
-  ServerFailure_ResponseCode = 2,
-  NameError_ResponseCode = 3
-};
 
 /* Query Type */
 enum {
@@ -92,19 +84,19 @@ struct Question {
    * encodes www.google.com to 3www6google3com0.
   */
   char *q_name;
-  uint16_t q_type;
+  uint16_t q_type; // Question's DNS record type
   uint16_t q_class;
 };
 
 /* Resource Record Section */
 struct ResourceRecord {
   char *name;
-  uint16_t type;
+  uint16_t type; // Question's DNS record type
   uint16_t class;
   uint32_t ttl;
   /* Resource Data Length: Indicates the size of the RData field, in bytes. */
   uint16_t rd_length;
-  unsigned char* rd_data;
+  unsigned char* rdata;
 };
 
 struct Message {
