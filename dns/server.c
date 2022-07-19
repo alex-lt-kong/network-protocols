@@ -34,7 +34,7 @@ int get_CNAME_Record(unsigned char** cname, const char domain_name[])
 {
   char records[] = {3, 'f', 'o', 'o', 3, 'b', 'a', 'r', 3, 'l', 'a', 'n', 0};
   if (strcmp(records, domain_name) == 0) {
-    char tmp[] = {3, 'w', 'w', 'w', 7, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 3, 'c', 'o', 'm', 0};
+    char tmp[] = {3, 'w', 'w', 'w', 4, 'i', 'a', 'n', 'a', 3, 'o', 'r', 'g', 0};
     size_t cname_len = sizeof(tmp) / sizeof(char);
     *cname = malloc(cname_len);
     if (*cname == NULL) {
@@ -96,30 +96,22 @@ void print_resource_record(struct ResourceRecord *rr)
 
 void print_message(struct Message *msg)
 {
-  struct Question *q;
-
   printf("QUERY {\n");
-  printf("  ID:                                %02x,\n", msg->id);
-  printf("  QR (Query/Response flag):          %u,\n", msg->qr);
-  printf("  OpCode:                            %u,\n", msg->opcode);
-  printf("  QDcount (Question Count):          %u,\n", msg->qdCount);
-  printf("  ANcount (Answer Record Count):     %u,\n", msg->anCount);
-  printf("  NScount (Authority Record Count):  %u,\n", msg->nsCount);
-  printf("  ARcount (Additional Record Count): %u,\n", msg->arCount);
+  printf("  ID:                                %02x,\n", msg->header->id);
+  printf("  QR (Query/Response flag):          %u,\n", msg->header->qr);
+  printf("  OpCode:                            %u,\n", msg->header->opcode);
+  printf("  QDcount (Question Count):          %u,\n", msg->header->qdCount);
+  printf("  ANcount (Answer Record Count):     %u,\n", msg->header->anCount);
+  printf("  NScount (Authority Record Count):  %u,\n", msg->header->nsCount);
+  printf("  ARcount (Additional Record Count): %u,\n", msg->header->arCount);
 
   printf("  Questions: [\n");
-  q = msg->questions;
-  while (q) {
-    printf("    {qName: '%s', qType: %u, qClass: %u}",
-      q->qName,
-      q->qType,
-      q->qClass
-    );
-    q = q->next;
-    q == NULL ? printf("\n") : printf(",\n");
-  }
-  printf("  ]\n");
-
+  printf("    {qName: '%s', qType: %u, qClass: %u}",
+    msg->questions->qName,
+    msg->questions->qType,
+    msg->questions->qClass
+  );
+  printf("\n]");
   print_resource_record(msg->answers);
   print_resource_record(msg->authorities);
   print_resource_record(msg->additionals);
@@ -175,8 +167,19 @@ void encode_domain_name(uint8_t **buffer, const char *domain) {
 }
 
 
-void parse_dns_query_header(struct Message *msg, const unsigned char** buffer) {
-  msg->id = get_and_move_by_2bytes(buffer);
+/**
+ * @brief Parse the first 12 bytes of the buffer into DNS query message header.
+ * There is no way for this function to know the exact size of the given buffer,
+ * callers are required to make sure the buffer is at least 12-byte long to 
+ * avoid OutOfBounds access
+ * 
+ * @param header The pointer to DNS query's header section 
+ * @param buffer The pointer of pointer to the minimumn 12-byte buffer. Since we
+ * need to move the pointer to the buffer, we have to pass a pointer to pointer
+ * as a parameter here.
+ */
+void parse_dns_query_header(struct Header *header, const unsigned char** buffer) {
+  header->id = get_and_move_by_2bytes(buffer);
 
   uint32_t fields = get_and_move_by_2bytes(buffer);
   /*
@@ -184,35 +187,35 @@ void parse_dns_query_header(struct Message *msg, const unsigned char** buffer) {
    * endianness is completely irrelevent. Shifts, bitwise operations, and so on perform as you would expect
    * (data logically laid out as low-order bit to high) regardless of endianness.
    */
-  msg->qr     = (fields & 0b1000000000000000) >> 15;
-  msg->opcode = (fields & 0b0111100000000000) >> 11;
-  msg->aa     = (fields & 0b0000010000000000) >> 10;
-  msg->tc     = (fields & 0b0000001000000000) >> 9;
-  msg->rd     = (fields & 0b0000000100000000) >> 8;
-  msg->ra     = (fields & 0b0000000010000000) >> 7;
+  header->qr     = (fields & 0b1000000000000000) >> 15;
+  header->opcode = (fields & 0b0111100000000000) >> 11;
+  header->aa     = (fields & 0b0000010000000000) >> 10;
+  header->tc     = (fields & 0b0000001000000000) >> 9;
+  header->rd     = (fields & 0b0000000100000000) >> 8;
+  header->ra     = (fields & 0b0000000010000000) >> 7;
   // three reserved bits are not used.
-  msg->rcode  = (fields & 0b0000000000001111) >> 0;
+  header->rcode  = (fields & 0b0000000000001111) >> 0;
 
-  msg->qdCount = get_and_move_by_2bytes(buffer);
-  msg->anCount = get_and_move_by_2bytes(buffer);
-  msg->nsCount = get_and_move_by_2bytes(buffer);
-  msg->arCount = get_and_move_by_2bytes(buffer);
+  header->qdCount = get_and_move_by_2bytes(buffer);
+  header->anCount = get_and_move_by_2bytes(buffer);
+  header->nsCount = get_and_move_by_2bytes(buffer);
+  header->arCount = get_and_move_by_2bytes(buffer);
 }
 
-void encode_header(struct Message *msg, uint8_t **buffer)
+void encode_header(struct Header *header, uint8_t **buffer)
 {
-  set_and_move_by_2bytes(buffer, msg->id);
+  set_and_move_by_2bytes(buffer, header->id);
 
   int fields = 0;
-  fields |= (msg->qr << 15) & 0b1000000000000000;
-  fields |= (msg->rcode << 0) & RCODE_MASK;
+  fields |= (header->qr << 15) & 0b1000000000000000;
+  fields |= (header->rcode << 0) & RCODE_MASK;
   // TODO: insert the rest of the fields
   set_and_move_by_2bytes(buffer, fields);
 
-  set_and_move_by_2bytes(buffer, msg->qdCount);
-  set_and_move_by_2bytes(buffer, msg->anCount);
-  set_and_move_by_2bytes(buffer, msg->nsCount);
-  set_and_move_by_2bytes(buffer, msg->arCount);
+  set_and_move_by_2bytes(buffer, header->qdCount);
+  set_and_move_by_2bytes(buffer, header->anCount);
+  set_and_move_by_2bytes(buffer, header->nsCount);
+  set_and_move_by_2bytes(buffer, header->arCount);
 }
 
 /**
@@ -221,7 +224,7 @@ void encode_header(struct Message *msg, uint8_t **buffer)
  * @param msg pointer to the struct where the parsed DNS message will be stored.
  * @param buffer pointer to bytes read from socket.
  * @param buffer_len number of bytes in buffer
- * @returns 0 means okay
+ * @returns 0: success; otherwise failure
  */
 int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer_len)
 {
@@ -229,50 +232,47 @@ int parse_dns_query(struct Message *msg, const unsigned char* buffer, int buffer
     fprintf(stderr, "Data length incorrect\n");
     return -1;
   }
-  parse_dns_query_header(msg, &buffer);
+  msg->header = malloc(sizeof(struct Header));
+  parse_dns_query_header(msg->header, &buffer);
 
-  if (msg->anCount != 0 || msg->nsCount != 0) {
+  if (msg->header->anCount != 0 || msg->header->nsCount != 0) {
     fprintf(stderr, "The DNS message contains unsupported section\n");
     return -1;
   }
 
-  // parse questions one by one
-  for (int i = 0; i < msg->qdCount; ++i) {
-    struct Question *q = malloc(sizeof(struct Question));
-    
-
-    if (strlen(buffer) > 64 * 4 + 4) {
-      // This works because a valid query contains something like 
-      // 3www6google3com0, so it is null-terminated by default. Note that in
-      // this implementation we dont really protect against intentionally malformed
-      // query.
-      // But what if a malformed message intentionally excludes all '\0'? It seems
-      // to cause undefined behaviors!
-      printf("The qName section appears to be longer than it should: %s\n", buffer);
-      return -1;
-    }
-    q->qName = calloc(strlen(buffer), sizeof(char));
-    strcpy(q->qName, buffer);
-    
-    buffer += (strlen(q->qName) + 1);
-    if (q->qName == NULL) {
-      printf("Failed to decode domain name!\n");
-      return -1;
-    }
-    q->qType = get_and_move_by_2bytes(&buffer);
-    q->qClass = get_and_move_by_2bytes(&buffer);    
-    if (q->qClass != 1 && q->qClass != 255) {
-      printf("qClass is equal to %d, which is currently not supported\n", q->qClass);
-      return -1;
-    }
-
-    // prepend question to questions list: msg->questions is a pointer pointing
-    // to the first question in a linked list of q's.
-    q->next = msg->questions;
-    msg->questions = q;
+  if (msg->header->qdCount != 1) {
+    fprintf(stderr, "qdCount is not equal to 1, which is not supported by this program\n");
+    return -1;
   }
 
-  // We do not expect any resource records to parse here.
+  msg->questions = malloc(sizeof(struct Question));
+  
+
+  short q_name_size = strnlen(buffer, READ_BUF_SIZE) + 1;
+  // strnlen() works because a valid encoded domain name is something like 
+  // 3www6google3com0, which is naturally null-terminated.
+  // Note that we use strnlen(), a POSIX standard (i.e., not C standard)
+  // function, instead of strlen(), to prevent reading beyond the array bounds.
+  if (q_name_size > 64 * 4) {      
+    fprintf(stderr, "The qName section [%s] appears to be longer than it should\n", buffer);
+    return -1;
+  }
+  msg->questions->qName = calloc(q_name_size, sizeof(char));
+  if (msg->questions->qName == NULL) {
+    fprintf(stderr, "Failed to calloc() memory to qName!\n");
+    return -1;
+  }
+  strcpy(msg->questions->qName, buffer);
+  // calloc() + strcpy() keeps the last '\0', which is exactly what we need
+  
+  buffer += q_name_size;
+  
+  msg->questions->qType = get_and_move_by_2bytes(&buffer);
+  msg->questions->qClass = get_and_move_by_2bytes(&buffer);    
+  if (msg->questions->qClass != 1 && msg->questions->qClass != 255) {
+    printf("qClass is equal to %d, which is currently not supported\n", msg->questions->qClass);
+    return -1;
+  }
 
   return 0;
 }
@@ -291,84 +291,83 @@ void resolve_query(struct Message *msg)
   int rc = -1; // should stand for return code
 
   // leave most values intact for response
-  msg->qr = 1; // this is a response
-  msg->aa = 1; // this server is authoritative
-  msg->ra = 0; // no recursion available
-  msg->rcode = Ok_ResponseType;
+  msg->header->qr = 1; // this is a response
+  msg->header->aa = 1; // this server is authoritative
+  msg->header->ra = 0; // no recursion available
+  msg->header->rcode = Ok_ResponseType;
 
   // should already be 0
-  msg->anCount = 0;
-  msg->nsCount = 0;
-  msg->arCount = 0;
+  msg->header->anCount = 0;
+  msg->header->nsCount = 0;
+  msg->header->arCount = 0;
 
   // for every question append resource records
   q = msg->questions;
-  while (q) {
-    rr = malloc(sizeof(struct ResourceRecord));
-    memset(rr, 0, sizeof(struct ResourceRecord));
 
-    rr->name = strdup(q->qName);
-    /*
-      The strdup() function returns a pointer to a new string which is
-      a duplicate of the string s.  Memory for the new string is
-      obtained with malloc(3), and can be freed with free(3).
-    */
-    rr->type = q->qType;
-    rr->class = q->qClass;
-    rr->ttl = 60*60; // in seconds; 0 means no caching
+  rr = malloc(sizeof(struct ResourceRecord));
+  memset(rr, 0, sizeof(struct ResourceRecord));
 
-    // We only can only answer three question types so far
-    // and the answer (resource records) will be all put
-    // into the answers list.
-    // This behavior is probably non-standard!
-    switch (q->qType) {
-      case A_Resource_RecordType:
-        rr->rd_length = 4;
-        rc = get_A_Record(&rr->rd_data, q->qName);
-        if (rc < 0) {
-          free(rr->name);
-          free(rr);
-        }
-        break;
-      case CNAME_Resource_RecordType:        
-        rc = get_CNAME_Record(&rr->rd_data, q->qName);        
-        if (rc < 0) {
-          free(rr->name);
-          free(rr);
-        }
-        rr->rd_length = strlen(rr->rd_data) + 1;
-        break;
-      case TXT_Resource_RecordType:
-        rc = get_TXT_Record(&rr->rd_data, q->qName);
-        if (rc < 0) {
-          free(rr->name);
-          free(rr);
-        }
-        rr->rd_length = strlen(rr->rd_data) + 1;
-        // extra one byte for length of txt string: https://en.wikipedia.org/wiki/TXT_record
-        break;
-      /*
-      case NS_Resource_RecordType:
-      case CNAME_Resource_RecordType:
-      case SOA_Resource_RecordType:
-      case PTR_Resource_RecordType:
-      case MX_Resource_RecordType:
-      case TXT_Resource_RecordType:
-      */
-      default:
+  rr->name = strdup(q->qName);
+  /*
+    The strdup() function returns a pointer to a new string which is
+    a duplicate of the string s.  Memory for the new string is
+    obtained with malloc(3), and can be freed with free(3).
+  */
+  rr->type = q->qType;
+  rr->class = q->qClass;
+  rr->ttl = 60*60; // in seconds; 0 means no caching
+
+  // We only can only answer three question types so far
+  // and the answer (resource records) will be all put
+  // into the answers list.
+  // This behavior is probably non-standard!
+  switch (q->qType) {
+    case A_Resource_RecordType:
+      rr->rd_length = 4;
+      rc = get_A_Record(&rr->rd_data, q->qName);
+      if (rc < 0) {
+        free(rr->name);
         free(rr);
-        msg->rcode = NotImplemented_ResponseType;
-        printf("Cannot answer question of type %d.\n", q->qType);
-    }
-    if (rc == 0) {
-      msg->anCount++;
-      // prepend resource record to answers list
-      beg = msg->answers;
-      msg->answers = rr;
-      rr->next = beg;
-    }
-    q = q->next;
+      }
+      break;
+    case CNAME_Resource_RecordType:        
+      rc = get_CNAME_Record(&rr->rd_data, q->qName);        
+      if (rc < 0) {
+        free(rr->name);
+        free(rr);
+      }
+      rr->rd_length = strlen(rr->rd_data) + 1;
+      break;
+    case TXT_Resource_RecordType:
+      rc = get_TXT_Record(&rr->rd_data, q->qName);
+      if (rc < 0) {
+        free(rr->name);
+        free(rr);
+      }
+      rr->rd_length = strlen(rr->rd_data) + 1;
+      // extra one byte for length of txt string: https://en.wikipedia.org/wiki/TXT_record
+      break;
+    /*
+    case NS_Resource_RecordType:
+    case CNAME_Resource_RecordType:
+    case SOA_Resource_RecordType:
+    case PTR_Resource_RecordType:
+    case MX_Resource_RecordType:
+    case TXT_Resource_RecordType:
+    */
+    default:
+      free(rr);
+      msg->header->rcode = NotImplemented_ResponseType;
+      printf("Cannot answer question of type %d.\n", q->qType);
   }
+  if (rc == 0) {
+    msg->header->anCount++;
+    // prepend resource record to answers list
+    beg = msg->answers;
+    msg->answers = rr;
+    rr->next = beg;
+  }
+
 }
 
 /**
@@ -428,16 +427,12 @@ int encode_msg(struct Message *msg, uint8_t **buffer)
   struct Question *q;
   int rc;
 
-  encode_header(msg, buffer);
+  encode_header(msg->header, buffer);
 
-  q = msg->questions;
-  while (q) {
-    encode_domain_name(buffer, q->qName);
-    set_and_move_by_2bytes(buffer, q->qType);
-    set_and_move_by_2bytes(buffer, q->qClass);
+  encode_domain_name(buffer, msg->questions->qName);
+  set_and_move_by_2bytes(buffer, msg->questions->qType);
+  set_and_move_by_2bytes(buffer, msg->questions->qClass);
 
-    q = q->next;
-  }
 
   rc = 0;
   rc |= encode_resource_records(msg->answers, buffer);
@@ -462,16 +457,26 @@ void free_resource_records(struct ResourceRecord *rr)
   }
 }
 
-void free_questions(struct Question *qq)
-{
-  struct Question *next;
+void free_message(struct Message *msg) {
+    free(msg->header);
+    
+    if (msg->questions != NULL) {
+      free(msg->questions->qName);
+    }
+    free(msg->questions);
 
-  while (qq) {
-    free(qq->qName);
-    next = qq->next;
-    free(qq);
-    qq = next;
-  }
+    free_resource_records(msg->answers);
+    free_resource_records(msg->authorities);
+    free_resource_records(msg->additionals);
+    // the C standard, 7.20.3.2/2 from ISO-IEC 9899: If ptr is a null pointer, no action occurs.
+    msg->header = NULL;
+    msg->questions = NULL;
+    msg->answers = NULL;
+    msg->authorities = NULL;
+    msg->additionals = NULL;
+    // setting pointers to NULL is not required by the C standard--it is a precaution to
+    // avoid accessing dangling pointers.
+    memset(msg, 0, sizeof(struct Message));
 }
 
 int main() {
@@ -500,15 +505,11 @@ int main() {
   printf("Listening on port %u.\n", PORT);
 
   while (1) {
-    free_questions(msg.questions);
-    free_resource_records(msg.answers);
-    free_resource_records(msg.authorities);
-    free_resource_records(msg.additionals);
-    memset(&msg, 0, sizeof(struct Message));
-
+    free_message(&msg);
     nbytes = recvfrom(sock, read_buf, sizeof(read_buf), 0, (struct sockaddr *) &client_addr, &addr_len);
 
     if (parse_dns_query(&msg, read_buf, nbytes) != 0) {
+      fprintf(stderr, "Invalid DNS query received, dropped it\n");
       continue;
     }
     printf("-----===== DNS request received =====-----\n");
@@ -529,5 +530,6 @@ int main() {
     /* Send DNS response */
     int buflen = p - read_buf;
     sendto(sock, read_buf, buflen, 0, (struct sockaddr*) &client_addr, addr_len);
+    // seems sendto() is the UDP's equivalent of TCP's send()
   }
 }
