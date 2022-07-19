@@ -79,10 +79,10 @@ struct Header {
   uint16_t ra;
   uint16_t rcode; /* Response Code */
 
-  uint16_t qdCount; /* Question Count */
-  uint16_t anCount; /* Answer Record Count */
-  uint16_t nsCount; /* Authority Record Count */
-  uint16_t arCount; /* Additional Record Count */
+  uint16_t qd_count; /* Question Count */
+  uint16_t an_count; /* Answer Record Count */
+  uint16_t ns_count; /* Authority Record Count */
+  uint16_t ar_count; /* Additional Record Count */
 };
 
 /* Question Section */
@@ -91,9 +91,9 @@ struct Question {
    * the queried domain name, encoded using standard DNS name notation. The "standard DNS name notation"
    * encodes www.google.com to 3www6google3com0.
   */
-  char *qName;
-  uint16_t qType;
-  uint16_t qClass;
+  char *q_name;
+  uint16_t q_type;
+  uint16_t q_class;
 };
 
 /* Resource Record Section */
@@ -105,20 +105,18 @@ struct ResourceRecord {
   /* Resource Data Length: Indicates the size of the RData field, in bytes. */
   uint16_t rd_length;
   unsigned char* rd_data;
-  struct ResourceRecord *next; // for linked list
 };
 
 struct Message {
 
   struct Header *header;
   /* At least one question; questions are copied to the response 1:1 */
-  struct Question *questions;
+  struct Question *question;
+  struct ResourceRecord *answer;
   /*
-  * Resource records to be send back.
-  * Every resource record can be in any of the following places.
-  * But every place has a different semantic.
-  */
-  struct ResourceRecord *answers;
-  struct ResourceRecord *authorities;
-  struct ResourceRecord *additionals;
+   * DNS protocol supports these ResourceRecords as well, but seems we dont have convenient
+   * ways to test them, so they are not implemented.
+   * struct ResourceRecord *authority;
+   * struct ResourceRecord *additional;
+   */
 };
