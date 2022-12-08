@@ -49,10 +49,13 @@ int main(void)
        just as well be an https:// URL if that is what should receive the
        data. */
     curl_easy_setopt(curl, CURLOPT_URL, getenv("CURL_TEST_RUNDECK_JOB_URL"));
+    // This URL is more difficult to construct. It should be something like:
+    // http://localhost:4440/api/1/job/<JOB_UUID>/run?argString=<ARGUMENTS>
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&resp_body);
     curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEHEADER, (void *)&resp_header);
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     struct curl_slist *list = NULL;
     list = curl_slist_append(list, "Cookie: JSESSIONID=node05ibc13qrr76f1l7w1hnx6gtba539.node0;Path=/;HttpOnly");

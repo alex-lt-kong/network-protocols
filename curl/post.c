@@ -41,6 +41,8 @@ int main(void)
   resp_header.memory = malloc(1);  /* will be grown as needed by realloc above */
   resp_header.size = 0;    /* no data at this point */
   char *post_this = getenv("CURL_TEST_POST_THIS");
+  // https://docs.rundeck.com/docs/api/rundeck-api.html#password-authentication
+  // should be something like "j_username=admin&j_password=admin"
 
   curl_global_init(CURL_GLOBAL_ALL);
   curl = curl_easy_init();
@@ -50,22 +52,23 @@ int main(void)
        just as well be an https:// URL if that is what should receive the
        data. */
     curl_easy_setopt(curl, CURLOPT_URL, getenv("CURL_TEST_RUNDECK_J_SECURITY_CHECK_URL"));
+    // $RUNDECK_SERVER_URL/j_security_check e.g.,: http://localhost:4440/j_security_check
     /* Now specify the POST data */
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_this);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&resp_body);
     curl_easy_setopt(curl, CURLOPT_WRITEHEADER, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEHEADER, (void *)&resp_header);
-    /* some servers do not like requests that are made without a user-agent
-       field, so we provide one */
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    // This will make libcurl print a lot of information, but CURLOPT_POSTFIELDS won't be among it.
+    // To examine the complete POST request in bytes, it seems to be easier to use another tool such as Wireshark.
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
     /* Perform the request, res will get the return code */
     res = curl_easy_perform(curl);
     /* Check for errors */
-    if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-              curl_easy_strerror(res));
-    else {
+    if(res != CURLE_OK) {
+      fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    } else {
       printf("=====resp_body.memory=====\n%s\n=====resp_body.memory=====\n", resp_body.memory);
       printf("\n");
       printf("=====resp_header.memory=====\n%s\n=====resp_header.memory=====\n", resp_header.memory);
