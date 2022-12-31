@@ -1,6 +1,6 @@
 # Network Protocols
 
-* Implementing/testing a few common network protocols from scratch.
+* Implementing/testing/playing with a few common network protocols.
 * "From scratch" generally means from L4 upwards as defined in OSI model with Linux's `socket()` functions.
 
 ### Review of OSI and TCP/IP models
