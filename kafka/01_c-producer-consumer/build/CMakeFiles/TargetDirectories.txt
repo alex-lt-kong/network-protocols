@@ -1,3 +1,0 @@
-/home/mamsds/Documents/data1/repos/network-protocols/kafka/01_c-sample/build/CMakeFiles/rebuild_cache.dir
-/home/mamsds/Documents/data1/repos/network-protocols/kafka/01_c-sample/build/CMakeFiles/edit_cache.dir
-/home/mamsds/Documents/data1/repos/network-protocols/kafka/01_c-sample/build/CMakeFiles/producer.dir

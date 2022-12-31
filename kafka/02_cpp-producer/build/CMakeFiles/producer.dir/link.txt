@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/producer.dir/producer.cpp.o -o producer  -lrdkafka++ 

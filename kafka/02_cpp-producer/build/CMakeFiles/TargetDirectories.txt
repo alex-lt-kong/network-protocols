@@ -1,3 +1,0 @@
-/root/bin/network-protocols/kafka/02_cpp-producer/build/CMakeFiles/rebuild_cache.dir
-/root/bin/network-protocols/kafka/02_cpp-producer/build/CMakeFiles/edit_cache.dir
-/root/bin/network-protocols/kafka/02_cpp-producer/build/CMakeFiles/producer.dir
