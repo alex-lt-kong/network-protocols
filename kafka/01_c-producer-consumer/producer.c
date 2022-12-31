@@ -1,3 +1,5 @@
+// Initially: https://github.com/confluentinc/librdkafka/blob/master/examples/producer.c
+
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>

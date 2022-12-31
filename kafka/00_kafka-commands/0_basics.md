@@ -1,56 +1,25 @@
 # Basic Commands
 
-## Start the Kafka Environment
+* KRaft is the consensus protocol developed to allow metadata management
+directly in Apache Kafka (instead of relaying on Apache ZooKeeper).
 
-Enter Kafka directory (make sure JRE is installed and $JAVA_HOME correctly set)
+* Kafka has KRaft support built-in since version 3. As a progressive repo,
+here we will focus on making Kafka work with KRaft instead of Apache ZooKeeper.
 
-```
-cd kafka_2.13-3.0.0
-```
+## Quickstart
 
-Start ZooKeeper
-
-```
-bin/zookeeper-server-start.sh config/zookeeper.properties
-```
-
-Start a broker
-
-```
-bin/kafka-server-start.sh config/server.properties
-```
-
-## Create a topic for single broker
-
-* If you need to create a topic for multiple brokers, refer to `1_multiple-brokers.md`.
-
-```
-bin/kafka-topics.sh --create --partitions 1 --replication-factor 1 --topic quickstart-events --bootstrap-server localhost:9092,localhost:9093,localhost:9094
-```
-
-## Write events into the topic
-
-```
-bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092
-```
-
-## Read events from the topic
-
-```
-bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092,localhost:9093,localhost:9094
-```
+* RTFM [here](https://kafka.apache.org/quickstart)
 
 ## List topics
 
 ```
-bin/kafka-topics.sh --list --bootstrap-server localhost:9093
+./bin/kafka-topics.sh --list --bootstrap-server localhost:9093
 ```
-
 
 ## Check details of a topic
 
 ```
-bin/kafka-topics.sh --describe --topic ak-topic --bootstrap-server localhost:9092,localhost:9093,localhost:9094
+./bin/kafka-topics.sh --describe --topic ak-topic --bootstrap-server localhost:9092,localhost:9093,localhost:9094
 ```
 
 Typical output:
