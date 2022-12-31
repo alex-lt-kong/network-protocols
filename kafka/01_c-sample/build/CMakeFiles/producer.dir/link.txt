@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/producer.dir/producer.c.o -o producer  -lrdkafka 

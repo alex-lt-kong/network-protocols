@@ -13,7 +13,7 @@ log.dirs=/tmp/kafka-logs-0
 
 offsets.topic.replication.factor=3
 transaction.state.log.replication.factor=3
-# the above two items are said to make sure the even if a broker is down, Kafka can still be operational
+# the above two items are said to make sure that even if a broker is down, Kafka can still be operational
 
 auto.create.topics.enable=false (optional)
 ```

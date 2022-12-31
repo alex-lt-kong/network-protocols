@@ -34,7 +34,7 @@ class ExampleDeliveryReportCb : public DeliveryReportCb {
 
 int main(int argc, char **argv) {
 
-  string brokers = "192.168.1.67:9092";
+  string brokers = "localhost:9092";
   string topic   = "test-topic";
 
   Conf *conf = Conf::create(Conf::CONF_GLOBAL);

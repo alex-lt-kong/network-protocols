@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/bin/network-protocols/kafka/02_cpp-producer/producer.cpp
+iostream
+-
+string
+-
+cstdlib
+-
+cstdio
+-
+csignal
+-
+cstring
+-
+librdkafka/rdkafkacpp.h
+-
+
