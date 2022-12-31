@@ -34,8 +34,8 @@ class ExampleDeliveryReportCb : public DeliveryReportCb {
 
 int main(int argc, char **argv) {
 
-  string brokers = "172.16.0.2:9092";
-  string topic   = "quickstart-events";
+  string brokers = "192.168.1.67:9092";
+  string topic   = "test-topic";
 
   Conf *conf = Conf::create(Conf::CONF_GLOBAL);
 
