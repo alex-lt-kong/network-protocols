@@ -1,4 +1,4 @@
-# Install script for directory: /root/bin/network-protocols/kafka/01_c-sample
+# Install script for directory: /home/mamsds/Documents/data1/repos/network-protocols/kafka/01_c-sample
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/root/bin/network-protocols/kafka/01_c-sample/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/mamsds/Documents/data1/repos/network-protocols/kafka/01_c-sample/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
