@@ -8,7 +8,7 @@ import socket
 conf = {'bootstrap.servers': "debian:9092,debian:9093,debian:9094",
         'client.id': socket.gethostname()}
 
-topic = 'als-alert-topic'
+topic = 'test-topic'
 
 producer = Producer(conf)
 
