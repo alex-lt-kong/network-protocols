@@ -1,4 +1,4 @@
-// Initially: https://github.com/confluentinc/librdkafka/blob/master/examples/producer.c
+// Originally: https://github.com/confluentinc/librdkafka/blob/master/examples/producer.c
 
 #include <stdio.h>
 #include <signal.h>
@@ -101,9 +101,9 @@ int main(int argc, char **argv) {
     signal(SIGINT, stop);
 
     fprintf(stderr,
-            "%% Type some text and hit enter to produce message\n"
-            "%% Or just hit enter to only serve delivery reports\n"
-            "%% Press Ctrl-C or Ctrl-D to exit\n");
+            "Type some text and hit enter to produce message\n"
+            "Or just hit enter to only serve delivery reports\n"
+            "Press Ctrl-C or Ctrl-D to exit\n");
 
     while (run && fgets(buf, sizeof(buf), stdin)) {
         size_t len = strlen(buf);
@@ -194,14 +194,22 @@ int main(int argc, char **argv) {
     /* Wait for final messages to be delivered or fail.
       * rd_kafka_flush() is an abstraction over rd_kafka_poll() which
       * waits for all messages to be delivered. */
-    fprintf(stderr, "%% Flushing final messages..\n");
-    rd_kafka_flush(rk, 10 * 1000 /* wait for max 10 seconds */);
+    int timeout_sec = 10;
+    fprintf(
+        stderr, "Flushing final messages (timeout: %d sec)..\n", timeout_sec
+    );
+    rd_kafka_flush(rk, timeout_sec * 1000);
 
     /* If the output queue is still not empty there is an issue
       * with producing messages to the clusters. */
-    if (rd_kafka_outq_len(rk) > 0)
-        fprintf(stderr, "%% %d message(s) were not delivered\n",
-            rd_kafka_outq_len(rk));
+    if (rd_kafka_outq_len(rk) > 0) {
+        fprintf(
+            stderr,
+            "rd_kafka_flush() timed out but %d message(s) are still not "
+            "delivered, they will be discarded\n",
+            rd_kafka_outq_len(rk)
+        );
+    }
 
     /* Destroy the producer instance */
     rd_kafka_destroy(rk);

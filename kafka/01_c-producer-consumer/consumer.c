@@ -49,11 +49,11 @@ int main(int argc, char **argv) {
       * Argument validation
       */
     if (argc < 4) {
-            fprintf(stderr,
-                    "%% Usage: "
-                    "%s <broker> <group.id> <topic1> <topic2>..\n",
-                    argv[0]);
-            return 1;
+        fprintf(stderr,
+                "%% Usage: "
+                "%s <broker> <group.id> <topic1> <topic2>..\n",
+                argv[0]);
+        return 1;
     }
 
     brokers   = argv[1];
