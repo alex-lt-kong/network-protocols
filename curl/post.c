@@ -43,7 +43,6 @@ int main(void)
   char *post_this = getenv("CURL_TEST_POST_THIS");
   // https://docs.rundeck.com/docs/api/rundeck-api.html#password-authentication
   // should be something like "j_username=admin&j_password=admin"
-
   curl_global_init(CURL_GLOBAL_ALL);
   curl = curl_easy_init();
   
@@ -60,12 +59,18 @@ int main(void)
     curl_easy_setopt(curl, CURLOPT_WRITEHEADER, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEHEADER, (void *)&resp_header);
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    struct curl_slist *list = NULL;
+    list = curl_slist_append(list, "Content-Type: application/x-www-form-urlencoded");
+    // libcurl will add this for us implicitly if we don't do it ourselves.
+    // this hides a bit of HTTP protocol's details--say we want to POST a JSON object, we need to set it to
+    // "Content-Type: application/json" instead
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+
     // This will make libcurl print a lot of information, but CURLOPT_POSTFIELDS won't be among it.
     // To examine the complete POST request in bytes, it seems to be easier to use another tool such as Wireshark.
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-    /* Perform the request, res will get the return code */
     res = curl_easy_perform(curl);
-    /* Check for errors */
+    curl_slist_free_all(list);
     if(res != CURLE_OK) {
       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
     } else {

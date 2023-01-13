@@ -58,22 +58,23 @@ int main(void)
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     struct curl_slist *list = NULL;
-    list = curl_slist_append(list, "Cookie: JSESSIONID=node05ibc13qrr76f1l7w1hnx6gtba539.node0;Path=/;HttpOnly");
+    list = curl_slist_append(list, "Cookie: JSESSIONID=node01rlawnq2ilur7qr2o9ifxmf91670.node0;Path=/;HttpOnly");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
     /* some servers do not like requests that are made without a user-agent
        field, so we provide one */
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-    /* Perform the request, res will get the return code */
+
     res = curl_easy_perform(curl);
-    /* Check for errors */
+    curl_slist_free_all(list);
+
     if(res != CURLE_OK)
       fprintf(stderr, "curl_easy_perform() failed: %s\n",
               curl_easy_strerror(res));
     else {
-      printf("=====resp_body.memory=====\n%s\n=====resp_body.memory=====",resp_body.memory);
+      printf("=====resp_body.memory=====\n%s\n=====resp_body.memory=====\n",resp_body.memory);
       printf("\n\n");
-      printf("=====resp_header.memory=====\n%s\n=====resp_header.memory=====",resp_header.memory);
+      printf("=====resp_header.memory=====\n%s\n=====resp_header.memory=====\n",resp_header.memory);
     }
     /* always cleanup */
     curl_easy_cleanup(curl);
