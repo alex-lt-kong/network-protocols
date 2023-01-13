@@ -12,20 +12,63 @@
 
 using namespace std;
 
-void writeAddressBook(int fd,
+void decodeMessageToStruct(kj::ArrayPtr<char> encoded_arr) {
+    auto encoded_array_ptr = encoded_arr;
+    auto encoded_char_array = encoded_array_ptr.begin();
+    auto size = encoded_array_ptr.size();
+
+    auto received_array = kj::ArrayPtr<capnp::word>(reinterpret_cast<capnp::word*>(encoded_char_array), size/sizeof(capnp::word));
+    capnp::FlatArrayMessageReader message_receiver_builder(received_array);
+    Person::Reader person_ = message_receiver_builder.getRoot<Person>();
+   // std::cout << person_.getName().cStr() << ": "
+     //           << person_.getEmail().cStr() << std::endl;
+    for (Person::PhoneNumber::Reader phone: person_.getPhones()) {
+        const char* typeName = "UNKNOWN";
+        switch (phone.getType()) {
+        case Person::PhoneNumber::Type::MOBILE: typeName = "mobile"; break;
+        case Person::PhoneNumber::Type::HOME: typeName = "home"; break;
+        case Person::PhoneNumber::Type::WORK: typeName = "work"; break;
+        }
+      //  std::cout << "  " << typeName << " phone: "
+     //           << phone.getNumber() << std::endl;
+    }
+    Person::Employment::Reader employment = person_.getEmployment();
+  //  cout << "  nationality: " << person_.getNationality().cStr() << endl;
+   // cout << "  address: " << person_.getAddress().cStr() << endl;
+   // cout << "  birthday: " << person_.getBitrthday().cStr() << endl;
+    switch (employment.which()) {
+        case Person::Employment::UNEMPLOYED:
+        //std::cout << "  unemployed" << std::endl;
+        break;
+        case Person::Employment::EMPLOYER:
+       // std::cout << "  employer: "
+       //             << employment.getEmployer().cStr() << std::endl;
+        break;
+        case Person::Employment::SCHOOL:
+        //std::cout << "  student at: "
+       //             << employment.getSchool().cStr() << std::endl;
+        break;
+        case Person::Employment::SELF_EMPLOYED:
+        //std::cout << "  self-employed" << std::endl;
+        break;
+    }
+  
+}
+
+kj::Array<capnp::word> encodeStructToBytes(
     uint32_t id, string name, string email, uint32_t phone_number, string school,
     string nationality,
     string birthday, string creation_date, string update_date
 ) {
-    capnp::MallocMessageBuilder message;
+    capnp::MallocMessageBuilder msg_builder;
 
 
-    Person::Builder person = message.initRoot<Person>();
+    Person::Builder person = msg_builder.initRoot<Person>();
     person.setId(id);
     person.setName(name);
     person.setEmail(email);
     // Type shown for explanation purposes; normally you'd use auto.
-    ::capnp::List<Person::PhoneNumber>::Builder alicePhones =
+    capnp::List<Person::PhoneNumber>::Builder alicePhones =
         person.initPhones(1);
     alicePhones[0].setNumber(phone_number);
     alicePhones[0].setType(Person::PhoneNumber::Type::MOBILE);
@@ -35,7 +78,9 @@ void writeAddressBook(int fd,
     person.setBitrthday(birthday);
     person.setCreationDate(creation_date);
     person.setUpdateDate(update_date);
-    writePackedMessageToFd(fd, message);
+    // https://stackoverflow.com/questions/60964979/cap-n-proto-c-serialize-to-char-array-or-any-byte-array
+    kj::Array<capnp::word> encoded_arr = messageToFlatArray(msg_builder);
+    return encoded_arr;
 }
 
 
@@ -89,23 +134,20 @@ int main() {
     }
     printf("sample data are prepared\n");
 
-    int fd = open("/tmp/ramdisk/capnp.data", O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG);
+
     clock_t start = clock(), diff;
     for (int i = 0; i < TEST_SIZE; ++i) {
         
-        if (fd == -1)  {
-            fprintf(stderr, "1st open() error: %s\n", strerror(errno));
-            return -1;
-        }
-        writeAddressBook(
-            fd, persons[i].id, persons[i].name, persons[i].email,
+        kj::Array<capnp::word> byte_msg = encodeStructToBytes(
+            persons[i].id, persons[i].name, persons[i].email,
             persons[i].phone_number, persons[i].school, persons[i].nationality,
             persons[i].birthday, persons[i].creation_date,
             persons[i].update_date
         );
+        decodeMessageToStruct(byte_msg.asChars());
     }
     diff = clock() - start;
-    close(fd);
+
     cout << diff / 1000 << "ms, i.e., " << TEST_SIZE * 1000 * 1000 / diff
          << " per sec or " << diff / TEST_SIZE << "ns per record" << endl;
     return 0;
