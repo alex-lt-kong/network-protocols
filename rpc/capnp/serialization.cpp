@@ -2,6 +2,7 @@
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
 #include <iostream>
+#include <iomanip>
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -12,7 +13,9 @@
 
 using namespace std;
 
-void decodeMessageToStruct(kj::ArrayPtr<char> encoded_arr) {
+string decodeMessageToStruct(kj::ArrayPtr<char> encoded_arr) {
+    string str_repr;
+    str_repr.reserve(256);
     auto encoded_array_ptr = encoded_arr;
     auto encoded_char_array = encoded_array_ptr.begin();
     auto size = encoded_array_ptr.size();
@@ -20,8 +23,12 @@ void decodeMessageToStruct(kj::ArrayPtr<char> encoded_arr) {
     auto received_array = kj::ArrayPtr<capnp::word>(reinterpret_cast<capnp::word*>(encoded_char_array), size/sizeof(capnp::word));
     capnp::FlatArrayMessageReader message_receiver_builder(received_array);
     Person::Reader person_ = message_receiver_builder.getRoot<Person>();
-   // std::cout << person_.getName().cStr() << ": "
-     //           << person_.getEmail().cStr() << std::endl;
+    str_repr.append("Id: ");
+    str_repr.append(to_string(person_.getId()));
+    str_repr.append("\nName: ");
+    str_repr.append(person_.getName().cStr());
+    str_repr.append("\nEmail: ");
+    str_repr.append(person_.getEmail());
     for (Person::PhoneNumber::Reader phone: person_.getPhones()) {
         const char* typeName = "UNKNOWN";
         switch (phone.getType()) {
@@ -29,13 +36,18 @@ void decodeMessageToStruct(kj::ArrayPtr<char> encoded_arr) {
         case Person::PhoneNumber::Type::HOME: typeName = "home"; break;
         case Person::PhoneNumber::Type::WORK: typeName = "work"; break;
         }
-      //  std::cout << "  " << typeName << " phone: "
-     //           << phone.getNumber() << std::endl;
+
+        str_repr.append("\nPhone: ");
+        str_repr.append(to_string(phone.getNumber()));
     }
     Person::Employment::Reader employment = person_.getEmployment();
-  //  cout << "  nationality: " << person_.getNationality().cStr() << endl;
-   // cout << "  address: " << person_.getAddress().cStr() << endl;
-   // cout << "  birthday: " << person_.getBitrthday().cStr() << endl;
+    str_repr.append("\nNationality: ");
+    str_repr.append(person_.getNationality().cStr());
+    str_repr.append("\nAddress: ");
+    str_repr.append(person_.getAddress().cStr());
+    str_repr.append("\nBirthday: ");
+    str_repr.append(person_.getBitrthday().cStr());
+
     switch (employment.which()) {
         case Person::Employment::UNEMPLOYED:
         //std::cout << "  unemployed" << std::endl;
@@ -52,12 +64,13 @@ void decodeMessageToStruct(kj::ArrayPtr<char> encoded_arr) {
         //std::cout << "  self-employed" << std::endl;
         break;
     }
+    return str_repr;
   
 }
 
 kj::Array<capnp::word> encodeStructToBytes(
     uint32_t id, string name, string email, uint32_t phone_number, string school,
-    string nationality,
+    string nationality, string address,
     string birthday, string creation_date, string update_date
 ) {
     capnp::MallocMessageBuilder msg_builder;
@@ -74,7 +87,7 @@ kj::Array<capnp::word> encodeStructToBytes(
     alicePhones[0].setType(Person::PhoneNumber::Type::MOBILE);
     person.getEmployment().setSchool(school);
     person.setNationality(nationality);
-    person.setAddress(nationality);
+    person.setAddress(address);
     person.setBitrthday(birthday);
     person.setCreationDate(creation_date);
     person.setUpdateDate(update_date);
@@ -91,6 +104,7 @@ struct person_struct {
     uint32_t phone_number;
     string school;
     string nationality;
+    string address;
     string birthday;
     string creation_date;
     string update_date;
@@ -113,12 +127,20 @@ int main() {
     vector<string> nationalities{
         "America", "Britain", "China", "Dominica", "El Salvador", "Finland"
     };
+    vector<string> addresses{
+        "4417 Jade Underpass Suite 432, Schowalterton, Alabama",
+        "Studio 75x Stacey Underpass, Mollyfurt, Grantborough",
+        "63 Nok Teu Ya East Road, New Territories, Kowloon",
+        "Rácz üdülőpart 813., Budapest, Nógrád",
+        "Av. Esteve, Nro 6, Parroquia Lucas, Carabobo",
+        "Voortmanring 9-p, Beek, Zuid-Holland"
+    };
     vector<string> dates{
         "1970-01-01", "1999-12-31", "2000-01-01", "1111-11-11", "2023-01-13"
         "0001-01-01", "9999-12-31", "1234-05-06", "4321-12-34", 
     };
     
-    constexpr size_t TEST_SIZE = 1 * 1000 * 1000;
+    constexpr size_t TEST_SIZE = 10 * 1000 * 1000;
     vector<person_struct> persons{TEST_SIZE};
     for (size_t i = 0; i < TEST_SIZE; ++i) {
         uint32_t idx = rand() % names.size();
@@ -128,27 +150,43 @@ int main() {
         persons[i].phone_number = rand();
         persons[i].school = schools[idx];
         persons[i].nationality = nationalities[idx];
+        persons[i].address = addresses[idx];
         persons[i].birthday = dates[idx];
         persons[i].creation_date = dates[idx+1];
         persons[i].update_date = dates[idx+2];
     }
+    
+    vector<kj::Array<capnp::word>> byte_msgs{TEST_SIZE};
+    vector<string> str_reprs{TEST_SIZE};
     printf("sample data are prepared\n");
-
-
     clock_t start = clock(), diff;
     for (int i = 0; i < TEST_SIZE; ++i) {
         
-        kj::Array<capnp::word> byte_msg = encodeStructToBytes(
+        byte_msgs[i] = encodeStructToBytes(
             persons[i].id, persons[i].name, persons[i].email,
-            persons[i].phone_number, persons[i].school, persons[i].nationality,
+            persons[i].phone_number, persons[i].school,
+            persons[i].nationality, persons[i].address,
             persons[i].birthday, persons[i].creation_date,
             persons[i].update_date
         );
-        decodeMessageToStruct(byte_msg.asChars());
+        
     }
     diff = clock() - start;
-
-    cout << diff / 1000 << "ms, i.e., " << TEST_SIZE * 1000 * 1000 / diff
-         << " per sec or " << diff / TEST_SIZE << "ns per record" << endl;
+    cout << "Serializing   " << TEST_SIZE << " items takes "
+         << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
+         << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
+         << "ns per record)" << endl;
+    start = clock();
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        str_reprs[i] = decodeMessageToStruct(byte_msgs[i].asChars());
+    }
+    diff = clock() - start;
+    cout << "Deserializing " << TEST_SIZE << " items takes "
+         << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
+         << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
+         << "ns per record)" << endl;
+    cout << "\n===== Sample item so that compiler can't just optimize the "
+         << "calculation away=====\n"
+         << str_reprs[rand() % str_reprs.size()] << endl;
     return 0;
 }
