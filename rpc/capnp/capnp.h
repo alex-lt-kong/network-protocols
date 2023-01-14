@@ -1,4 +1,3 @@
-#include "person.capnp.h"
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
 #include <iostream>
@@ -10,10 +9,12 @@
 #include <string>
 #include <stdlib.h>
 #include <time.h>
+#include "../rpc.h"
+#include "person.capnp.h"
 
 using namespace std;
 
-string decodeMessageToStruct(kj::ArrayPtr<char> encoded_arr) {
+string decodeMessageToStructCapnp(kj::ArrayPtr<char> encoded_arr) {
     string str_repr;
     str_repr.reserve(256);
     auto encoded_array_ptr = encoded_arr;
@@ -70,48 +71,28 @@ string decodeMessageToStruct(kj::ArrayPtr<char> encoded_arr) {
   
 }
 
-kj::Array<capnp::word> encodeStructToBytes(
-    uint32_t id, string name, string email, uint32_t phone_number, string school,
-    string nationality, string address,
-    string birthday, string creation_date, string update_date,
-    string self_introduction
-) {
+kj::Array<capnp::word> encodeStructToBytesCapnp(person_struct p) {
     capnp::MallocMessageBuilder msg_builder;
 
 
     Person::Builder person = msg_builder.initRoot<Person>();
-    person.setId(id);
-    person.setName(name);
-    person.setEmail(email);
+    person.setId(p.id);
+    person.setName(p.name);
+    person.setEmail(p.email);
     // Type shown for explanation purposes; normally you'd use auto.
     capnp::List<Person::PhoneNumber>::Builder alicePhones =
         person.initPhones(1);
-    alicePhones[0].setNumber(phone_number);
+    alicePhones[0].setNumber(p.phone_number);
     alicePhones[0].setType(Person::PhoneNumber::Type::MOBILE);
-    person.getEmployment().setSchool(school);
-    person.setNationality(nationality);
-    person.setAddress(address);
-    person.setBitrthday(birthday);
-    person.setCreationDate(creation_date);
-    person.setUpdateDate(update_date);
-    person.setSelfIntroduction(self_introduction);
+    person.getEmployment().setSchool(p.school);
+    person.setNationality(p.nationality);
+    person.setAddress(p.address);
+    person.setBitrthday(p.birthday);
+    person.setCreationDate(p.creation_date);
+    person.setUpdateDate(p.update_date);
+    person.setSelfIntroduction(p.self_introduction);
     // https://stackoverflow.com/questions/60964979/cap-n-proto-c-serialize-to-char-array-or-any-byte-array
     kj::Array<capnp::word> encoded_arr = messageToFlatArray(msg_builder);
     return encoded_arr;
 }
 
-
-struct person_struct {
-    uint32_t id;
-    string name;
-    string email;
-    uint32_t phone_number;
-    string school;
-    string nationality;
-    string address;
-    string birthday;
-    string creation_date;
-    string update_date;
-    string self_introduction;
-
-};

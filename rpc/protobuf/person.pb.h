@@ -218,33 +218,17 @@ class Person_PhoneNumber PROTOBUF_FINAL :
     kNumberFieldNumber = 1,
     kTypeFieldNumber = 2,
   };
-  // optional string number = 1;
+  // optional uint32 number = 1;
   bool has_number() const;
   private:
   bool _internal_has_number() const;
   public:
   void clear_number();
-  const std::string& number() const;
-  void set_number(const std::string& value);
-  void set_number(std::string&& value);
-  void set_number(const char* value);
-  void set_number(const char* value, size_t size);
-  std::string* mutable_number();
-  std::string* release_number();
-  void set_allocated_number(std::string* number);
-  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
-  "    string fields are deprecated and will be removed in a"
-  "    future release.")
-  std::string* unsafe_arena_release_number();
-  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
-  "    string fields are deprecated and will be removed in a"
-  "    future release.")
-  void unsafe_arena_set_allocated_number(
-      std::string* number);
+  ::PROTOBUF_NAMESPACE_ID::uint32 number() const;
+  void set_number(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  const std::string& _internal_number() const;
-  void _internal_set_number(const std::string& value);
-  std::string* _internal_mutable_number();
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_number() const;
+  void _internal_set_number(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // optional .pb_test.Person.PhoneType type = 2 [default = HOME];
@@ -269,7 +253,7 @@ class Person_PhoneNumber PROTOBUF_FINAL :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr number_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 number_;
   int type_;
   friend struct ::TableStruct_person_2eproto;
 };
@@ -690,17 +674,17 @@ class Person PROTOBUF_FINAL :
   std::string* _internal_mutable_selfintroduction();
   public:
 
-  // optional int32 id = 2;
+  // optional uint32 id = 2;
   bool has_id() const;
   private:
   bool _internal_has_id() const;
   public:
   void clear_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 id() const;
-  void set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 id() const;
+  void set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_id() const;
-  void _internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_id() const;
+  void _internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:pb_test.Person)
@@ -721,7 +705,7 @@ class Person PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr creationdate_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr updatedate_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr selfintroduction_;
-  ::PROTOBUF_NAMESPACE_ID::int32 id_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 id_;
   friend struct ::TableStruct_person_2eproto;
 };
 // ===================================================================
@@ -735,7 +719,7 @@ class Person PROTOBUF_FINAL :
 #endif  // __GNUC__
 // Person_PhoneNumber
 
-// optional string number = 1;
+// optional uint32 number = 1;
 inline bool Person_PhoneNumber::_internal_has_number() const {
   bool value = (_has_bits_[0] & 0x00000001u) != 0;
   return value;
@@ -744,88 +728,23 @@ inline bool Person_PhoneNumber::has_number() const {
   return _internal_has_number();
 }
 inline void Person_PhoneNumber::clear_number() {
-  number_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  number_ = 0u;
   _has_bits_[0] &= ~0x00000001u;
 }
-inline const std::string& Person_PhoneNumber::number() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Person_PhoneNumber::_internal_number() const {
+  return number_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Person_PhoneNumber::number() const {
   // @@protoc_insertion_point(field_get:pb_test.Person.PhoneNumber.number)
   return _internal_number();
 }
-inline void Person_PhoneNumber::set_number(const std::string& value) {
+inline void Person_PhoneNumber::_internal_set_number(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _has_bits_[0] |= 0x00000001u;
+  number_ = value;
+}
+inline void Person_PhoneNumber::set_number(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_number(value);
   // @@protoc_insertion_point(field_set:pb_test.Person.PhoneNumber.number)
-}
-inline std::string* Person_PhoneNumber::mutable_number() {
-  // @@protoc_insertion_point(field_mutable:pb_test.Person.PhoneNumber.number)
-  return _internal_mutable_number();
-}
-inline const std::string& Person_PhoneNumber::_internal_number() const {
-  return number_.Get();
-}
-inline void Person_PhoneNumber::_internal_set_number(const std::string& value) {
-  _has_bits_[0] |= 0x00000001u;
-  number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
-}
-inline void Person_PhoneNumber::set_number(std::string&& value) {
-  _has_bits_[0] |= 0x00000001u;
-  number_.Set(
-    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
-  // @@protoc_insertion_point(field_set_rvalue:pb_test.Person.PhoneNumber.number)
-}
-inline void Person_PhoneNumber::set_number(const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  _has_bits_[0] |= 0x00000001u;
-  number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
-              GetArena());
-  // @@protoc_insertion_point(field_set_char:pb_test.Person.PhoneNumber.number)
-}
-inline void Person_PhoneNumber::set_number(const char* value,
-    size_t size) {
-  _has_bits_[0] |= 0x00000001u;
-  number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
-      reinterpret_cast<const char*>(value), size), GetArena());
-  // @@protoc_insertion_point(field_set_pointer:pb_test.Person.PhoneNumber.number)
-}
-inline std::string* Person_PhoneNumber::_internal_mutable_number() {
-  _has_bits_[0] |= 0x00000001u;
-  return number_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
-}
-inline std::string* Person_PhoneNumber::release_number() {
-  // @@protoc_insertion_point(field_release:pb_test.Person.PhoneNumber.number)
-  if (!_internal_has_number()) {
-    return nullptr;
-  }
-  _has_bits_[0] &= ~0x00000001u;
-  return number_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
-}
-inline void Person_PhoneNumber::set_allocated_number(std::string* number) {
-  if (number != nullptr) {
-    _has_bits_[0] |= 0x00000001u;
-  } else {
-    _has_bits_[0] &= ~0x00000001u;
-  }
-  number_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), number,
-      GetArena());
-  // @@protoc_insertion_point(field_set_allocated:pb_test.Person.PhoneNumber.number)
-}
-inline std::string* Person_PhoneNumber::unsafe_arena_release_number() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:pb_test.Person.PhoneNumber.number)
-  GOOGLE_DCHECK(GetArena() != nullptr);
-  _has_bits_[0] &= ~0x00000001u;
-  return number_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
-}
-inline void Person_PhoneNumber::unsafe_arena_set_allocated_number(
-    std::string* number) {
-  GOOGLE_DCHECK(GetArena() != nullptr);
-  if (number != nullptr) {
-    _has_bits_[0] |= 0x00000001u;
-  } else {
-    _has_bits_[0] &= ~0x00000001u;
-  }
-  number_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      number, GetArena());
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:pb_test.Person.PhoneNumber.number)
 }
 
 // optional .pb_test.Person.PhoneType type = 2 [default = HOME];
@@ -954,7 +873,7 @@ inline void Person::unsafe_arena_set_allocated_name(
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:pb_test.Person.name)
 }
 
-// optional int32 id = 2;
+// optional uint32 id = 2;
 inline bool Person::_internal_has_id() const {
   bool value = (_has_bits_[0] & 0x00000100u) != 0;
   return value;
@@ -963,21 +882,21 @@ inline bool Person::has_id() const {
   return _internal_has_id();
 }
 inline void Person::clear_id() {
-  id_ = 0;
+  id_ = 0u;
   _has_bits_[0] &= ~0x00000100u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Person::_internal_id() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Person::_internal_id() const {
   return id_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Person::id() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Person::id() const {
   // @@protoc_insertion_point(field_get:pb_test.Person.id)
   return _internal_id();
 }
-inline void Person::_internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void Person::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _has_bits_[0] |= 0x00000100u;
   id_ = value;
 }
-inline void Person::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void Person::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_id(value);
   // @@protoc_insertion_point(field_set:pb_test.Person.id)
 }

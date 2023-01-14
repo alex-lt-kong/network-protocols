@@ -11,6 +11,8 @@
 #include <time.h>
 #include "./capnp/person.capnp.h"
 #include "./capnp/capnp.h"
+#include "./protobuf/protobuf.h"
+
 
 using namespace std;
 
@@ -52,7 +54,7 @@ int main() {
         "I have done my schooling from Jaipur. For my graduation, I chose Xyz program at Abc University. It was a very enriching experience at the University as not only we were actively involved in practical projects, but also got opportunities to participate in a number of sports and other extra-curricular activities such as plays and skits."
     };
     
-    constexpr size_t TEST_SIZE = 10 * 1000 * 1000;
+    constexpr size_t TEST_SIZE = 5 * 1000 * 1000;
     vector<person_struct> persons{TEST_SIZE};
     for (size_t i = 0; i < TEST_SIZE; ++i) {
         uint32_t idx = rand() % names.size();
@@ -69,37 +71,58 @@ int main() {
         persons[i].self_introduction = self_introductions[idx];
     }
     
-    vector<kj::Array<capnp::word>> byte_msgs{TEST_SIZE};
+    vector<kj::Array<capnp::word>> byte_msgs_capnp{TEST_SIZE};
     vector<string> str_reprs{TEST_SIZE};
     printf("sample data are prepared\n");
-    clock_t start = clock(), diff;
-    for (int i = 0; i < TEST_SIZE; ++i) {
-        
-        byte_msgs[i] = encodeStructToBytes(
-            persons[i].id, persons[i].name, persons[i].email,
-            persons[i].phone_number, persons[i].school,
-            persons[i].nationality, persons[i].address,
-            persons[i].birthday, persons[i].creation_date,
-            persons[i].update_date, persons[i].self_introduction
-        );
-        
+    clock_t start, diff;
+
+    start = clock();
+    for (int i = 0; i < TEST_SIZE; ++i) {        
+        byte_msgs_capnp[i] = encodeStructToBytesCapnp(persons[i]);
     }
     diff = clock() - start;
-    cout << "Serializing   " << TEST_SIZE << " items takes "
+    cout << "===== Testing Capn Proto =====\n"
+         << "Serializing   " << TEST_SIZE << " items takes "
          << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
          << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
          << "us per record)" << endl;
     start = clock();
     for (int i = 0; i < TEST_SIZE; ++i) {
-        str_reprs[i] = decodeMessageToStruct(byte_msgs[i].asChars());
+        str_reprs[i] = decodeMessageToStructCapnp(byte_msgs_capnp[i].asChars());
     }
     diff = clock() - start;
     cout << "Deserializing " << TEST_SIZE << " items takes "
          << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
          << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
          << "us per record)" << endl;
-    cout << "\n===== Sample item so that compiler can't just optimize the "
-         << "calculation away=====\n"
+    cout << "\n--- Sample item so that compiler can't just optimize the "
+         << "calculation away ---\n"
+         << str_reprs[rand() % str_reprs.size()] << "\n\n" << endl;
+
+    vector<vector<uint8_t>> byte_msgs_protobuf{TEST_SIZE};
+    start = clock();
+    for (int i = 0; i < TEST_SIZE; ++i) {        
+        byte_msgs_protobuf[i] = encodeStructToBytesProtoBuf(persons[i]);
+    }
+    diff = clock() - start;
+    cout << "===== Testing ProtoBuf =====\n"
+         << "Serializing   " << TEST_SIZE << " items takes "
+         << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
+         << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
+         << "us per record)" << endl;
+    start = clock();
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        str_reprs[i] = decodeMessageToStructProtoBuf(byte_msgs_protobuf[i]);
+    }
+    diff = clock() - start;
+    cout << "Deserializing " << TEST_SIZE << " items takes "
+         << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
+         << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
+         << "us per record)" << endl;
+    cout << "\n--- Sample item so that compiler can't just optimize the "
+         << "calculation away ---\n"
          << str_reprs[rand() % str_reprs.size()] << endl;
+
+
     return 0;
 }

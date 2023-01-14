@@ -106,12 +106,12 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 
 const char descriptor_table_protodef_person_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\014person.proto\022\007pb_test\"\326\002\n\006Person\022\014\n\004na"
-  "me\030\001 \001(\t\022\n\n\002id\030\002 \001(\005\022\r\n\005email\030\003 \001(\t\022+\n\006p"
+  "me\030\001 \001(\t\022\n\n\002id\030\002 \001(\r\022\r\n\005email\030\003 \001(\t\022+\n\006p"
   "hones\030\004 \003(\0132\033.pb_test.Person.PhoneNumber"
   "\022\017\n\007address\030\010 \001(\t\022\023\n\013nationality\030\t \001(\t\022\021"
   "\n\tbitrthday\030\n \001(\t\022\024\n\014creationDate\030\013 \001(\t\022"
   "\022\n\nupdateDate\030\014 \001(\t\022\030\n\020selfIntroduction\030"
-  "\r \001(\t\032L\n\013PhoneNumber\022\016\n\006number\030\001 \001(\t\022-\n\004"
+  "\r \001(\t\032L\n\013PhoneNumber\022\016\n\006number\030\001 \001(\r\022-\n\004"
   "type\030\002 \001(\0162\031.pb_test.Person.PhoneType:\004H"
   "OME\"+\n\tPhoneType\022\n\n\006MOBILE\020\000\022\010\n\004HOME\020\001\022\010"
   "\n\004WORK\020\002"
@@ -182,18 +182,14 @@ Person_PhoneNumber::Person_PhoneNumber(const Person_PhoneNumber& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _has_bits_(from._has_bits_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  number_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_number()) {
-    number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_number(),
-      GetArena());
-  }
-  type_ = from.type_;
+  ::memcpy(&number_, &from.number_,
+    static_cast<size_t>(reinterpret_cast<char*>(&type_) -
+    reinterpret_cast<char*>(&number_)) + sizeof(type_));
   // @@protoc_insertion_point(copy_constructor:pb_test.Person.PhoneNumber)
 }
 
 void Person_PhoneNumber::SharedCtor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_Person_PhoneNumber_person_2eproto.base);
-  number_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  number_ = 0u;
   type_ = 1;
 }
 
@@ -205,7 +201,6 @@ Person_PhoneNumber::~Person_PhoneNumber() {
 
 void Person_PhoneNumber::SharedDtor() {
   GOOGLE_DCHECK(GetArena() == nullptr);
-  number_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 void Person_PhoneNumber::ArenaDtor(void* object) {
@@ -231,9 +226,7 @@ void Person_PhoneNumber::Clear() {
 
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      number_.ClearNonDefaultToEmpty();
-    }
+    number_ = 0u;
     type_ = 1;
   }
   _has_bits_.Clear();
@@ -249,14 +242,11 @@ const char* Person_PhoneNumber::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // optional string number = 1;
+      // optional uint32 number = 1;
       case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
-          auto str = _internal_mutable_number();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.PhoneNumber.number");
-          #endif  // !NDEBUG
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          _Internal::set_has_number(&has_bits);
+          number_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -302,14 +292,10 @@ failure:
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  // optional string number = 1;
+  // optional uint32 number = 1;
   if (cached_has_bits & 0x00000001u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->_internal_number().data(), static_cast<int>(this->_internal_number().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
-      "pb_test.Person.PhoneNumber.number");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_number(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_number(), target);
   }
 
   // optional .pb_test.Person.PhoneType type = 2 [default = HOME];
@@ -337,10 +323,10 @@ size_t Person_PhoneNumber::ByteSizeLong() const {
 
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional string number = 1;
+    // optional uint32 number = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
           this->_internal_number());
     }
 
@@ -385,7 +371,7 @@ void Person_PhoneNumber::MergeFrom(const Person_PhoneNumber& from) {
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _internal_set_number(from._internal_number());
+      number_ = from.number_;
     }
     if (cached_has_bits & 0x00000002u) {
       type_ = from.type_;
@@ -416,7 +402,7 @@ void Person_PhoneNumber::InternalSwap(Person_PhoneNumber* other) {
   using std::swap;
   _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  number_.Swap(&other->number_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  swap(number_, other->number_);
   swap(type_, other->type_);
 }
 
@@ -527,7 +513,7 @@ void Person::SharedCtor() {
   creationdate_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   updatedate_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   selfintroduction_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  id_ = 0;
+  id_ = 0u;
 }
 
 Person::~Person() {
@@ -597,7 +583,7 @@ void Person::Clear() {
       selfintroduction_.ClearNonDefaultToEmpty();
     }
   }
-  id_ = 0;
+  id_ = 0u;
   _has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -622,11 +608,11 @@ const char* Person::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional int32 id = 2;
+      // optional uint32 id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           _Internal::set_has_id(&has_bits);
-          id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -759,10 +745,10 @@ failure:
         1, this->_internal_name(), target);
   }
 
-  // optional int32 id = 2;
+  // optional uint32 id = 2;
   if (cached_has_bits & 0x00000100u) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_id(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_id(), target);
   }
 
   // optional string email = 3;
@@ -925,10 +911,10 @@ size_t Person::ByteSizeLong() const {
     }
 
   }
-  // optional int32 id = 2;
+  // optional uint32 id = 2;
   if (cached_has_bits & 0x00000100u) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_id());
   }
 
