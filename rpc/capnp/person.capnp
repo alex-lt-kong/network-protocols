@@ -10,6 +10,7 @@ struct Person {
   bitrthday @10: Text;
   creationDate @11: Text;
   updateDate @12: Text;
+  selfIntroduction @13: Text;
 
   struct PhoneNumber {
     number @0 :UInt32;
@@ -20,13 +21,5 @@ struct Person {
       home @1;
       work @2;
     }
-  }
-
-  employment :union {
-    unemployed @4 :Void;
-    employer @5 :Text;
-    school @6 :Text;
-    selfEmployed @7 :Void;
-    # We assume that a person is only one of these.
   }
 }

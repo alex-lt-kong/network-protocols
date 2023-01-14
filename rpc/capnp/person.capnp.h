@@ -41,7 +41,7 @@ struct Person {
   struct Employment;
 
   struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(86af4bd6a08fbde3, 1, 9)
+    CAPNP_DECLARE_STRUCT_HEADER(86af4bd6a08fbde3, 1, 10)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -79,7 +79,7 @@ struct Person::Employment {
   };
 
   struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(eacf075818b0a2bb, 1, 9)
+    CAPNP_DECLARE_STRUCT_HEADER(eacf075818b0a2bb, 1, 10)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -132,6 +132,9 @@ public:
 
   inline bool hasUpdateDate() const;
   inline  ::capnp::Text::Reader getUpdateDate() const;
+
+  inline bool hasSelfIntroduction() const;
+  inline  ::capnp::Text::Reader getSelfIntroduction() const;
 
 private:
   ::capnp::_::StructReader _reader;
@@ -222,6 +225,13 @@ public:
   inline  ::capnp::Text::Builder initUpdateDate(unsigned int size);
   inline void adoptUpdateDate(::capnp::Orphan< ::capnp::Text>&& value);
   inline ::capnp::Orphan< ::capnp::Text> disownUpdateDate();
+
+  inline bool hasSelfIntroduction();
+  inline  ::capnp::Text::Builder getSelfIntroduction();
+  inline void setSelfIntroduction( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initSelfIntroduction(unsigned int size);
+  inline void adoptSelfIntroduction(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownSelfIntroduction();
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -744,6 +754,40 @@ inline void Person::Builder::adoptUpdateDate(
 inline ::capnp::Orphan< ::capnp::Text> Person::Builder::disownUpdateDate() {
   return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
       ::capnp::bounded<8>() * ::capnp::POINTERS));
+}
+
+inline bool Person::Reader::hasSelfIntroduction() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<9>() * ::capnp::POINTERS).isNull();
+}
+inline bool Person::Builder::hasSelfIntroduction() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<9>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::Text::Reader Person::Reader::getSelfIntroduction() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
+      ::capnp::bounded<9>() * ::capnp::POINTERS));
+}
+inline  ::capnp::Text::Builder Person::Builder::getSelfIntroduction() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
+      ::capnp::bounded<9>() * ::capnp::POINTERS));
+}
+inline void Person::Builder::setSelfIntroduction( ::capnp::Text::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
+      ::capnp::bounded<9>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::Text::Builder Person::Builder::initSelfIntroduction(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
+      ::capnp::bounded<9>() * ::capnp::POINTERS), size);
+}
+inline void Person::Builder::adoptSelfIntroduction(
+    ::capnp::Orphan< ::capnp::Text>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
+      ::capnp::bounded<9>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::Text> Person::Builder::disownSelfIntroduction() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
+      ::capnp::bounded<9>() * ::capnp::POINTERS));
 }
 
 inline  ::uint32_t Person::PhoneNumber::Reader::getNumber() const {
