@@ -32,10 +32,12 @@ int main(int argc, char *argv[]) {
   zmqpp::message message;
   // decompose the message 
   socket.receive(message);
-  string text;
-  int number;
-  message >> text >> number;
+  cout << "message received: [" << message.size(0) << "]" << endl;
+  cout << "message received: [" << message.get(0) << "]" << endl;
+  //string text;
+  //int number;
+  //message >> text >> number;
 
-  cout << "Received text:\"" << text << "\" and a number: " << number << endl;
+  //cout << "Received text:\"" << text << "\" and a number: " << number << endl;
   cout << "Finished." << endl;
 }

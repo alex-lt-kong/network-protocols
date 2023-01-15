@@ -35,5 +35,6 @@ struct person_struct {
 
 string getStringRepresentationOfPerson(person_struct p);
 float getRandomFloat(float a, float b);
+vector<person_struct> generateRandomData(size_t TEST_SIZE);
 
 #endif

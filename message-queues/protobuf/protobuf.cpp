@@ -56,7 +56,7 @@ vector<uint8_t> encodeStructToBytesProtoBuf(person_struct p) {
     }
     
     for (int i = 0; i < sizeof(p.scores)/sizeof(p.scores[0]); ++i) {
-        person.add_scores(p.scores[0]);
+        person.add_scores(p.scores[i]);
     }
 
     person.set_bitrthday(p.birthday);

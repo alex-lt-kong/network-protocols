@@ -10,10 +10,14 @@
 #include <zmqpp/zmqpp.hpp>
 #include <string>
 #include <iostream>
+#include "serialization.h"
+#include "./capnp/capnp.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
+  
+  
   const string endpoint = "tcp://localhost:4242";
 
   // initialize the 0MQ context
@@ -29,11 +33,20 @@ int main(int argc, char *argv[]) {
 
   // send a message
   cout << "Sending text and a number..." << endl;
-  zmqpp::message message;
-  // compose a message from a string and a number
-  message << "Hello World!" << 42;
-  socket.send(message);
   
+  
+  
+  constexpr size_t TEST_SIZE = 1;
+  vector<person_struct> persons = generateRandomData(TEST_SIZE);
+  string test = "jello";
+  for (int i = 0; i < TEST_SIZE; ++i) {
+      auto byte_msg = encodeStructToBytesCapnp(persons[i]);
+      cout << byte_msg.size() << endl;
+      zmqpp::message_t msg;
+      msg.add_raw(byte_msg.asChars().begin(), byte_msg.size());
+      cout << msg.size(0) << endl;
+      socket.send(msg);
+  }
   cout << "Sent message." << endl;
   cout << "Finished." << endl;
 }
