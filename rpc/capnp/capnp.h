@@ -14,5 +14,6 @@
 
 using namespace std;
 
-person_struct decodeMessageToStructCapnp(kj::ArrayPtr<char> encoded_arr);
+person_struct decodeMessageToStructCapnp(kj::Array<capnp::word>& byte_msg);
+
 kj::Array<capnp::word> encodeStructToBytesCapnp(person_struct p);

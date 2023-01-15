@@ -2,15 +2,11 @@
 
 using namespace std;
 
-person_struct decodeMessageToStructCapnp(kj::ArrayPtr<char> encoded_arr) {
+person_struct decodeMessageToStructCapnp(kj::Array<capnp::word>& encoded_arr) {
     person_struct p;
-    auto encoded_array_ptr = encoded_arr;
-    auto encoded_char_array = encoded_array_ptr.begin();
-    auto size = encoded_array_ptr.size();
 
-    auto received_array = kj::ArrayPtr<capnp::word>(reinterpret_cast<capnp::word*>(encoded_char_array), size/sizeof(capnp::word));
-    capnp::FlatArrayMessageReader message_receiver_builder(received_array);
-    Person::Reader person = message_receiver_builder.getRoot<Person>();
+    capnp::FlatArrayMessageReader msg_builder(encoded_arr);
+    Person::Reader person = msg_builder.getRoot<Person>();
     p.id = person.getId();
     p.name = person.getName().cStr();
     p.email = person.getEmail().cStr();
@@ -71,7 +67,6 @@ kj::Array<capnp::word> encodeStructToBytesCapnp(person_struct p) {
     person.setUpdateDate(p.update_date);
     person.setSelfIntroduction(p.self_introduction);
     // https://stackoverflow.com/questions/60964979/cap-n-proto-c-serialize-to-char-array-or-any-byte-array
-    kj::Array<capnp::word> encoded_arr = messageToFlatArray(msg_builder);
-    return encoded_arr;
+    return messageToFlatArray(msg_builder);
 }
 

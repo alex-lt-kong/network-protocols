@@ -141,8 +141,7 @@ int main() {
          << "us per record)" << endl;
     start = clock();
     for (int i = 0; i < TEST_SIZE; ++i) {
-        deserialized_persons[i] = decodeMessageToStructCapnp(
-            byte_msgs_capnp[i].asChars());
+        deserialized_persons[i] = decodeMessageToStructCapnp(byte_msgs_capnp[i]);
     }
     diff = clock() - start;
     cout << "Deserializing " << TEST_SIZE << " items takes "
