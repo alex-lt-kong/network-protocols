@@ -16,6 +16,13 @@
 
 using namespace std;
 
+float getRandomFloat(float a, float b) {
+    float random = ((float) rand()) / (float) RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+    return a + r;
+}
+
 int main() {
     srand(time(NULL));
     
@@ -41,7 +48,7 @@ int main() {
         "Voortmanring 9-p, Beek, Zuid-Holland"
     };
     vector<string> dates{
-        "1970-01-01", "1999-12-31", "2000-01-01", "1111-11-11", "2023-01-13"
+        "1970-01-01", "1999-12-31", "2000-01-01", "1111-11-11", "2023-01-13",
         "0001-01-01", "9999-12-31", "1234-05-06", "4321-12-34", 
     };
 
@@ -62,6 +69,7 @@ int main() {
         persons[i].name = names[idx];
         persons[i].email = persons[i].name + email_hosts[idx];
         persons[i].phone_number = rand();
+        persons[i].phone_type = persons[i].phone_number % 3;
         persons[i].school = schools[idx];
         persons[i].nationality = nationalities[idx];
         persons[i].address = addresses[idx];
@@ -69,6 +77,13 @@ int main() {
         persons[i].creation_date = dates[idx+1];
         persons[i].update_date = dates[idx+2];
         persons[i].self_introduction = self_introductions[idx];
+        for (
+            int j = 0;
+            j < sizeof(persons[i].scores)/sizeof(persons[i].scores[0]);
+            ++j
+        ) {
+            persons[i].scores[j] = getRandomFloat(0, 100.0);
+        }
     }
     
     vector<kj::Array<capnp::word>> byte_msgs_capnp{TEST_SIZE};
@@ -112,7 +127,7 @@ int main() {
          << "us per record)" << endl;
     start = clock();
     for (int i = 0; i < TEST_SIZE; ++i) {
-        str_reprs[i] = decodeMessageToStructProtoBuf(byte_msgs_protobuf[i]);
+        decodeMessageToStructProtoBuf(byte_msgs_protobuf[i]);
     }
     diff = clock() - start;
     cout << "Deserializing " << TEST_SIZE << " items takes "

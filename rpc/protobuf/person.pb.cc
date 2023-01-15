@@ -76,6 +76,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_person_2eproto::offsets[] PROT
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, name_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, id_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, email_),
+  PROTOBUF_FIELD_OFFSET(::pb_test::Person, scores_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, phones_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, address_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, nationality_),
@@ -87,6 +88,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_person_2eproto::offsets[] PROT
   8,
   1,
   ~0u,
+  ~0u,
   2,
   3,
   4,
@@ -96,7 +98,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_person_2eproto::offsets[] PROT
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 7, sizeof(::pb_test::Person_PhoneNumber)},
-  { 9, 24, sizeof(::pb_test::Person)},
+  { 9, 25, sizeof(::pb_test::Person)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -105,16 +107,16 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_person_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\014person.proto\022\007pb_test\"\326\002\n\006Person\022\014\n\004na"
-  "me\030\001 \001(\t\022\n\n\002id\030\002 \001(\r\022\r\n\005email\030\003 \001(\t\022+\n\006p"
-  "hones\030\004 \003(\0132\033.pb_test.Person.PhoneNumber"
-  "\022\017\n\007address\030\010 \001(\t\022\023\n\013nationality\030\t \001(\t\022\021"
-  "\n\tbitrthday\030\n \001(\t\022\024\n\014creationDate\030\013 \001(\t\022"
-  "\022\n\nupdateDate\030\014 \001(\t\022\030\n\020selfIntroduction\030"
-  "\r \001(\t\032L\n\013PhoneNumber\022\016\n\006number\030\001 \001(\r\022-\n\004"
-  "type\030\002 \001(\0162\031.pb_test.Person.PhoneType:\004H"
-  "OME\"+\n\tPhoneType\022\n\n\006MOBILE\020\000\022\010\n\004HOME\020\001\022\010"
-  "\n\004WORK\020\002"
+  "\n\014person.proto\022\007pb_test\"\352\002\n\006Person\022\014\n\004na"
+  "me\030\001 \001(\t\022\n\n\002id\030\002 \001(\r\022\r\n\005email\030\003 \001(\t\022\022\n\006s"
+  "cores\030\020 \003(\002B\002\020\001\022+\n\006phones\030\004 \003(\0132\033.pb_tes"
+  "t.Person.PhoneNumber\022\017\n\007address\030\010 \001(\t\022\023\n"
+  "\013nationality\030\t \001(\t\022\021\n\tbitrthday\030\n \001(\t\022\024\n"
+  "\014creationDate\030\013 \001(\t\022\022\n\nupdateDate\030\014 \001(\t\022"
+  "\030\n\020selfIntroduction\030\r \001(\t\032L\n\013PhoneNumber"
+  "\022\016\n\006number\030\001 \001(\r\022-\n\004type\030\002 \001(\0162\031.pb_test"
+  ".Person.PhoneType:\004HOME\"+\n\tPhoneType\022\n\n\006"
+  "MOBILE\020\000\022\010\n\004HOME\020\001\022\010\n\004WORK\020\002"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_person_2eproto_deps[1] = {
 };
@@ -124,7 +126,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_per
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_person_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_person_2eproto = {
-  false, false, descriptor_table_protodef_person_2eproto, "person.proto", 368,
+  false, false, descriptor_table_protodef_person_2eproto, "person.proto", 388,
   &descriptor_table_person_2eproto_once, descriptor_table_person_2eproto_sccs, descriptor_table_person_2eproto_deps, 2, 0,
   schemas, file_default_instances, TableStruct_person_2eproto::offsets,
   file_level_metadata_person_2eproto, 2, file_level_enum_descriptors_person_2eproto, file_level_service_descriptors_person_2eproto,
@@ -449,7 +451,8 @@ class Person::_Internal {
 
 Person::Person(::PROTOBUF_NAMESPACE_ID::Arena* arena)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena),
-  phones_(arena) {
+  phones_(arena),
+  scores_(arena) {
   SharedCtor();
   RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:pb_test.Person)
@@ -457,7 +460,8 @@ Person::Person(::PROTOBUF_NAMESPACE_ID::Arena* arena)
 Person::Person(const Person& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _has_bits_(from._has_bits_),
-      phones_(from.phones_) {
+      phones_(from.phones_),
+      scores_(from.scores_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_name()) {
@@ -556,6 +560,7 @@ void Person::Clear() {
   (void) cached_has_bits;
 
   phones_.Clear();
+  scores_.Clear();
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x000000ffu) {
     if (cached_has_bits & 0x00000001u) {
@@ -705,6 +710,16 @@ const char* Person::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
+      // repeated float scores = 16 [packed = true];
+      case 16:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 130)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedFloatParser(_internal_mutable_scores(), ptr, ctx);
+          CHK_(ptr);
+        } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 133) {
+          _internal_add_scores(::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr));
+          ptr += sizeof(float);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
         if ((tag & 7) == 4 || tag == 0) {
@@ -829,6 +844,11 @@ failure:
         13, this->_internal_selfintroduction(), target);
   }
 
+  // repeated float scores = 16 [packed = true];
+  if (this->_internal_scores_size() > 0) {
+    target = stream->WriteFixedPacked(16, _internal_scores(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -850,6 +870,21 @@ size_t Person::ByteSizeLong() const {
   for (const auto& msg : this->phones_) {
     total_size +=
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // repeated float scores = 16 [packed = true];
+  {
+    unsigned int count = static_cast<unsigned int>(this->_internal_scores_size());
+    size_t data_size = 4UL * count;
+    if (data_size > 0) {
+      total_size += 2 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+            static_cast<::PROTOBUF_NAMESPACE_ID::int32>(data_size));
+    }
+    int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(data_size);
+    _scores_cached_byte_size_.store(cached_size,
+                                    std::memory_order_relaxed);
+    total_size += data_size;
   }
 
   cached_has_bits = _has_bits_[0];
@@ -950,6 +985,7 @@ void Person::MergeFrom(const Person& from) {
   (void) cached_has_bits;
 
   phones_.MergeFrom(from.phones_);
+  scores_.MergeFrom(from.scores_);
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x000000ffu) {
     if (cached_has_bits & 0x00000001u) {
@@ -1005,6 +1041,7 @@ void Person::InternalSwap(Person* other) {
   _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   phones_.InternalSwap(&other->phones_);
+  scores_.InternalSwap(&other->scores_);
   name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   email_.Swap(&other->email_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   address_.Swap(&other->address_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());

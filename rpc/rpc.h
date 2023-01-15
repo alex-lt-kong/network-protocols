@@ -10,6 +10,7 @@ struct person_struct {
     uint32_t id;
     string name;
     string email;
+    int phone_type;
     uint32_t phone_number;
     string school;
     string nationality;
@@ -18,6 +19,7 @@ struct person_struct {
     string creation_date;
     string update_date;
     string self_introduction;
+    float scores[16];
 };
 
 #endif

@@ -25,7 +25,6 @@ enum class Type_eea652160841c248: uint16_t {
   WORK,
 };
 CAPNP_DECLARE_ENUM(Type, eea652160841c248);
-CAPNP_DECLARE_SCHEMA(eacf075818b0a2bb);
 
 }  // namespace schemas
 }  // namespace capnp
@@ -38,7 +37,6 @@ struct Person {
   class Builder;
   class Pipeline;
   struct PhoneNumber;
-  struct Employment;
 
   struct _capnpPrivate {
     CAPNP_DECLARE_STRUCT_HEADER(86af4bd6a08fbde3, 1, 10)
@@ -59,27 +57,6 @@ struct Person::PhoneNumber {
 
   struct _capnpPrivate {
     CAPNP_DECLARE_STRUCT_HEADER(e7067680945dcafc, 1, 0)
-    #if !CAPNP_LITE
-    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
-    #endif  // !CAPNP_LITE
-  };
-};
-
-struct Person::Employment {
-  Employment() = delete;
-
-  class Reader;
-  class Builder;
-  class Pipeline;
-  enum Which: uint16_t {
-    UNEMPLOYED,
-    EMPLOYER,
-    SCHOOL,
-    SELF_EMPLOYED,
-  };
-
-  struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(eacf075818b0a2bb, 1, 10)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -116,7 +93,8 @@ public:
   inline bool hasPhones() const;
   inline  ::capnp::List< ::Person::PhoneNumber,  ::capnp::Kind::STRUCT>::Reader getPhones() const;
 
-  inline typename Employment::Reader getEmployment() const;
+  inline bool hasScores() const;
+  inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Reader getScores() const;
 
   inline bool hasAddress() const;
   inline  ::capnp::Text::Reader getAddress() const;
@@ -188,8 +166,13 @@ public:
   inline void adoptPhones(::capnp::Orphan< ::capnp::List< ::Person::PhoneNumber,  ::capnp::Kind::STRUCT>>&& value);
   inline ::capnp::Orphan< ::capnp::List< ::Person::PhoneNumber,  ::capnp::Kind::STRUCT>> disownPhones();
 
-  inline typename Employment::Builder getEmployment();
-  inline typename Employment::Builder initEmployment();
+  inline bool hasScores();
+  inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Builder getScores();
+  inline void setScores( ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Reader value);
+  inline void setScores(::kj::ArrayPtr<const float> value);
+  inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Builder initScores(unsigned int size);
+  inline void adoptScores(::capnp::Orphan< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>&& value);
+  inline ::capnp::Orphan< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>> disownScores();
 
   inline bool hasAddress();
   inline  ::capnp::Text::Builder getAddress();
@@ -251,7 +234,6 @@ public:
   inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
       : _typeless(kj::mv(typeless)) {}
 
-  inline typename Employment::Pipeline getEmployment();
 private:
   ::capnp::AnyPointer::Pipeline _typeless;
   friend class ::capnp::PipelineHook;
@@ -328,117 +310,6 @@ private:
 class Person::PhoneNumber::Pipeline {
 public:
   typedef PhoneNumber Pipelines;
-
-  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
-  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
-      : _typeless(kj::mv(typeless)) {}
-
-private:
-  ::capnp::AnyPointer::Pipeline _typeless;
-  friend class ::capnp::PipelineHook;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::ToDynamic_;
-};
-#endif  // !CAPNP_LITE
-
-class Person::Employment::Reader {
-public:
-  typedef Employment Reads;
-
-  Reader() = default;
-  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
-
-  inline ::capnp::MessageSize totalSize() const {
-    return _reader.totalSize().asPublic();
-  }
-
-#if !CAPNP_LITE
-  inline ::kj::StringTree toString() const {
-    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
-  }
-#endif  // !CAPNP_LITE
-
-  inline Which which() const;
-  inline bool isUnemployed() const;
-  inline  ::capnp::Void getUnemployed() const;
-
-  inline bool isEmployer() const;
-  inline bool hasEmployer() const;
-  inline  ::capnp::Text::Reader getEmployer() const;
-
-  inline bool isSchool() const;
-  inline bool hasSchool() const;
-  inline  ::capnp::Text::Reader getSchool() const;
-
-  inline bool isSelfEmployed() const;
-  inline  ::capnp::Void getSelfEmployed() const;
-
-private:
-  ::capnp::_::StructReader _reader;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::ToDynamic_;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::_::PointerHelpers;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::List;
-  friend class ::capnp::MessageBuilder;
-  friend class ::capnp::Orphanage;
-};
-
-class Person::Employment::Builder {
-public:
-  typedef Employment Builds;
-
-  Builder() = delete;  // Deleted to discourage incorrect usage.
-                       // You can explicitly initialize to nullptr instead.
-  inline Builder(decltype(nullptr)) {}
-  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
-  inline operator Reader() const { return Reader(_builder.asReader()); }
-  inline Reader asReader() const { return *this; }
-
-  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
-#if !CAPNP_LITE
-  inline ::kj::StringTree toString() const { return asReader().toString(); }
-#endif  // !CAPNP_LITE
-
-  inline Which which();
-  inline bool isUnemployed();
-  inline  ::capnp::Void getUnemployed();
-  inline void setUnemployed( ::capnp::Void value = ::capnp::VOID);
-
-  inline bool isEmployer();
-  inline bool hasEmployer();
-  inline  ::capnp::Text::Builder getEmployer();
-  inline void setEmployer( ::capnp::Text::Reader value);
-  inline  ::capnp::Text::Builder initEmployer(unsigned int size);
-  inline void adoptEmployer(::capnp::Orphan< ::capnp::Text>&& value);
-  inline ::capnp::Orphan< ::capnp::Text> disownEmployer();
-
-  inline bool isSchool();
-  inline bool hasSchool();
-  inline  ::capnp::Text::Builder getSchool();
-  inline void setSchool( ::capnp::Text::Reader value);
-  inline  ::capnp::Text::Builder initSchool(unsigned int size);
-  inline void adoptSchool(::capnp::Orphan< ::capnp::Text>&& value);
-  inline ::capnp::Orphan< ::capnp::Text> disownSchool();
-
-  inline bool isSelfEmployed();
-  inline  ::capnp::Void getSelfEmployed();
-  inline void setSelfEmployed( ::capnp::Void value = ::capnp::VOID);
-
-private:
-  ::capnp::_::StructBuilder _builder;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::ToDynamic_;
-  friend class ::capnp::Orphanage;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::_::PointerHelpers;
-};
-
-#if !CAPNP_LITE
-class Person::Employment::Pipeline {
-public:
-  typedef Employment Pipelines;
 
   inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
   inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
@@ -570,22 +441,44 @@ inline ::capnp::Orphan< ::capnp::List< ::Person::PhoneNumber,  ::capnp::Kind::ST
       ::capnp::bounded<2>() * ::capnp::POINTERS));
 }
 
-inline typename Person::Employment::Reader Person::Reader::getEmployment() const {
-  return typename Person::Employment::Reader(_reader);
+inline bool Person::Reader::hasScores() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
 }
-inline typename Person::Employment::Builder Person::Builder::getEmployment() {
-  return typename Person::Employment::Builder(_builder);
+inline bool Person::Builder::hasScores() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
 }
-#if !CAPNP_LITE
-inline typename Person::Employment::Pipeline Person::Pipeline::getEmployment() {
-  return typename Person::Employment::Pipeline(_typeless.noop());
+inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Reader Person::Reader::getScores() const {
+  return ::capnp::_::PointerHelpers< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>::get(_reader.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
 }
-#endif  // !CAPNP_LITE
-inline typename Person::Employment::Builder Person::Builder::initEmployment() {
-  _builder.setDataField< ::uint16_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
-  _builder.getPointerField(::capnp::bounded<3>() * ::capnp::POINTERS).clear();
-  return typename Person::Employment::Builder(_builder);
+inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Builder Person::Builder::getScores() {
+  return ::capnp::_::PointerHelpers< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>::get(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
 }
+inline void Person::Builder::setScores( ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>::set(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), value);
+}
+inline void Person::Builder::setScores(::kj::ArrayPtr<const float> value) {
+  ::capnp::_::PointerHelpers< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>::set(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>::Builder Person::Builder::initScores(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>::init(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), size);
+}
+inline void Person::Builder::adoptScores(
+    ::capnp::Orphan< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>::adopt(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>> Person::Builder::disownScores() {
+  return ::capnp::_::PointerHelpers< ::capnp::List<float,  ::capnp::Kind::PRIMITIVE>>::disown(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
+}
+
 inline bool Person::Reader::hasAddress() const {
   return !_reader.getPointerField(
       ::capnp::bounded<4>() * ::capnp::POINTERS).isNull();
@@ -816,175 +709,6 @@ inline  ::Person::PhoneNumber::Type Person::PhoneNumber::Builder::getType() {
 inline void Person::PhoneNumber::Builder::setType( ::Person::PhoneNumber::Type value) {
   _builder.setDataField< ::Person::PhoneNumber::Type>(
       ::capnp::bounded<2>() * ::capnp::ELEMENTS, value);
-}
-
-inline  ::Person::Employment::Which Person::Employment::Reader::which() const {
-  return _reader.getDataField<Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
-}
-inline  ::Person::Employment::Which Person::Employment::Builder::which() {
-  return _builder.getDataField<Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
-}
-
-inline bool Person::Employment::Reader::isUnemployed() const {
-  return which() == Person::Employment::UNEMPLOYED;
-}
-inline bool Person::Employment::Builder::isUnemployed() {
-  return which() == Person::Employment::UNEMPLOYED;
-}
-inline  ::capnp::Void Person::Employment::Reader::getUnemployed() const {
-  KJ_IREQUIRE((which() == Person::Employment::UNEMPLOYED),
-              "Must check which() before get()ing a union member.");
-  return _reader.getDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
-}
-
-inline  ::capnp::Void Person::Employment::Builder::getUnemployed() {
-  KJ_IREQUIRE((which() == Person::Employment::UNEMPLOYED),
-              "Must check which() before get()ing a union member.");
-  return _builder.getDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
-}
-inline void Person::Employment::Builder::setUnemployed( ::capnp::Void value) {
-  _builder.setDataField<Person::Employment::Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Person::Employment::UNEMPLOYED);
-  _builder.setDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
-}
-
-inline bool Person::Employment::Reader::isEmployer() const {
-  return which() == Person::Employment::EMPLOYER;
-}
-inline bool Person::Employment::Builder::isEmployer() {
-  return which() == Person::Employment::EMPLOYER;
-}
-inline bool Person::Employment::Reader::hasEmployer() const {
-  if (which() != Person::Employment::EMPLOYER) return false;
-  return !_reader.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
-}
-inline bool Person::Employment::Builder::hasEmployer() {
-  if (which() != Person::Employment::EMPLOYER) return false;
-  return !_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
-}
-inline  ::capnp::Text::Reader Person::Employment::Reader::getEmployer() const {
-  KJ_IREQUIRE((which() == Person::Employment::EMPLOYER),
-              "Must check which() before get()ing a union member.");
-  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS));
-}
-inline  ::capnp::Text::Builder Person::Employment::Builder::getEmployer() {
-  KJ_IREQUIRE((which() == Person::Employment::EMPLOYER),
-              "Must check which() before get()ing a union member.");
-  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS));
-}
-inline void Person::Employment::Builder::setEmployer( ::capnp::Text::Reader value) {
-  _builder.setDataField<Person::Employment::Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Person::Employment::EMPLOYER);
-  ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS), value);
-}
-inline  ::capnp::Text::Builder Person::Employment::Builder::initEmployer(unsigned int size) {
-  _builder.setDataField<Person::Employment::Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Person::Employment::EMPLOYER);
-  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS), size);
-}
-inline void Person::Employment::Builder::adoptEmployer(
-    ::capnp::Orphan< ::capnp::Text>&& value) {
-  _builder.setDataField<Person::Employment::Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Person::Employment::EMPLOYER);
-  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS), kj::mv(value));
-}
-inline ::capnp::Orphan< ::capnp::Text> Person::Employment::Builder::disownEmployer() {
-  KJ_IREQUIRE((which() == Person::Employment::EMPLOYER),
-              "Must check which() before get()ing a union member.");
-  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS));
-}
-
-inline bool Person::Employment::Reader::isSchool() const {
-  return which() == Person::Employment::SCHOOL;
-}
-inline bool Person::Employment::Builder::isSchool() {
-  return which() == Person::Employment::SCHOOL;
-}
-inline bool Person::Employment::Reader::hasSchool() const {
-  if (which() != Person::Employment::SCHOOL) return false;
-  return !_reader.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
-}
-inline bool Person::Employment::Builder::hasSchool() {
-  if (which() != Person::Employment::SCHOOL) return false;
-  return !_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
-}
-inline  ::capnp::Text::Reader Person::Employment::Reader::getSchool() const {
-  KJ_IREQUIRE((which() == Person::Employment::SCHOOL),
-              "Must check which() before get()ing a union member.");
-  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS));
-}
-inline  ::capnp::Text::Builder Person::Employment::Builder::getSchool() {
-  KJ_IREQUIRE((which() == Person::Employment::SCHOOL),
-              "Must check which() before get()ing a union member.");
-  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS));
-}
-inline void Person::Employment::Builder::setSchool( ::capnp::Text::Reader value) {
-  _builder.setDataField<Person::Employment::Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Person::Employment::SCHOOL);
-  ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS), value);
-}
-inline  ::capnp::Text::Builder Person::Employment::Builder::initSchool(unsigned int size) {
-  _builder.setDataField<Person::Employment::Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Person::Employment::SCHOOL);
-  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS), size);
-}
-inline void Person::Employment::Builder::adoptSchool(
-    ::capnp::Orphan< ::capnp::Text>&& value) {
-  _builder.setDataField<Person::Employment::Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Person::Employment::SCHOOL);
-  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS), kj::mv(value));
-}
-inline ::capnp::Orphan< ::capnp::Text> Person::Employment::Builder::disownSchool() {
-  KJ_IREQUIRE((which() == Person::Employment::SCHOOL),
-              "Must check which() before get()ing a union member.");
-  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
-      ::capnp::bounded<3>() * ::capnp::POINTERS));
-}
-
-inline bool Person::Employment::Reader::isSelfEmployed() const {
-  return which() == Person::Employment::SELF_EMPLOYED;
-}
-inline bool Person::Employment::Builder::isSelfEmployed() {
-  return which() == Person::Employment::SELF_EMPLOYED;
-}
-inline  ::capnp::Void Person::Employment::Reader::getSelfEmployed() const {
-  KJ_IREQUIRE((which() == Person::Employment::SELF_EMPLOYED),
-              "Must check which() before get()ing a union member.");
-  return _reader.getDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
-}
-
-inline  ::capnp::Void Person::Employment::Builder::getSelfEmployed() {
-  KJ_IREQUIRE((which() == Person::Employment::SELF_EMPLOYED),
-              "Must check which() before get()ing a union member.");
-  return _builder.getDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
-}
-inline void Person::Employment::Builder::setSelfEmployed( ::capnp::Void value) {
-  _builder.setDataField<Person::Employment::Which>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Person::Employment::SELF_EMPLOYED);
-  _builder.setDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
 }
 
 

@@ -17,8 +17,8 @@ message Person {
     optional uint32 number = 1;
     optional PhoneType type = 2 [default = HOME];
   }
-
-  repeated PhoneNumber phones = 4;
+  repeated float scores = 16 [packed=true];
+  repeated PhoneNumber phones = 4;  
   optional string address = 8;
   optional string nationality = 9;
   optional string bitrthday = 10;

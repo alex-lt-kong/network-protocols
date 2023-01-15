@@ -414,6 +414,7 @@ class Person PROTOBUF_FINAL :
 
   enum : int {
     kPhonesFieldNumber = 4,
+    kScoresFieldNumber = 16,
     kNameFieldNumber = 1,
     kEmailFieldNumber = 3,
     kAddressFieldNumber = 8,
@@ -441,6 +442,28 @@ class Person PROTOBUF_FINAL :
   ::pb_test::Person_PhoneNumber* add_phones();
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::pb_test::Person_PhoneNumber >&
       phones() const;
+
+  // repeated float scores = 16 [packed = true];
+  int scores_size() const;
+  private:
+  int _internal_scores_size() const;
+  public:
+  void clear_scores();
+  private:
+  float _internal_scores(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      _internal_scores() const;
+  void _internal_add_scores(float value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      _internal_mutable_scores();
+  public:
+  float scores(int index) const;
+  void set_scores(int index, float value);
+  void add_scores(float value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      scores() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      mutable_scores();
 
   // optional string name = 1;
   bool has_name() const;
@@ -697,6 +720,8 @@ class Person PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::pb_test::Person_PhoneNumber > phones_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float > scores_;
+  mutable std::atomic<int> _scores_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr email_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr address_;
@@ -992,6 +1017,53 @@ inline void Person::unsafe_arena_set_allocated_email(
   email_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       email, GetArena());
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:pb_test.Person.email)
+}
+
+// repeated float scores = 16 [packed = true];
+inline int Person::_internal_scores_size() const {
+  return scores_.size();
+}
+inline int Person::scores_size() const {
+  return _internal_scores_size();
+}
+inline void Person::clear_scores() {
+  scores_.Clear();
+}
+inline float Person::_internal_scores(int index) const {
+  return scores_.Get(index);
+}
+inline float Person::scores(int index) const {
+  // @@protoc_insertion_point(field_get:pb_test.Person.scores)
+  return _internal_scores(index);
+}
+inline void Person::set_scores(int index, float value) {
+  scores_.Set(index, value);
+  // @@protoc_insertion_point(field_set:pb_test.Person.scores)
+}
+inline void Person::_internal_add_scores(float value) {
+  scores_.Add(value);
+}
+inline void Person::add_scores(float value) {
+  _internal_add_scores(value);
+  // @@protoc_insertion_point(field_add:pb_test.Person.scores)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+Person::_internal_scores() const {
+  return scores_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+Person::scores() const {
+  // @@protoc_insertion_point(field_list:pb_test.Person.scores)
+  return _internal_scores();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+Person::_internal_mutable_scores() {
+  return &scores_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+Person::mutable_scores() {
+  // @@protoc_insertion_point(field_mutable_list:pb_test.Person.scores)
+  return _internal_mutable_scores();
 }
 
 // repeated .pb_test.Person.PhoneNumber phones = 4;
