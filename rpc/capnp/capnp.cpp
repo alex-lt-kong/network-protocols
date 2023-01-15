@@ -2,10 +2,10 @@
 
 using namespace std;
 
-person_struct decodeMessageToStructCapnp(kj::Array<capnp::word>& encoded_arr) {
+person_struct decodeMessageToStructCapnp(kj::Array<capnp::word>& byte_msg) {
     person_struct p;
 
-    capnp::FlatArrayMessageReader msg_builder(encoded_arr);
+    capnp::FlatArrayMessageReader msg_builder(byte_msg);
     Person::Reader person = msg_builder.getRoot<Person>();
     p.id = person.getId();
     p.name = person.getName().cStr();
