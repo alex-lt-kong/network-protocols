@@ -9,7 +9,7 @@
 #include <string>
 #include <stdlib.h>
 #include <time.h>
-#include "../rpc.h"
+#include "../serialization.h"
 #include "person.capnp.h"
 
 using namespace std;

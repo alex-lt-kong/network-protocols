@@ -1,9 +1,12 @@
 OPTS = -O3 -Wall -pedantic -Wc++-compat -Wextra 
 CC = clang++
-main: serialization.out zmq-server.out zmq-client.out
+main: serialization-benchmark.out zmq-server.out zmq-client.out
 
-serialization.out: serialization.cpp protobuf.o person.pb.o capnp.o
-	$(CC) serialization.cpp protobuf.o person.pb.o capnp.o -o serialization.out $(OPT) -lcapnp -lkj -lprotobuf
+serialization-benchmark.out: serialization-benchmark.cpp serialization.o protobuf.o person.pb.o capnp.o
+	$(CC) serialization-benchmark.cpp protobuf.o serialization.o person.pb.o capnp.o -o serialization-benchmark.out $(OPT) -lcapnp -lkj -lprotobuf
+
+serialization.o: serialization.cpp serialization.h
+	$(CC) serialization.cpp -c $(OPT)
 
 protobuf.o: ./protobuf/protobuf.cpp
 	$(CC) -c ./protobuf/protobuf.cpp $(OPT)

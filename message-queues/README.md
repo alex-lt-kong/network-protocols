@@ -1,6 +1,6 @@
 # Message Queues
 
-* We will test message queues, such as ZeroMQ, on top of a few few popular
+* We will test message queues, such as ZeroMQ, on top of a few popular
 serialization libraries including Protobuf and Capnproto.
   * `apt install protobuf-compiler`
   * [Capnproto](https://capnproto.org/install.html)
@@ -10,7 +10,7 @@ serialization libraries including Protobuf and Capnproto.
 * Question: Protobuf uses variable-length encoding while Canproto uses
 fixed-length encoding?
   * Protobuf: https://developers.google.com/protocol-buffers/docs/proto
-
+  * https://stackoverflow.com/questions/61347404/protobuf-vs-flatbuffers-vs-capn-proto-which-is-faster
 
 ## Serialization libraries comparison
 
