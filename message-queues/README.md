@@ -1,14 +1,18 @@
-# RPC Frameworks
+# Message Queues
 
-* We will test a few popular frameworks including Protobuf and Capnproto.
-  * `apt-get install protobuf-compiler`
+* We will test message queues, such as ZeroMQ, on top of a few few popular
+serialization libraries including Protobuf and Capnproto.
+  * `apt install protobuf-compiler`
+  * [Capnproto](https://capnproto.org/install.html)
+  * `apt install libzmq3-dev`
+  * [zmqpp](https://github.com/zeromq/zmqpp)
 
-* Question: Protobuf uses variable-length encoding while Canproto uses fixed-length
-encoding?
+* Question: Protobuf uses variable-length encoding while Canproto uses
+fixed-length encoding?
   * Protobuf: https://developers.google.com/protocol-buffers/docs/proto
 
 
-## Comparison
+## Serialization libraries comparison
 
 ```
 sample data are prepared

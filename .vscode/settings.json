@@ -41,6 +41,8 @@
         "vector": "cpp",
         "utility": "cpp",
         "thread": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "array": "cpp",
+        "ranges": "cpp"
     }
 }
