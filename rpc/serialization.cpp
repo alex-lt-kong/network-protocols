@@ -16,6 +16,44 @@
 
 using namespace std;
 
+
+string getStringRepresentationOfPerson(person_struct p) {
+    string str_repr;
+    str_repr.reserve(1024);
+    str_repr.append("Id: ");
+    str_repr.append(to_string(p.id));
+    str_repr.append("\nName: ");
+    str_repr.append(p.name);
+    str_repr.append("\nEmail: ");
+    str_repr.append(p.email);
+    str_repr.append("\nPhone: ");
+    str_repr.append(to_string(p.phone_number));
+    if (p.phone_type == 0) {
+        str_repr.append("(mobile)");
+    } else if (p.phone_type == 1) {
+        str_repr.append("(home)");
+    } else {
+        str_repr.append("(work)");
+    }
+    
+    str_repr.append("\nNationality: ");
+    str_repr.append(p.nationality);
+    str_repr.append("\nAddress: ");
+    str_repr.append(p.address);
+    str_repr.append("\nBirthday: ");
+    str_repr.append(p.birthday);
+    str_repr.append("\nSelf introduction: ");
+    str_repr.append(p.self_introduction);
+    str_repr.append("\nScores: [");
+    for (int i = 0; i< sizeof(p.scores)/sizeof(p.scores[0]); ++i) {        
+        str_repr.append(to_string(p.scores[i]));
+        str_repr.append(",");
+    }
+    str_repr.append("]\n");
+    return str_repr;
+  
+}
+
 float getRandomFloat(float a, float b) {
     float random = ((float) rand()) / (float) RAND_MAX;
     float diff = b - a;
@@ -87,7 +125,7 @@ int main() {
     }
     
     vector<kj::Array<capnp::word>> byte_msgs_capnp{TEST_SIZE};
-    vector<string> str_reprs{TEST_SIZE};
+    vector<person_struct> deserialized_persons{TEST_SIZE};
     printf("sample data are prepared\n");
     clock_t start, diff;
 
@@ -103,16 +141,18 @@ int main() {
          << "us per record)" << endl;
     start = clock();
     for (int i = 0; i < TEST_SIZE; ++i) {
-        str_reprs[i] = decodeMessageToStructCapnp(byte_msgs_capnp[i].asChars());
+        deserialized_persons[i] = decodeMessageToStructCapnp(
+            byte_msgs_capnp[i].asChars());
     }
     diff = clock() - start;
     cout << "Deserializing " << TEST_SIZE << " items takes "
          << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
          << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
          << "us per record)" << endl;
-    cout << "\n--- Sample item so that compiler can't just optimize the "
-         << "calculation away ---\n"
-         << str_reprs[rand() % str_reprs.size()] << "\n\n" << endl;
+    cout << "\n--- Sample item ---\n"
+         << getStringRepresentationOfPerson(
+             deserialized_persons[rand() % deserialized_persons.size()])
+         << "\n\n" << endl;
 
     vector<vector<uint8_t>> byte_msgs_protobuf{TEST_SIZE};
     start = clock();
@@ -127,16 +167,18 @@ int main() {
          << "us per record)" << endl;
     start = clock();
     for (int i = 0; i < TEST_SIZE; ++i) {
-        decodeMessageToStructProtoBuf(byte_msgs_protobuf[i]);
+        deserialized_persons[i] = decodeMessageToStructProtoBuf(
+            byte_msgs_protobuf[i]);
     }
     diff = clock() - start;
     cout << "Deserializing " << TEST_SIZE << " items takes "
          << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
          << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
          << "us per record)" << endl;
-    cout << "\n--- Sample item so that compiler can't just optimize the "
-         << "calculation away ---\n"
-         << str_reprs[rand() % str_reprs.size()] << endl;
+    cout << "\n--- Sample item ---\n"
+         << getStringRepresentationOfPerson(
+             deserialized_persons[rand() % deserialized_persons.size()])
+         << "\n\n" << endl;
 
 
     return 0;

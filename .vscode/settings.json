@@ -39,6 +39,8 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "vector": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "thread": "cpp",
+        "fstream": "cpp"
     }
 }
