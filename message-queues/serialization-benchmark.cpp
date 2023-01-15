@@ -19,10 +19,9 @@ using namespace std;
 int main() {
     srand(time(NULL));
     cout << "Generating random data..." << endl;
-    constexpr size_t TEST_SIZE = 5 * 1000 * 1000;
     vector<kj::Array<capnp::word>> byte_msgs_capnp{TEST_SIZE};
     vector<person_struct> deserialized_persons{TEST_SIZE};
-    vector<person_struct> persons = generateRandomData(TEST_SIZE);
+    vector<person_struct> persons = generateRandomData();
     cout << "Random data are prepared\n\n"
          << "===== Testing CapnProto =====" << endl;
     clock_t start, diff;

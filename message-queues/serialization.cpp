@@ -5,7 +5,7 @@
 
 using namespace std;
 
-vector<person_struct> generateRandomData(size_t TEST_SIZE) {
+vector<person_struct> generateRandomData() {
     
     vector<string> names{
         "Alice", "Bob", "Charlie", "Dave", "Ella", "Frankenstein"

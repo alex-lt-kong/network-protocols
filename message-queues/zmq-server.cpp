@@ -10,6 +10,8 @@
 #include <zmqpp/zmqpp.hpp>
 #include <string>
 #include <iostream>
+#include "./capnp/capnp.h"
+#include "serialization.h"
 
 using namespace std;
 
@@ -26,18 +28,24 @@ int main(int argc, char *argv[]) {
   // bind to the socket
   cout << "Binding to " << endpoint << "..." << endl;
   socket.bind(endpoint);
-
-  // receive the message
-  cout << "Receiving message..." << endl;
-  zmqpp::message message;
-  // decompose the message 
-  socket.receive(message);
-  cout << "message received: [" << message.size(0) << "]" << endl;
-  cout << "message received: [" << message.get(0) << "]" << endl;
-  //string text;
-  //int number;
-  //message >> text >> number;
+  zmqpp::message_t message;
+  vector<person_struct> persons{TEST_SIZE};
+  for (size_t i = 0; i < TEST_SIZE; ++i) {    
+    // decompose the message 
+    socket.receive(message);
+    cout << "message.size(): " << message.size(0) << endl;
+    auto d = message.get(0);
+    auto t = reinterpret_cast<uint8_t*>((char*)(d.data()));
+    for (int i = 0; i < message.size(0); ++i)
+        printf("%x(%d) ", t[i], t[i]);
+    printf("\n");
+    auto received_array = kj::ArrayPtr<capnp::word>(reinterpret_cast<capnp::word*>(t), message.size(0) * sizeof(capnp::word));
+    capnp::FlatArrayMessageReader msg_builder(received_array);
+    Person::Reader person = msg_builder.getRoot<Person>();
+    cout << "message received: person.getName().cStr() [" << person.getEmail().cStr() << "]" << endl;
+  }
 
   //cout << "Received text:\"" << text << "\" and a number: " << number << endl;
   cout << "Finished." << endl;
 }
+

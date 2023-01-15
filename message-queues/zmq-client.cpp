@@ -13,6 +13,7 @@
 #include "serialization.h"
 #include "./capnp/capnp.h"
 
+
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -34,18 +35,29 @@ int main(int argc, char *argv[]) {
   // send a message
   cout << "Sending text and a number..." << endl;
   
-  
-  
-  constexpr size_t TEST_SIZE = 1;
-  vector<person_struct> persons = generateRandomData(TEST_SIZE);
-  string test = "jello";
+
+  vector<person_struct> persons = generateRandomData();
   for (int i = 0; i < TEST_SIZE; ++i) {
       auto byte_msg = encodeStructToBytesCapnp(persons[i]);
-      cout << byte_msg.size() << endl;
-      zmqpp::message_t msg;
-      msg.add_raw(byte_msg.asChars().begin(), byte_msg.size());
-      cout << msg.size(0) << endl;
-      socket.send(msg);
+      cout << "byte_msg.size(): " << byte_msg.size() << endl;
+      zmqpp::message msg;
+      msg.add_raw((byte_msg.asChars().begin()), byte_msg.asChars().size());
+
+      for (int i = 0; i < byte_msg.asChars().size(); ++i)
+          printf("%x(%d) ", byte_msg.asBytes().begin()[i], byte_msg.asBytes().begin()[i]);
+      printf("\n??");
+      cout << endl;
+      auto d = msg.get(0);
+      auto t = reinterpret_cast<uint8_t*>((char*)(d.data()));
+
+      for (int i = 0; i < msg.size(0) * sizeof(capnp::word); ++i)
+          printf("%x(%d) ", t[i], t[i]);
+      cout << "byte_msg.asChars().size(): " << byte_msg.asChars().size() << " msg.size(0) :" << msg.size(0) << endl;
+      auto received_array = kj::ArrayPtr<capnp::word>(reinterpret_cast<capnp::word*>(t), msg.size(0) * sizeof(capnp::word));
+    capnp::FlatArrayMessageReader msg_builder(received_array);
+    Person::Reader person = msg_builder.getRoot<Person>();
+    cout << "message received: person.getName().cStr() [" << person.getName().cStr() << "]" << endl;
+    socket.send(msg);
   }
   cout << "Sent message." << endl;
   cout << "Finished." << endl;

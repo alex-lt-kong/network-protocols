@@ -8,8 +8,8 @@ serialization-benchmark.out: serialization-benchmark.cpp serialization.o protobu
 zmq-client.out:zmq-client.cpp serialization.o capnp.o
 	$(CC) zmq-client.cpp serialization.o capnp.o -o zmq-client.out -lpthread -lzmqpp -lzmq -lsodium -lcapnp -lkj $(OPT)
 
-zmq-server.out:zmq-server.cpp
-	$(CC) zmq-server.cpp -o zmq-server.out -lpthread -lzmqpp -lzmq -lsodium  $(OPT)
+zmq-server.out:zmq-server.cpp serialization.o capnp.o
+	$(CC) zmq-server.cpp  serialization.o capnp.o -o zmq-server.out -lpthread -lzmqpp -lzmq -lsodium -lcapnp -lkj $(OPT)
 
 serialization.o: serialization.cpp serialization.h
 	$(CC) serialization.cpp -c $(OPT)

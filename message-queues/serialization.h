@@ -17,6 +17,8 @@
 
 using namespace std;
 
+#define TEST_SIZE 5UL
+
 struct person_struct {
     uint32_t id;
     string name;
@@ -35,6 +37,6 @@ struct person_struct {
 
 string getStringRepresentationOfPerson(person_struct p);
 float getRandomFloat(float a, float b);
-vector<person_struct> generateRandomData(size_t TEST_SIZE);
+vector<person_struct> generateRandomData();
 
 #endif

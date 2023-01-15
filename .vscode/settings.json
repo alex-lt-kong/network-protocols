@@ -43,6 +43,9 @@
         "thread": "cpp",
         "fstream": "cpp",
         "array": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "memory": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp"
     }
 }
