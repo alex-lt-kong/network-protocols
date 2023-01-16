@@ -17,48 +17,43 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-  
-  
-  const string endpoint = "tcp://localhost:4242";
+    
+    
+    const string endpoint = "tcp://localhost:4242";
 
-  // initialize the 0MQ context
-  zmqpp::context context;
+    // initialize the 0MQ context
+    zmqpp::context context;
 
-  // generate a push socket
-  zmqpp::socket_type type = zmqpp::socket_type::push;
-  zmqpp::socket socket (context, type);
+    // generate a push socket
+    zmqpp::socket_type type = zmqpp::socket_type::push;
+    zmqpp::socket socket (context, type);
 
-  // open the connection
-  cout << "Opening connection to " << endpoint << "..." << endl;
-  socket.connect(endpoint);
+    // open the connection
+    cout << "Opening connection to " << endpoint << "..." << endl;
+    socket.connect(endpoint);
 
-  // send a message
-  cout << "Sending text and a number..." << endl;
-  
 
-  vector<person_struct> persons = generateRandomData();
-  for (int i = 0; i < TEST_SIZE; ++i) {
-      auto byte_msg = encodeStructToBytesCapnp(persons[i]);
-      cout << "byte_msg.size(): " << byte_msg.size() << endl;
-      zmqpp::message msg;
-      msg.add_raw((byte_msg.asChars().begin()), byte_msg.asChars().size());
-
-      for (int i = 0; i < byte_msg.asChars().size(); ++i)
-          printf("%x(%d) ", byte_msg.asBytes().begin()[i], byte_msg.asBytes().begin()[i]);
-      printf("\n??");
-      cout << endl;
-      auto d = msg.get(0);
-      auto t = reinterpret_cast<uint8_t*>((char*)(d.data()));
-
-      for (int i = 0; i < msg.size(0) * sizeof(capnp::word); ++i)
-          printf("%x(%d) ", t[i], t[i]);
-      cout << "byte_msg.asChars().size(): " << byte_msg.asChars().size() << " msg.size(0) :" << msg.size(0) << endl;
-      auto received_array = kj::ArrayPtr<capnp::word>(reinterpret_cast<capnp::word*>(t), msg.size(0) * sizeof(capnp::word));
-    capnp::FlatArrayMessageReader msg_builder(received_array);
-    Person::Reader person = msg_builder.getRoot<Person>();
-    cout << "message received: person.getName().cStr() [" << person.getName().cStr() << "]" << endl;
-    socket.send(msg);
-  }
-  cout << "Sent message." << endl;
-  cout << "Finished." << endl;
+    
+    
+    clock_t start, diff;
+    start = clock();
+    cout << "Filling " << TEST_SIZE << " items with random data..." << endl;
+    vector<person_struct> persons = generateRandomData();
+    vector<kj::Array<capnp::word>> byte_msgs_capnp(TEST_SIZE);
+    cout << "Serializing " << TEST_SIZE << " items for ZeroMQ..." << endl;
+    for (int i = 0; i < TEST_SIZE; ++i) {        
+        byte_msgs_capnp[i] = encodeStructToBytesCapnp(persons[i]);
+    }
+    cout << "Sending " << TEST_SIZE << " items over ZeroMQ..." << endl;
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        zmqpp::message msg;
+        msg.add_raw((byte_msgs_capnp[i].asChars().begin()), byte_msgs_capnp[i].asChars().size());
+        socket.send(msg);
+    }
+    diff = clock() - start;
+    
+    cout << "Serializing   " << TEST_SIZE << " items takes "
+         << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
+         << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
+         << "us per record)" << endl;
 }

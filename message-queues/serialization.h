@@ -17,7 +17,7 @@
 
 using namespace std;
 
-#define TEST_SIZE 5UL
+#define TEST_SIZE 2000000UL
 
 struct person_struct {
     uint32_t id;

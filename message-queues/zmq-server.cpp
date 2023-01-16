@@ -26,26 +26,29 @@ int main(int argc, char *argv[]) {
   zmqpp::socket socket (context, type);
 
   // bind to the socket
-  cout << "Binding to " << endpoint << "..." << endl;
-  socket.bind(endpoint);
+  
   zmqpp::message_t message;
   vector<person_struct> persons{TEST_SIZE};
+  vector<string> messages{TEST_SIZE};
   for (size_t i = 0; i < TEST_SIZE; ++i) {    
-    // decompose the message 
+    messages[i].reserve(256);
+  }
+  cout << "Binding to " << endpoint << "..." << endl;
+  socket.bind(endpoint);
+  for (size_t i = 0; i < TEST_SIZE; ++i) {
     socket.receive(message);
-    cout << "message.size(): " << message.size(0) << endl;
-    auto d = message.get(0);
-    auto t = reinterpret_cast<uint8_t*>((char*)(d.data()));
-    for (int i = 0; i < message.size(0); ++i)
-        printf("%x(%d) ", t[i], t[i]);
-    printf("\n");
-    auto received_array = kj::ArrayPtr<capnp::word>(reinterpret_cast<capnp::word*>(t), message.size(0) * sizeof(capnp::word));
-    capnp::FlatArrayMessageReader msg_builder(received_array);
-    Person::Reader person = msg_builder.getRoot<Person>();
-    cout << "message received: person.getName().cStr() [" << person.getEmail().cStr() << "]" << endl;
+    messages[i] = message.get(0);
   }
 
-  //cout << "Received text:\"" << text << "\" and a number: " << number << endl;
-  cout << "Finished." << endl;
+  for (size_t i = 0; i < TEST_SIZE; ++i) {
+    auto received_array = kj::ArrayPtr<capnp::word>(
+      reinterpret_cast<capnp::word*>((char*)(messages[i].data())),
+      messages[i].size() * sizeof(capnp::word)
+    );
+    persons[i] = decodeMessageToStructCapnp(received_array);
+  }
+
+
+  cout << getStringRepresentationOfPerson(persons[rand() % persons.size()]) << endl;
 }
 
