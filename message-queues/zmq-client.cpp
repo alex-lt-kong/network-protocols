@@ -47,12 +47,12 @@ int main(int argc, char *argv[]) {
     cout << "Sending " << TEST_SIZE << " items over ZeroMQ..." << endl;
     for (int i = 0; i < TEST_SIZE; ++i) {
         zmqpp::message msg;
-        msg.add_raw((byte_msgs_capnp[i].asChars().begin()), byte_msgs_capnp[i].asChars().size());
+        msg.add_nocopy((byte_msgs_capnp[i].asChars().begin()), byte_msgs_capnp[i].asChars().size());
         socket.send(msg);
     }
     diff = clock() - start;
     
-    cout << "Serializing   " << TEST_SIZE << " items takes "
+    cout << "Sending " << TEST_SIZE << " items takes "
          << diff / 1000 << "ms (" << TEST_SIZE * 1000 * 1000 / diff
          << " per sec or " << setprecision(2) << 1.0 * diff / TEST_SIZE
          << "us per record)" << endl;
