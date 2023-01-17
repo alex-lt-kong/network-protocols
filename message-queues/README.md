@@ -1,7 +1,7 @@
 # Message Queues
 
 * We will test message queues, such as ZeroMQ, on top of a few popular
-serialization libraries including Protobuf and Capnproto.
+serialization libraries including ProtoBuf and Capnproto.
   * `apt install protobuf-compiler`
   * [Capnproto](https://capnproto.org/install.html)
   * `apt install libzmq3-dev`
@@ -48,4 +48,33 @@ Birthday: 0001-01-01
 Self introduction: I have done my schooling from Jaipur. For my graduation, I chose Xyz program at Abc University. It was a very enriching experience at the University as not only we were actively involved in practical projects, but also got opportunities to participate in a number of sports and other extra-curricular activities such as plays and skits.
 Scores: [26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,26.923361,]
 
+```
+
+* Let's include C# versions of them, just for fun.
+
+```
+===== Testing CapnProto =====
+sample data are prepared
+Serializing   2000000 items takes 18047 ms (110821.74 records per sec or 9.02 us per record)
+Deserializing 2000000 items takes 10653 ms (187740.54 records per sec or 5.33 us per record)
+--- Sample item ---
+Id: 913228427
+Name: Bob
+E-mail: Bob@outlook.com
+Self-intro: "My name is Lucas Martin, and I enjoy meeting new people and finding ways to help them have an uplifting experience. I have had a variety of customer service opportunities, through which I was able to have fewer returned products and increased repeat customers, when compared with co-workers. I am dedicated, outgoing, and a team player. Who could I speak with in your customer service department about your organization's customer service needs?"
+work: 1887492300
+Scores: [51, 70.6, 22.2, 17.9, 7, 48.3, 22.1, 6.9, 58.2, 69.7, 32.4, 39, 66.8, 53.4, 66.5, 46.8, ] 
+
+
+===== Testing ProtoBuf =====
+sample data are prepared
+Serializing  2000000 items takes 7709 ms (259437.02 records per sec or 3.85 us per record)
+Deserializing 2000000 items takes 20340 ms (98328.42 records per sec or 10.17 us per record)
+--- Sample item ---
+Id: 55666510
+Name: Ella
+E-mail: Ella@icloud.com
+Self-intro: I have moved to this city three months ago. I love the street food here. On weekends, I explore new eating joints. This way, I get to learn the routes of this city and prepare myself professionally. Being a sales professional, my profile requires a lot of traveling.
+Home: 5551212
+Scores: [33.1, 72.5, 47, 47.7, 89.3, 20.5, 57.4, 6.6, 23.8, 21.1, 53.7, 71.2, 92.8, 10.9, 57.8, 2.8, ]   
 ```
