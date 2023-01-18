@@ -39,7 +39,6 @@ void decodeBytesToStructCapnp(T &byte_msg, person_struct& p) {
     p.update_date = person.getUpdateDate().cStr();
     p.creation_date = person.getCreationDate().cStr();
     p.self_introduction = person.getSelfIntroduction().cStr();
-    double sum = 0;
     int i = 0;
     for (float score: person.getScores()) {        
         p.scores[i] = score;
@@ -52,9 +51,8 @@ void decodeBytesToStructsCapnp(T &byte_msg, vector<person_struct>& persons) {
 
     capnp::FlatArrayMessageReader msg_builder(byte_msg);
     University::Reader uni = msg_builder.getRoot<University>();
-    Person::Reader student;
     for (size_t i = 0; i < uni.getStudents().size(); ++i) {
-        student = uni.getStudents()[i];
+        Person::Reader student = uni.getStudents()[i];
         persons[i].id = student.getId();
         persons[i].name = student.getName().cStr();
         persons[i].email = student.getEmail().cStr();

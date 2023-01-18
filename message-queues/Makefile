@@ -1,5 +1,5 @@
-OPTS = -O3 -Wall -pedantic -Wc++-compat -Wextra 
-CC = clang++
+OPTS = -O2 -Wall -pedantic -Wc++-compat -Wextra -funroll-loops
+CC = g++
 main: serialization-benchmark.out zmq-client-single.out zmq-server-single.out zmq-client-multiple.out zmq-server-multiple.out
 
 serialization-benchmark.out: serialization-benchmark.cpp serialization.o protobuf.o pb_test.pb.o capnp.o
@@ -16,16 +16,16 @@ zmq-server-multiple.out:zmq-server-multiple.cpp serialization.o capnp.o
 	$(CC) zmq-server-multiple.cpp  serialization.o capnp.o -o zmq-server-multiple.out -lpthread -lzmqpp -lzmq -lsodium -lcapnp -lkj $(OPT)
 
 serialization.o: serialization.cpp serialization.h
-	$(CC) serialization.cpp -c $(OPT)
+	$(CC) serialization.cpp -c $(OPT) -fPIE
 
 protobuf.o: ./protobuf/protobuf.cpp
-	$(CC) -c ./protobuf/protobuf.cpp $(OPT)
+	$(CC) -c ./protobuf/protobuf.cpp $(OPT) -fPIE
 
 pb_test.pb.o: ./protobuf/pb_test.pb.cc 
-	$(CC) -c ./protobuf/pb_test.pb.cc $(OPT)
+	$(CC) -c ./protobuf/pb_test.pb.cc $(OPT) -fPIE
 
 capnp.o: ./capnp/capnp.cpp ./capnp/capnp.h 
-	$(CC) -c ./capnp/capnp.cpp $(OPT)
+	$(CC) -c ./capnp/capnp.cpp $(OPT) -fPIE
 
 
 clean:

@@ -3,11 +3,9 @@
 using namespace std;
 
 
-void decodeBytesToStructsProtoBuf(vector<uint8_t>& byte_msg, vector<person_struct>& p) {
+void decodeBytesToStructsProtoBuf(string& byte_msg, vector<person_struct>& p) {
     pb_test::University uni;
-    if (!uni.ParseFromArray(byte_msg.data(), byte_msg.size())) {
-      cerr << "Failed!!" << endl;
-    }
+    uni.ParseFromString(byte_msg);
 
     for (int i = 0; i < uni.students_size(); ++i) {
         const pb_test::Person& person = uni.students(i);
@@ -36,13 +34,9 @@ void decodeBytesToStructsProtoBuf(vector<uint8_t>& byte_msg, vector<person_struc
     }
 }
 
-void decodeBytesToStructProtoBuf(vector<uint8_t>& byte_msg, person_struct& p) {
+void decodeBytesToStructProtoBuf(string& byte_msg, person_struct& p) {
     pb_test::Person person;
-    
-
-    if (!person.ParseFromArray(byte_msg.data(), byte_msg.size())) {
-      cerr << "Failed to parse person_." << endl;
-    }
+    person.ParseFromString(byte_msg);
     p.id = person.id();    
     p.name = person.name();    
     p.email = person.email();
@@ -66,7 +60,7 @@ void decodeBytesToStructProtoBuf(vector<uint8_t>& byte_msg, person_struct& p) {
     }
 }
 
-vector<uint8_t> encodeStructToBytesProtoBuf(person_struct& p) {
+void encodeStructToBytesProtoBuf(person_struct& p, string* byte_msg) {
     pb_test::Person person;
     person.set_id(p.id);
     person.set_name(p.name);
@@ -94,15 +88,14 @@ vector<uint8_t> encodeStructToBytesProtoBuf(person_struct& p) {
     person.set_updatedate(p.update_date);
     person.set_selfintroduction(p.self_introduction);
 
-    vector<uint8_t> byte_msg(person.ByteSizeLong()); 
-    person.SerializeToArray(byte_msg.data(), person.ByteSizeLong());
-    return byte_msg;
+    //person.SerializeToArray(byte_msg.data(), person.ByteSizeLong());
+    person.SerializeToString(byte_msg);
     // According to: https://stackoverflow.com/questions/4986673/c11-rvalues-and-move-semantics-confusion-return-statement/4986802#4986802
     // No special treatment is needed--compiler will apply move constructor
     // or other optimization techniques automatically.
 }
 
-vector<uint8_t> encodeStructsToBytesProtoBuf(vector<person_struct>& p, size_t lower, size_t upper) {
+void encodeStructsToBytesProtoBuf(vector<person_struct>& p, size_t lower, size_t upper, string* byte_msg) {
     pb_test::University uni;
     for (size_t i = lower; i < upper; ++i) {
         pb_test::Person* student = uni.add_students();
@@ -134,9 +127,7 @@ vector<uint8_t> encodeStructsToBytesProtoBuf(vector<person_struct>& p, size_t lo
 
     }
     
-    vector<uint8_t> byte_msg(uni.ByteSizeLong()); 
-    uni.SerializeToArray(byte_msg.data(), uni.ByteSizeLong());
-    return byte_msg;
+    uni.SerializeToString(byte_msg);
     // According to: https://stackoverflow.com/questions/4986673/c11-rvalues-and-move-semantics-confusion-return-statement/4986802#4986802
     // No special treatment is needed--compiler will apply move constructor
     // or other optimization techniques automatically.

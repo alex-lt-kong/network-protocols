@@ -10,9 +10,9 @@
 
 using namespace std;
 
-void decodeBytesToStructProtoBuf(vector<uint8_t>& byte_msg, person_struct& p);
-void decodeBytesToStructsProtoBuf(vector<uint8_t>& byte_msg, vector<person_struct>& p);
-vector<uint8_t> encodeStructToBytesProtoBuf(person_struct& p);
-vector<uint8_t> encodeStructsToBytesProtoBuf(vector<person_struct>& p, size_t lower, size_t upper);;
+void decodeBytesToStructProtoBuf(string& byte_msg, person_struct& p);
+void decodeBytesToStructsProtoBuf(string& byte_msg, vector<person_struct>& p);
+void encodeStructToBytesProtoBuf(person_struct& p, string* byte_msg);
+void encodeStructsToBytesProtoBuf(vector<person_struct>& p, size_t lower, size_t upper, string* byte_msg);
 
 #endif
