@@ -10,13 +10,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include "../serialization.h"
-#include "person.capnp.h"
+#include "cp_test.capnp.h"
 
 using namespace std;
 
 template <typename T>
-person_struct decodeMessageToStructCapnp(T &byte_msg) {
-    person_struct p;
+void decodeBytesToStructCapnp(T &byte_msg, person_struct& p) {
 
     capnp::FlatArrayMessageReader msg_builder(byte_msg);
     Person::Reader person = msg_builder.getRoot<Person>();
@@ -46,7 +45,41 @@ person_struct decodeMessageToStructCapnp(T &byte_msg) {
         p.scores[i] = score;
         ++i;
     }
-    return p;  
 }
 
-kj::Array<capnp::word> encodeStructToBytesCapnp(person_struct p);
+template <typename T>
+void decodeBytesToStructsCapnp(T &byte_msg, vector<person_struct>& persons) {
+
+    capnp::FlatArrayMessageReader msg_builder(byte_msg);
+    University::Reader uni = msg_builder.getRoot<University>();
+    Person::Reader student;
+    for (size_t i = 0; i < uni.getStudents().size(); ++i) {
+        student = uni.getStudents()[i];
+        persons[i].id = student.getId();
+        persons[i].name = student.getName().cStr();
+        persons[i].email = student.getEmail().cStr();
+        for (Person::PhoneNumber::Reader phone: student.getPhones()) {
+            persons[i].phone_number = phone.getNumber();
+            
+            if (phone.getType() == Person::PhoneNumber::Type::MOBILE) {
+                persons[i].phone_type = 0;
+            } else if (phone.getType() == Person::PhoneNumber::Type::HOME) {
+                persons[i].phone_type = 1;
+            } else {
+                persons[i].phone_type = 2;
+            }
+        }
+        persons[i].nationality = student.getNationality().cStr();
+        persons[i].address = student.getAddress().cStr();
+        persons[i].birthday = student.getBitrthday().cStr();
+        persons[i].update_date = student.getUpdateDate().cStr();
+        persons[i].creation_date = student.getCreationDate().cStr();
+        persons[i].self_introduction = student.getSelfIntroduction().cStr();
+        for (size_t j = 0; j < student.getScores().size(); ++j) {
+            persons[i].scores[j] = student.getScores()[j];
+        }
+    }
+}
+
+kj::Array<capnp::word> encodeStructToBytesCapnp(person_struct& p);
+kj::Array<capnp::word> encodeStructsToBytesCapnp(vector<person_struct>& p, size_t lower, size_t upper);

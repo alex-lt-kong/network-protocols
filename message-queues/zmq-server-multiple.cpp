@@ -25,30 +25,34 @@ int main(int argc, char *argv[]) {
   zmqpp::socket_type type = zmqpp::socket_type::pull;
   zmqpp::socket socket (context, type);
 
-  // bind to the socket
+  const size_t batch_size = 20;
+  assert (TEST_SIZE % batch_size == 0);
+  const size_t batch_count = TEST_SIZE / batch_size;
   
   zmqpp::message_t message;
-  vector<person_struct> persons{TEST_SIZE};
-  vector<string> messages{TEST_SIZE};
-  for (size_t i = 0; i < TEST_SIZE; ++i) {    
+  vector<vector<person_struct>> persons{batch_count};
+  vector<string> messages{batch_count};
+  for (size_t i = 0; i < batch_count; ++i) {    
     messages[i].reserve(256);
   }
   cout << "Binding to " << endpoint << "..." << endl;
   socket.bind(endpoint);
-  for (size_t i = 0; i < TEST_SIZE; ++i) {
+  for (size_t i = 0; i < batch_count; ++i) {
     socket.receive(message);
     messages[i] = message.get(0);
   }
 
-  for (size_t i = 0; i < TEST_SIZE; ++i) {
+  for (size_t i = 0; i < batch_count; ++i) {
     auto received_array = kj::ArrayPtr<capnp::word>(
       reinterpret_cast<capnp::word*>((char*)(messages[i].data())),
       messages[i].size() * sizeof(capnp::word)
     );
-    persons[i] = decodeMessageToStructCapnp(received_array);
+    persons[i] = vector<person_struct>{batch_size};
+    decodeBytesToStructsCapnp(received_array, persons[i]);
   }
 
 
-  cout << getStringRepresentationOfPerson(persons[rand() % persons.size()]) << endl;
+  cout << getStringRepresentationOfPerson(
+    persons[rand() % persons.size()][rand() % batch_size]) << endl;
 }
 

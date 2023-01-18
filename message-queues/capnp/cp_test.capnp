@@ -1,4 +1,4 @@
-@0xbf811a3d36d4deec;
+@0xbf811a3d36d5aeec;
 
 struct Person {
   id @0 :UInt32;
@@ -7,7 +7,7 @@ struct Person {
   phones @3 :List(PhoneNumber);
   address @5: Text;
   nationality @6: Text;
-  bitrthday @7: Text;
+  birthday @7: Text;
   creationDate @8: Text;
   updateDate @9: Text;
   selfIntroduction @10: Text;
@@ -24,6 +24,6 @@ struct Person {
   }
 }
 
-struct AddressBook {
-  people @0 :List(Person);
+struct University {
+  students @0 :List(Person);
 }

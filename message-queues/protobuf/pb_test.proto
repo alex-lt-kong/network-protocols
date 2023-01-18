@@ -21,8 +21,12 @@ message Person {
   repeated PhoneNumber phones = 4;  
   optional string address = 8;
   optional string nationality = 9;
-  optional string bitrthday = 10;
+  optional string birthday = 10;
   optional string creationDate = 11;
   optional string updateDate = 12;
   optional string selfIntroduction = 13;
+}
+
+message University {
+  repeated Person students = 1;
 }

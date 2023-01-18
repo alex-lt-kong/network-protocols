@@ -1,5 +1,5 @@
 #include "serialization.h"
-#include "./capnp/person.capnp.h"
+#include "./capnp/cp_test.capnp.h"
 #include "./capnp/capnp.h"
 #include "./protobuf/protobuf.h"
 
