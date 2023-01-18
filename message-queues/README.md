@@ -78,3 +78,27 @@ Self-intro: I have moved to this city three months ago. I love the street food h
 Home: 5551212
 Scores: [33.1, 72.5, 47, 47.7, 89.3, 20.5, 57.4, 6.6, 23.8, 21.1, 53.7, 71.2, 92.8, 10.9, 57.8, 2.8, ]   
 ```
+
+## ZeroMQ benchmarking
+
+* `zmq-lient.out`:
+  ```
+  Opening connection to tcp://localhost:4242...
+  Filling 2000000 items with random data...
+  Serializing 2000000 items for ZeroMQ...
+  Sending 2000000 items over ZeroMQ...
+  Sending 2000000 items takes 8045ms (248593 per sec or 4us per record)
+  ```
+* `zmq-server.out`:
+  ```
+  Binding to tcp://*:4242...
+  Id: 1316074830
+  Name: Dave
+  Email: Dave@qq.com
+  Phone: 606587996(work)
+  Nationality: Dominica
+  Address: Rácz üdülőpart 813., Budapest, Nógrád
+  Birthday: 1111-11-11
+  Self introduction: “I am a dedicated person with a family of four. I enjoy reading, and the knowledge and perspective that my reading gives me has strengthened my teaching skills and presentation abilities. I have been successful at raising a family, and I attribute this success to my ability to plan, schedule, and handle many different tasks at once. This flexibility will help me in the classroom, where there are many different personalities and learning styles.”
+  Scores: [33.575752, 65.372322, 52.944416, 56.873955, 99.711571, 49.082947, 22.428776, 75.558029, 26.563078, 45.914017, 80.841522, 71.072426, 39.001526, 41.962193, 16.374081, 5.806120, ]
+  ```

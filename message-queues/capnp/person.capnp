@@ -23,3 +23,7 @@ struct Person {
     }
   }
 }
+
+struct AddressBook {
+  people @0 :List(Person);
+}
