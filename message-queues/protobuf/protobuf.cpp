@@ -3,14 +3,15 @@
 using namespace std;
 
 
-void decodeBytesToStructsProtoBuf(string& byte_msg, vector<person_struct>& p) {
+void decodeBytesToStructsProtoBuf(pb_test::Person& person,
+    string& byte_msg, vector<person_struct>& p) {
     pb_test::University uni;
     uni.ParseFromString(byte_msg);
-
+    person.Clear();
     for (int i = 0; i < uni.students_size(); ++i) {
-        const pb_test::Person& person = uni.students(i);
+        person = uni.students(i);
 
-        p[i].id = person.id();    
+        p[i].id = person.id();
         p[i].name = person.name();    
         p[i].email = person.email();
         const pb_test::Person::PhoneNumber& phone_number = person.phones(0);
@@ -24,7 +25,7 @@ void decodeBytesToStructsProtoBuf(string& byte_msg, vector<person_struct>& p) {
         }    
         p[i].nationality = person.nationality();
         p[i].address = person.address();
-        p[i].birthday = person.bitrthday();
+        p[i].birthday = person.birthday();
         p[i].update_date = person.updatedate();
         p[i].creation_date = person.creationdate();
         p[i].self_introduction = person.selfintroduction();
@@ -34,8 +35,9 @@ void decodeBytesToStructsProtoBuf(string& byte_msg, vector<person_struct>& p) {
     }
 }
 
-void decodeBytesToStructProtoBuf(string& byte_msg, person_struct& p) {
-    pb_test::Person person;
+void decodeBytesToStructProtoBuf(pb_test::Person& person,
+    string& byte_msg, person_struct& p) {
+    ;
     person.ParseFromString(byte_msg);
     p.id = person.id();    
     p.name = person.name();    
@@ -51,7 +53,7 @@ void decodeBytesToStructProtoBuf(string& byte_msg, person_struct& p) {
     }    
     p.nationality = person.nationality();
     p.address = person.address();
-    p.birthday = person.bitrthday();
+    p.birthday = person.birthday();
     p.update_date = person.updatedate();
     p.creation_date = person.creationdate();
     p.self_introduction = person.selfintroduction();
@@ -60,14 +62,14 @@ void decodeBytesToStructProtoBuf(string& byte_msg, person_struct& p) {
     }
 }
 
-void encodeStructToBytesProtoBuf(person_struct& p, string* byte_msg) {
-    pb_test::Person person;
+void encodeStructToBytesProtoBuf(pb_test::Person& person,
+    person_struct& p, string* byte_msg) {
+    person.Clear();
     person.set_id(p.id);
     person.set_name(p.name);
     person.set_email(p.email);
     person.set_address(p.address);
     person.set_nationality(p.nationality);
-
 
     pb_test::Person::PhoneNumber* phone_number = person.add_phones();
     phone_number->set_number(p.phone_number);
@@ -83,7 +85,7 @@ void encodeStructToBytesProtoBuf(person_struct& p, string* byte_msg) {
         person.add_scores(p.scores[i]);
     }
 
-    person.set_bitrthday(p.birthday);
+    person.set_birthday(p.birthday);
     person.set_creationdate(p.creation_date);
     person.set_updatedate(p.update_date);
     person.set_selfintroduction(p.self_introduction);
@@ -95,7 +97,8 @@ void encodeStructToBytesProtoBuf(person_struct& p, string* byte_msg) {
     // or other optimization techniques automatically.
 }
 
-void encodeStructsToBytesProtoBuf(vector<person_struct>& p, size_t lower, size_t upper, string* byte_msg) {
+void encodeStructsToBytesProtoBuf(vector<person_struct>& p, size_t lower,
+    size_t upper, string* byte_msg) {
     pb_test::University uni;
     for (size_t i = lower; i < upper; ++i) {
         pb_test::Person* student = uni.add_students();
@@ -120,7 +123,7 @@ void encodeStructsToBytesProtoBuf(vector<person_struct>& p, size_t lower, size_t
             student->add_scores(p[i].scores[j]);
         }
 
-        student->set_bitrthday(p[i].birthday);
+        student->set_birthday(p[i].birthday);
         student->set_creationdate(p[i].creation_date);
         student->set_updatedate(p[i].update_date);
         student->set_selfintroduction(p[i].self_introduction);

@@ -1,11 +1,11 @@
-syntax = "proto2";
+syntax = "proto3";
 
 package pb_test;
 
 message Person {
-  optional string name = 1;
-  optional uint32 id = 2;
-  optional string email = 3;
+  string name = 1;
+  uint32 id = 2;
+  string email = 3;
 
   enum PhoneType {
     MOBILE = 0;
@@ -14,17 +14,17 @@ message Person {
   }
 
   message PhoneNumber {
-    optional uint32 number = 1;
-    optional PhoneType type = 2 [default = HOME];
+    uint32 number = 1;
+    PhoneType type = 2;
   }
   repeated float scores = 16 [packed=true];
   repeated PhoneNumber phones = 4;  
-  optional string address = 8;
-  optional string nationality = 9;
-  optional string birthday = 10;
-  optional string creationDate = 11;
-  optional string updateDate = 12;
-  optional string selfIntroduction = 13;
+  string address = 8;
+  string nationality = 9;
+  string birthday = 10;
+  string creationDate = 11;
+  string updateDate = 12;
+  string selfIntroduction = 13;
 }
 
 message University {

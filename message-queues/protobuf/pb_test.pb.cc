@@ -79,16 +79,14 @@ static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptor
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_pb_5ftest_2eproto = nullptr;
 
 const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_pb_5ftest_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  PROTOBUF_FIELD_OFFSET(::pb_test::Person_PhoneNumber, _has_bits_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::pb_test::Person_PhoneNumber, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::pb_test::Person_PhoneNumber, number_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person_PhoneNumber, type_),
-  0,
-  1,
-  PROTOBUF_FIELD_OFFSET(::pb_test::Person, _has_bits_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -100,21 +98,10 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_pb_5ftest_2eproto::offsets[] P
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, phones_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, address_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, nationality_),
-  PROTOBUF_FIELD_OFFSET(::pb_test::Person, bitrthday_),
+  PROTOBUF_FIELD_OFFSET(::pb_test::Person, birthday_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, creationdate_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, updatedate_),
   PROTOBUF_FIELD_OFFSET(::pb_test::Person, selfintroduction_),
-  0,
-  8,
-  1,
-  ~0u,
-  ~0u,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::pb_test::University, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -123,9 +110,9 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_pb_5ftest_2eproto::offsets[] P
   PROTOBUF_FIELD_OFFSET(::pb_test::University, students_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 7, sizeof(::pb_test::Person_PhoneNumber)},
-  { 9, 25, sizeof(::pb_test::Person)},
-  { 36, -1, sizeof(::pb_test::University)},
+  { 0, -1, sizeof(::pb_test::Person_PhoneNumber)},
+  { 7, -1, sizeof(::pb_test::Person)},
+  { 23, -1, sizeof(::pb_test::University)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -135,17 +122,17 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_pb_5ftest_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\rpb_test.proto\022\007pb_test\"\352\002\n\006Person\022\014\n\004n"
+  "\n\rpb_test.proto\022\007pb_test\"\343\002\n\006Person\022\014\n\004n"
   "ame\030\001 \001(\t\022\n\n\002id\030\002 \001(\r\022\r\n\005email\030\003 \001(\t\022\022\n\006"
   "scores\030\020 \003(\002B\002\020\001\022+\n\006phones\030\004 \003(\0132\033.pb_te"
   "st.Person.PhoneNumber\022\017\n\007address\030\010 \001(\t\022\023"
-  "\n\013nationality\030\t \001(\t\022\021\n\tbitrthday\030\n \001(\t\022\024"
-  "\n\014creationDate\030\013 \001(\t\022\022\n\nupdateDate\030\014 \001(\t"
-  "\022\030\n\020selfIntroduction\030\r \001(\t\032L\n\013PhoneNumbe"
-  "r\022\016\n\006number\030\001 \001(\r\022-\n\004type\030\002 \001(\0162\031.pb_tes"
-  "t.Person.PhoneType:\004HOME\"+\n\tPhoneType\022\n\n"
-  "\006MOBILE\020\000\022\010\n\004HOME\020\001\022\010\n\004WORK\020\002\"/\n\nUnivers"
-  "ity\022!\n\010students\030\001 \003(\0132\017.pb_test.Person"
+  "\n\013nationality\030\t \001(\t\022\020\n\010birthday\030\n \001(\t\022\024\n"
+  "\014creationDate\030\013 \001(\t\022\022\n\nupdateDate\030\014 \001(\t\022"
+  "\030\n\020selfIntroduction\030\r \001(\t\032F\n\013PhoneNumber"
+  "\022\016\n\006number\030\001 \001(\r\022\'\n\004type\030\002 \001(\0162\031.pb_test"
+  ".Person.PhoneType\"+\n\tPhoneType\022\n\n\006MOBILE"
+  "\020\000\022\010\n\004HOME\020\001\022\010\n\004WORK\020\002\"/\n\nUniversity\022!\n\010"
+  "students\030\001 \003(\0132\017.pb_test.Personb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_pb_5ftest_2eproto_deps[1] = {
 };
@@ -156,7 +143,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_pb_
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_pb_5ftest_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_pb_5ftest_2eproto = {
-  false, false, descriptor_table_protodef_pb_5ftest_2eproto, "pb_test.proto", 438,
+  false, false, descriptor_table_protodef_pb_5ftest_2eproto, "pb_test.proto", 439,
   &descriptor_table_pb_5ftest_2eproto_once, descriptor_table_pb_5ftest_2eproto_sccs, descriptor_table_pb_5ftest_2eproto_deps, 3, 0,
   schemas, file_default_instances, TableStruct_pb_5ftest_2eproto::offsets,
   file_level_metadata_pb_5ftest_2eproto, 3, file_level_enum_descriptors_pb_5ftest_2eproto, file_level_service_descriptors_pb_5ftest_2eproto,
@@ -195,13 +182,6 @@ void Person_PhoneNumber::InitAsDefaultInstance() {
 }
 class Person_PhoneNumber::_Internal {
  public:
-  using HasBits = decltype(std::declval<Person_PhoneNumber>()._has_bits_);
-  static void set_has_number(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
-  static void set_has_type(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
 };
 
 Person_PhoneNumber::Person_PhoneNumber(::PROTOBUF_NAMESPACE_ID::Arena* arena)
@@ -211,8 +191,7 @@ Person_PhoneNumber::Person_PhoneNumber(::PROTOBUF_NAMESPACE_ID::Arena* arena)
   // @@protoc_insertion_point(arena_constructor:pb_test.Person.PhoneNumber)
 }
 Person_PhoneNumber::Person_PhoneNumber(const Person_PhoneNumber& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _has_bits_(from._has_bits_) {
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&number_, &from.number_,
     static_cast<size_t>(reinterpret_cast<char*>(&type_) -
@@ -221,8 +200,9 @@ Person_PhoneNumber::Person_PhoneNumber(const Person_PhoneNumber& from)
 }
 
 void Person_PhoneNumber::SharedCtor() {
-  number_ = 0u;
-  type_ = 1;
+  ::memset(&number_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&type_) -
+      reinterpret_cast<char*>(&number_)) + sizeof(type_));
 }
 
 Person_PhoneNumber::~Person_PhoneNumber() {
@@ -256,42 +236,33 @@ void Person_PhoneNumber::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    number_ = 0u;
-    type_ = 1;
-  }
-  _has_bits_.Clear();
+  ::memset(&number_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&type_) -
+      reinterpret_cast<char*>(&number_)) + sizeof(type_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* Person_PhoneNumber::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // optional uint32 number = 1;
+      // uint32 number = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
-          _Internal::set_has_number(&has_bits);
           number_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional .pb_test.Person.PhoneType type = 2 [default = HOME];
+      // .pb_test.Person.PhoneType type = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          if (PROTOBUF_PREDICT_TRUE(::pb_test::Person_PhoneType_IsValid(val))) {
-            _internal_set_type(static_cast<::pb_test::Person_PhoneType>(val));
-          } else {
-            ::PROTOBUF_NAMESPACE_ID::internal::WriteVarint(2, val, mutable_unknown_fields());
-          }
+          _internal_set_type(static_cast<::pb_test::Person_PhoneType>(val));
         } else goto handle_unusual;
         continue;
       default: {
@@ -309,7 +280,6 @@ const char* Person_PhoneNumber::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
     }  // switch
   }  // while
 success:
-  _has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -323,15 +293,14 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  // optional uint32 number = 1;
-  if (cached_has_bits & 0x00000001u) {
+  // uint32 number = 1;
+  if (this->number() != 0) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_number(), target);
   }
 
-  // optional .pb_test.Person.PhoneType type = 2 [default = HOME];
-  if (cached_has_bits & 0x00000002u) {
+  // .pb_test.Person.PhoneType type = 2;
+  if (this->type() != 0) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteEnumToArray(
       2, this->_internal_type(), target);
@@ -353,22 +322,19 @@ size_t Person_PhoneNumber::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    // optional uint32 number = 1;
-    if (cached_has_bits & 0x00000001u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-          this->_internal_number());
-    }
-
-    // optional .pb_test.Person.PhoneType type = 2 [default = HOME];
-    if (cached_has_bits & 0x00000002u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_type());
-    }
-
+  // uint32 number = 1;
+  if (this->number() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_number());
   }
+
+  // .pb_test.Person.PhoneType type = 2;
+  if (this->type() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_type());
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
         _internal_metadata_, total_size, &_cached_size_);
@@ -400,15 +366,11 @@ void Person_PhoneNumber::MergeFrom(const Person_PhoneNumber& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      number_ = from.number_;
-    }
-    if (cached_has_bits & 0x00000002u) {
-      type_ = from.type_;
-    }
-    _has_bits_[0] |= cached_has_bits;
+  if (from.number() != 0) {
+    _internal_set_number(from._internal_number());
+  }
+  if (from.type() != 0) {
+    _internal_set_type(from._internal_type());
   }
 }
 
@@ -433,9 +395,12 @@ bool Person_PhoneNumber::IsInitialized() const {
 void Person_PhoneNumber::InternalSwap(Person_PhoneNumber* other) {
   using std::swap;
   _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  swap(number_, other->number_);
-  swap(type_, other->type_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(Person_PhoneNumber, type_)
+      + sizeof(Person_PhoneNumber::type_)
+      - PROTOBUF_FIELD_OFFSET(Person_PhoneNumber, number_)>(
+          reinterpret_cast<char*>(&number_),
+          reinterpret_cast<char*>(&other->number_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata Person_PhoneNumber::GetMetadata() const {
@@ -449,34 +414,6 @@ void Person::InitAsDefaultInstance() {
 }
 class Person::_Internal {
  public:
-  using HasBits = decltype(std::declval<Person>()._has_bits_);
-  static void set_has_name(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
-  static void set_has_id(HasBits* has_bits) {
-    (*has_bits)[0] |= 256u;
-  }
-  static void set_has_email(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
-  static void set_has_address(HasBits* has_bits) {
-    (*has_bits)[0] |= 4u;
-  }
-  static void set_has_nationality(HasBits* has_bits) {
-    (*has_bits)[0] |= 8u;
-  }
-  static void set_has_bitrthday(HasBits* has_bits) {
-    (*has_bits)[0] |= 16u;
-  }
-  static void set_has_creationdate(HasBits* has_bits) {
-    (*has_bits)[0] |= 32u;
-  }
-  static void set_has_updatedate(HasBits* has_bits) {
-    (*has_bits)[0] |= 64u;
-  }
-  static void set_has_selfintroduction(HasBits* has_bits) {
-    (*has_bits)[0] |= 128u;
-  }
 };
 
 Person::Person(::PROTOBUF_NAMESPACE_ID::Arena* arena)
@@ -489,47 +426,46 @@ Person::Person(::PROTOBUF_NAMESPACE_ID::Arena* arena)
 }
 Person::Person(const Person& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _has_bits_(from._has_bits_),
       phones_(from.phones_),
       scores_(from.scores_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_name()) {
+  if (!from._internal_name().empty()) {
     name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_name(),
       GetArena());
   }
   email_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_email()) {
+  if (!from._internal_email().empty()) {
     email_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_email(),
       GetArena());
   }
   address_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_address()) {
+  if (!from._internal_address().empty()) {
     address_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_address(),
       GetArena());
   }
   nationality_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_nationality()) {
+  if (!from._internal_nationality().empty()) {
     nationality_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_nationality(),
       GetArena());
   }
-  bitrthday_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_bitrthday()) {
-    bitrthday_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_bitrthday(),
+  birthday_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_birthday().empty()) {
+    birthday_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_birthday(),
       GetArena());
   }
   creationdate_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_creationdate()) {
+  if (!from._internal_creationdate().empty()) {
     creationdate_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_creationdate(),
       GetArena());
   }
   updatedate_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_updatedate()) {
+  if (!from._internal_updatedate().empty()) {
     updatedate_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_updatedate(),
       GetArena());
   }
   selfintroduction_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_selfintroduction()) {
+  if (!from._internal_selfintroduction().empty()) {
     selfintroduction_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_selfintroduction(),
       GetArena());
   }
@@ -543,7 +479,7 @@ void Person::SharedCtor() {
   email_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   address_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   nationality_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  bitrthday_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  birthday_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   creationdate_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   updatedate_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   selfintroduction_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
@@ -562,7 +498,7 @@ void Person::SharedDtor() {
   email_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   address_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   nationality_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  bitrthday_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  birthday_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   creationdate_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   updatedate_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   selfintroduction_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
@@ -591,74 +527,48 @@ void Person::Clear() {
 
   phones_.Clear();
   scores_.Clear();
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x000000ffu) {
-    if (cached_has_bits & 0x00000001u) {
-      name_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000002u) {
-      email_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000004u) {
-      address_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000008u) {
-      nationality_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000010u) {
-      bitrthday_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000020u) {
-      creationdate_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000040u) {
-      updatedate_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000080u) {
-      selfintroduction_.ClearNonDefaultToEmpty();
-    }
-  }
+  name_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  email_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  address_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  nationality_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  birthday_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  creationdate_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  updatedate_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  selfintroduction_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   id_ = 0u;
-  _has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* Person::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // optional string name = 1;
+      // string name = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
           auto str = _internal_mutable_name();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.name");
-          #endif  // !NDEBUG
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.name"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional uint32 id = 2;
+      // uint32 id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          _Internal::set_has_id(&has_bits);
           id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional string email = 3;
+      // string email = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
           auto str = _internal_mutable_email();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.email");
-          #endif  // !NDEBUG
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.email"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -674,69 +584,57 @@ const char* Person::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
         } else goto handle_unusual;
         continue;
-      // optional string address = 8;
+      // string address = 8;
       case 8:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 66)) {
           auto str = _internal_mutable_address();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.address");
-          #endif  // !NDEBUG
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.address"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional string nationality = 9;
+      // string nationality = 9;
       case 9:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 74)) {
           auto str = _internal_mutable_nationality();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.nationality");
-          #endif  // !NDEBUG
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.nationality"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional string bitrthday = 10;
+      // string birthday = 10;
       case 10:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 82)) {
-          auto str = _internal_mutable_bitrthday();
+          auto str = _internal_mutable_birthday();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.bitrthday");
-          #endif  // !NDEBUG
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.birthday"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional string creationDate = 11;
+      // string creationDate = 11;
       case 11:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 90)) {
           auto str = _internal_mutable_creationdate();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.creationDate");
-          #endif  // !NDEBUG
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.creationDate"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional string updateDate = 12;
+      // string updateDate = 12;
       case 12:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 98)) {
           auto str = _internal_mutable_updatedate();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.updateDate");
-          #endif  // !NDEBUG
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.updateDate"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional string selfIntroduction = 13;
+      // string selfIntroduction = 13;
       case 13:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 106)) {
           auto str = _internal_mutable_selfintroduction();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.selfIntroduction");
-          #endif  // !NDEBUG
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.selfIntroduction"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -765,7 +663,6 @@ const char* Person::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
     }  // switch
   }  // while
 success:
-  _has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -779,28 +676,27 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  // optional string name = 1;
-  if (cached_has_bits & 0x00000001u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string name = 1;
+  if (this->name().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "pb_test.Person.name");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_name(), target);
   }
 
-  // optional uint32 id = 2;
-  if (cached_has_bits & 0x00000100u) {
+  // uint32 id = 2;
+  if (this->id() != 0) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_id(), target);
   }
 
-  // optional string email = 3;
-  if (cached_has_bits & 0x00000002u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string email = 3;
+  if (this->email().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_email().data(), static_cast<int>(this->_internal_email().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "pb_test.Person.email");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_email(), target);
@@ -814,61 +710,61 @@ failure:
       InternalWriteMessage(4, this->_internal_phones(i), target, stream);
   }
 
-  // optional string address = 8;
-  if (cached_has_bits & 0x00000004u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string address = 8;
+  if (this->address().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_address().data(), static_cast<int>(this->_internal_address().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "pb_test.Person.address");
     target = stream->WriteStringMaybeAliased(
         8, this->_internal_address(), target);
   }
 
-  // optional string nationality = 9;
-  if (cached_has_bits & 0x00000008u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string nationality = 9;
+  if (this->nationality().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_nationality().data(), static_cast<int>(this->_internal_nationality().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "pb_test.Person.nationality");
     target = stream->WriteStringMaybeAliased(
         9, this->_internal_nationality(), target);
   }
 
-  // optional string bitrthday = 10;
-  if (cached_has_bits & 0x00000010u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->_internal_bitrthday().data(), static_cast<int>(this->_internal_bitrthday().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
-      "pb_test.Person.bitrthday");
+  // string birthday = 10;
+  if (this->birthday().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_birthday().data(), static_cast<int>(this->_internal_birthday().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "pb_test.Person.birthday");
     target = stream->WriteStringMaybeAliased(
-        10, this->_internal_bitrthday(), target);
+        10, this->_internal_birthday(), target);
   }
 
-  // optional string creationDate = 11;
-  if (cached_has_bits & 0x00000020u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string creationDate = 11;
+  if (this->creationdate().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_creationdate().data(), static_cast<int>(this->_internal_creationdate().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "pb_test.Person.creationDate");
     target = stream->WriteStringMaybeAliased(
         11, this->_internal_creationdate(), target);
   }
 
-  // optional string updateDate = 12;
-  if (cached_has_bits & 0x00000040u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string updateDate = 12;
+  if (this->updatedate().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_updatedate().data(), static_cast<int>(this->_internal_updatedate().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "pb_test.Person.updateDate");
     target = stream->WriteStringMaybeAliased(
         12, this->_internal_updatedate(), target);
   }
 
-  // optional string selfIntroduction = 13;
-  if (cached_has_bits & 0x00000080u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string selfIntroduction = 13;
+  if (this->selfintroduction().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_selfintroduction().data(), static_cast<int>(this->_internal_selfintroduction().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "pb_test.Person.selfIntroduction");
     target = stream->WriteStringMaybeAliased(
         13, this->_internal_selfintroduction(), target);
@@ -917,67 +813,64 @@ size_t Person::ByteSizeLong() const {
     total_size += data_size;
   }
 
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x000000ffu) {
-    // optional string name = 1;
-    if (cached_has_bits & 0x00000001u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_name());
-    }
-
-    // optional string email = 3;
-    if (cached_has_bits & 0x00000002u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_email());
-    }
-
-    // optional string address = 8;
-    if (cached_has_bits & 0x00000004u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_address());
-    }
-
-    // optional string nationality = 9;
-    if (cached_has_bits & 0x00000008u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_nationality());
-    }
-
-    // optional string bitrthday = 10;
-    if (cached_has_bits & 0x00000010u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_bitrthday());
-    }
-
-    // optional string creationDate = 11;
-    if (cached_has_bits & 0x00000020u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_creationdate());
-    }
-
-    // optional string updateDate = 12;
-    if (cached_has_bits & 0x00000040u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_updatedate());
-    }
-
-    // optional string selfIntroduction = 13;
-    if (cached_has_bits & 0x00000080u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_selfintroduction());
-    }
-
+  // string name = 1;
+  if (this->name().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_name());
   }
-  // optional uint32 id = 2;
-  if (cached_has_bits & 0x00000100u) {
+
+  // string email = 3;
+  if (this->email().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_email());
+  }
+
+  // string address = 8;
+  if (this->address().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_address());
+  }
+
+  // string nationality = 9;
+  if (this->nationality().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_nationality());
+  }
+
+  // string birthday = 10;
+  if (this->birthday().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_birthday());
+  }
+
+  // string creationDate = 11;
+  if (this->creationdate().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_creationdate());
+  }
+
+  // string updateDate = 12;
+  if (this->updatedate().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_updatedate());
+  }
+
+  // string selfIntroduction = 13;
+  if (this->selfintroduction().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_selfintroduction());
+  }
+
+  // uint32 id = 2;
+  if (this->id() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_id());
@@ -1016,34 +909,31 @@ void Person::MergeFrom(const Person& from) {
 
   phones_.MergeFrom(from.phones_);
   scores_.MergeFrom(from.scores_);
-  cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x000000ffu) {
-    if (cached_has_bits & 0x00000001u) {
-      _internal_set_name(from._internal_name());
-    }
-    if (cached_has_bits & 0x00000002u) {
-      _internal_set_email(from._internal_email());
-    }
-    if (cached_has_bits & 0x00000004u) {
-      _internal_set_address(from._internal_address());
-    }
-    if (cached_has_bits & 0x00000008u) {
-      _internal_set_nationality(from._internal_nationality());
-    }
-    if (cached_has_bits & 0x00000010u) {
-      _internal_set_bitrthday(from._internal_bitrthday());
-    }
-    if (cached_has_bits & 0x00000020u) {
-      _internal_set_creationdate(from._internal_creationdate());
-    }
-    if (cached_has_bits & 0x00000040u) {
-      _internal_set_updatedate(from._internal_updatedate());
-    }
-    if (cached_has_bits & 0x00000080u) {
-      _internal_set_selfintroduction(from._internal_selfintroduction());
-    }
+  if (from.name().size() > 0) {
+    _internal_set_name(from._internal_name());
   }
-  if (cached_has_bits & 0x00000100u) {
+  if (from.email().size() > 0) {
+    _internal_set_email(from._internal_email());
+  }
+  if (from.address().size() > 0) {
+    _internal_set_address(from._internal_address());
+  }
+  if (from.nationality().size() > 0) {
+    _internal_set_nationality(from._internal_nationality());
+  }
+  if (from.birthday().size() > 0) {
+    _internal_set_birthday(from._internal_birthday());
+  }
+  if (from.creationdate().size() > 0) {
+    _internal_set_creationdate(from._internal_creationdate());
+  }
+  if (from.updatedate().size() > 0) {
+    _internal_set_updatedate(from._internal_updatedate());
+  }
+  if (from.selfintroduction().size() > 0) {
+    _internal_set_selfintroduction(from._internal_selfintroduction());
+  }
+  if (from.id() != 0) {
     _internal_set_id(from._internal_id());
   }
 }
@@ -1069,14 +959,13 @@ bool Person::IsInitialized() const {
 void Person::InternalSwap(Person* other) {
   using std::swap;
   _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
   phones_.InternalSwap(&other->phones_);
   scores_.InternalSwap(&other->scores_);
   name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   email_.Swap(&other->email_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   address_.Swap(&other->address_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   nationality_.Swap(&other->nationality_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
-  bitrthday_.Swap(&other->bitrthday_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  birthday_.Swap(&other->birthday_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   creationdate_.Swap(&other->creationdate_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   updatedate_.Swap(&other->updatedate_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   selfintroduction_.Swap(&other->selfintroduction_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());

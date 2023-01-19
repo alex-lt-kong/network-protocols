@@ -58,8 +58,9 @@ cout << "Generating random data..." << endl;
      vector<string> byte_msgs_protobuf{TEST_SIZE};
      totalSize = 0;
      start = clock();
+     pb_test::Person person;
      for (int i = 0; i < TEST_SIZE; ++i) {        
-          encodeStructToBytesProtoBuf(persons[i], &byte_msgs_protobuf[i]);
+          encodeStructToBytesProtoBuf(person, persons[i], &byte_msgs_protobuf[i]);
           totalSize += byte_msgs_protobuf[i].size();
      }
      diff = clock() - start;
@@ -72,7 +73,7 @@ cout << "Generating random data..." << endl;
      sample_idx = rand() % TEST_SIZE;
      start = clock();
      for (int i = 0; i < TEST_SIZE; ++i) {
-          decodeBytesToStructProtoBuf(
+          decodeBytesToStructProtoBuf(person, 
                byte_msgs_protobuf[i], deserialized_person);
           if (i == sample_idx) {
                deserialized_person_sample = deserialized_person;
@@ -148,8 +149,9 @@ void benchmarkMultipleMessagesSerialization(size_t batch_size) {
      sample_idx = rand() % batch_count;
      deserialized_persons = vector<person_struct>{batch_size};
      start = clock();
+     pb_test::Person person = pb_test::Person();
      for (int i = 0; i < batch_count; ++i) {
-          decodeBytesToStructsProtoBuf(
+          decodeBytesToStructsProtoBuf(person,
                byte_msgs_protobuf[i], deserialized_persons);
           if (i == sample_idx) {
                deserialized_persons_sample = deserialized_persons;
