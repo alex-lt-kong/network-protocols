@@ -1,7 +1,7 @@
 # Message Queues
 
 * We will test message queues, such as ZeroMQ, on top of a few popular
-serialization libraries including ProtoBuf and Capnproto.
+serialization libraries including ProtoBuf and CapnProto.
   * `apt install protobuf-compiler`
   * [Capnproto](https://capnproto.org/install.html)
   * `apt install libzmq3-dev`
