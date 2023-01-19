@@ -1,4 +1,4 @@
-OPTS = -O2 -Wall -pedantic -Wc++-compat -Wextra -funroll-loops
+OPTS = -O3 -Wall -pedantic -Wc++-compat -Wextra 
 CC = g++
 main: serialization-benchmark.out zmq-client-single.out zmq-server-single.out zmq-client-multiple.out zmq-server-multiple.out
 

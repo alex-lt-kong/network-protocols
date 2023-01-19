@@ -124,7 +124,7 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 const char descriptor_table_protodef_pb_5ftest_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\rpb_test.proto\022\007pb_test\"\343\002\n\006Person\022\014\n\004n"
   "ame\030\001 \001(\t\022\n\n\002id\030\002 \001(\r\022\r\n\005email\030\003 \001(\t\022\022\n\006"
-  "scores\030\020 \003(\002B\002\020\001\022+\n\006phones\030\004 \003(\0132\033.pb_te"
+  "scores\030\005 \003(\002B\002\020\001\022+\n\006phones\030\004 \003(\0132\033.pb_te"
   "st.Person.PhoneNumber\022\017\n\007address\030\010 \001(\t\022\023"
   "\n\013nationality\030\t \001(\t\022\020\n\010birthday\030\n \001(\t\022\024\n"
   "\014creationDate\030\013 \001(\t\022\022\n\nupdateDate\030\014 \001(\t\022"
@@ -584,6 +584,16 @@ const char* Person::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
         } else goto handle_unusual;
         continue;
+      // repeated float scores = 5 [packed = true];
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 42)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedFloatParser(_internal_mutable_scores(), ptr, ctx);
+          CHK_(ptr);
+        } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 45) {
+          _internal_add_scores(::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr));
+          ptr += sizeof(float);
+        } else goto handle_unusual;
+        continue;
       // string address = 8;
       case 8:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 66)) {
@@ -636,16 +646,6 @@ const char* Person::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "pb_test.Person.selfIntroduction"));
           CHK_(ptr);
-        } else goto handle_unusual;
-        continue;
-      // repeated float scores = 16 [packed = true];
-      case 16:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 130)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedFloatParser(_internal_mutable_scores(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 133) {
-          _internal_add_scores(::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr));
-          ptr += sizeof(float);
         } else goto handle_unusual;
         continue;
       default: {
@@ -710,6 +710,11 @@ failure:
       InternalWriteMessage(4, this->_internal_phones(i), target, stream);
   }
 
+  // repeated float scores = 5 [packed = true];
+  if (this->_internal_scores_size() > 0) {
+    target = stream->WriteFixedPacked(5, _internal_scores(), target);
+  }
+
   // string address = 8;
   if (this->address().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
@@ -770,11 +775,6 @@ failure:
         13, this->_internal_selfintroduction(), target);
   }
 
-  // repeated float scores = 16 [packed = true];
-  if (this->_internal_scores_size() > 0) {
-    target = stream->WriteFixedPacked(16, _internal_scores(), target);
-  }
-
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -798,12 +798,12 @@ size_t Person::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
-  // repeated float scores = 16 [packed = true];
+  // repeated float scores = 5 [packed = true];
   {
     unsigned int count = static_cast<unsigned int>(this->_internal_scores_size());
     size_t data_size = 4UL * count;
     if (data_size > 0) {
-      total_size += 2 +
+      total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
             static_cast<::PROTOBUF_NAMESPACE_ID::int32>(data_size));
     }

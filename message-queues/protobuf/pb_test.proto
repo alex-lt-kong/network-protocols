@@ -12,12 +12,13 @@ message Person {
     HOME = 1;
     WORK = 2;
   }
-
+  // repeated field should use a smaller tag so that the message is smaller.
+  repeated float scores = 5 [packed=true];
   message PhoneNumber {
     uint32 number = 1;
     PhoneType type = 2;
   }
-  repeated float scores = 16 [packed=true];
+  
   repeated PhoneNumber phones = 4;  
   string address = 8;
   string nationality = 9;

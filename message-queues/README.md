@@ -12,6 +12,9 @@ fixed-length encoding?
   * Protobuf: https://developers.google.com/protocol-buffers/docs/proto
   * https://stackoverflow.com/questions/61347404/protobuf-vs-flatbuffers-vs-capn-proto-which-is-faster
 
+* Tried [TCMALLOC](https://github.com/gperftools/gperftools), seems it doesn't
+help--and make programs even slower.
+
 ## Serialization libraries comparison
 
 ```

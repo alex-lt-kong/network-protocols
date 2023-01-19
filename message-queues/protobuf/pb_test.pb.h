@@ -397,7 +397,7 @@ class Person PROTOBUF_FINAL :
 
   enum : int {
     kPhonesFieldNumber = 4,
-    kScoresFieldNumber = 16,
+    kScoresFieldNumber = 5,
     kNameFieldNumber = 1,
     kEmailFieldNumber = 3,
     kAddressFieldNumber = 8,
@@ -426,7 +426,7 @@ class Person PROTOBUF_FINAL :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::pb_test::Person_PhoneNumber >&
       phones() const;
 
-  // repeated float scores = 16 [packed = true];
+  // repeated float scores = 5 [packed = true];
   int scores_size() const;
   private:
   int _internal_scores_size() const;
@@ -1062,7 +1062,7 @@ inline void Person::unsafe_arena_set_allocated_email(
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:pb_test.Person.email)
 }
 
-// repeated float scores = 16 [packed = true];
+// repeated float scores = 5 [packed = true];
 inline int Person::_internal_scores_size() const {
   return scores_.size();
 }
