@@ -13,7 +13,7 @@ fixed-length encoding?
   * https://stackoverflow.com/questions/61347404/protobuf-vs-flatbuffers-vs-capn-proto-which-is-faster
 
 * Tried [TCMALLOC](https://github.com/gperftools/gperftools), seems it doesn't
-help--and make programs even slower.
+help--and makes programs even slower.
 
 ## Serialization libraries comparison
 
