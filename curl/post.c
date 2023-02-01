@@ -81,6 +81,8 @@ int main(void)
     /* always cleanup */
     curl_easy_cleanup(curl);
   }
+  free(resp_body.memory);
+  free(resp_header.memory);
   curl_global_cleanup();
   return 0;
 }

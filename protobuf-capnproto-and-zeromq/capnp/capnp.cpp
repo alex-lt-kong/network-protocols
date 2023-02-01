@@ -4,7 +4,9 @@ using namespace std;
 
 kj::Array<capnp::word> encodeStructToBytesCapnp(person_struct& p) {
     capnp::MallocMessageBuilder msg_builder;
-
+    // Unlike ProtoBuf (https://developers.google.com/protocol-buffers/docs/cpptutorial#optimization-tips),
+    // MessageBuilder should NOT be re-used in CapnProto
+    // https://stackoverflow.com/questions/61347404/protobuf-vs-flatbuffers-vs-capn-proto-which-is-faster
 
     Person::Builder person = msg_builder.initRoot<Person>();
     person.setId(p.id);
@@ -38,8 +40,10 @@ kj::Array<capnp::word> encodeStructToBytesCapnp(person_struct& p) {
 
 kj::Array<capnp::word> encodeStructsToBytesCapnp(vector<person_struct>& p, size_t lower, size_t upper) {
     capnp::MallocMessageBuilder msg_builder;
-
-
+    // Unlike ProtoBuf (https://developers.google.com/protocol-buffers/docs/cpptutorial#optimization-tips),
+    // MessageBuilder should NOT be re-used in CapnProto
+    // https://stackoverflow.com/questions/61347404/protobuf-vs-flatbuffers-vs-capn-proto-which-is-faster
+    
     University::Builder uni = msg_builder.initRoot<University>();
     capnp::List<Person>::Builder students = uni.initStudents(upper - lower);
     for (size_t i = lower; i < upper; ++i) {

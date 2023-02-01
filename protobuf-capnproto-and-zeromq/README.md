@@ -7,9 +7,9 @@ serialization libraries including ProtoBuf and CapnProto.
   * `apt install libzmq3-dev`
   * [zmqpp](https://github.com/zeromq/zmqpp)
 
-* Question: Protobuf uses variable-length encoding while Canproto uses
+* Question: ProtoBuf uses variable-length encoding while CapnProto uses
 fixed-length encoding?
-  * Protobuf: https://developers.google.com/protocol-buffers/docs/proto
+  * ProtoBuf: https://developers.google.com/protocol-buffers/docs/proto
   * https://stackoverflow.com/questions/61347404/protobuf-vs-flatbuffers-vs-capn-proto-which-is-faster
 
 * Tried [TCMALLOC](https://github.com/gperftools/gperftools), seems it doesn't
