@@ -51,6 +51,10 @@
         "iomanip": "cpp",
         "sstream": "cpp",
         "chrono": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "any": "cpp",
+        "ratio": "cpp",
+        "future": "cpp",
+        "variant": "cpp"
     }
 }

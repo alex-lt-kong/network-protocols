@@ -1,5 +1,5 @@
 OPTS = -O2 -Wall -pedantic -Wextra
-LIBS = -lzmqpp -lzmq -lsodium
+LIBS = -lzmq
 CXX = g++
 
 main: publisher.out subscriber.out
