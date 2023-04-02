@@ -13,7 +13,6 @@ int main(void) {
     zmq::socket_t socket(context, zmq::socket_type::pub);
     
 
-
     cout << "Binding to endpoint: " << endpoint << "...\n";
     socket.bind(endpoint);
     cout << "Endpoint bound" << endl;
