@@ -1,4 +1,4 @@
-# Message Queues
+# Protobuf vs CapnProto
 
 * We will test message queues, such as ZeroMQ, on top of a few popular
 serialization libraries including ProtoBuf and CapnProto.
@@ -6,6 +6,9 @@ serialization libraries including ProtoBuf and CapnProto.
   * [Capnproto](https://capnproto.org/install.html)
   * `apt install libzmq3-dev`
   * [zmqpp](https://github.com/zeromq/zmqpp)
+  * Due to historical reasons, the C++ binding used in this project, `zmqpp`,
+  is different from the one used in the proper [zeromq](../zeromq/) project.
+  One should use the implementation is that project as reference.
 
 * Question: ProtoBuf uses variable-length encoding while CapnProto uses
 fixed-length encoding?
