@@ -7,7 +7,7 @@ LDFLAGS = -lrdkafka
 main: forwarder.out
 
 forwarder.out: forwarder.c
-	$(CC) -c forwarder.c $(INCS) $(LDFLAGS) $(CFLAGS)
+	$(CC) forwarder.c -o forwarder.out $(INCS) $(LDFLAGS) $(CFLAGS)
 
 .PHONY:
 clean:

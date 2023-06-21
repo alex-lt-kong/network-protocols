@@ -1,3 +1,5 @@
+#include <getopt.h>
+#include <linux/limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +14,68 @@
 static volatile int keep_running = 1;
 
 static size_t iso_dt_len = sizeof("1970-01-01T00:00:00Z");
+
+void print_usage(char *binary_name) {
+  printf("Usage: %s [OPTION]\n\n", binary_name);
+  printf("Description:\n");
+  printf("  Forwards Kafka messages from one topic to another\n\n");
+  printf("Options:\n");
+  printf("  -b, --brokers <broker1:port1,broker2:port2,...,brokerN::portN> A "
+         "comma-separate list of brokers\n");
+  printf("  -s, --src-topic <topic>                                        "
+         "Source Kafka topic\n");
+  printf(
+      "  -d, --dst-topic <topic>                                        "
+      "Destination Kafka topic, it can't be the same as source Kafka topic\n");
+  printf("  -h, --help                     Print this help message\n");
+}
+
+/**
+ * @brief
+ *
+ * @param argc
+ * @param argv
+ * @param out_broker_list Caller takes the ownership of the pointer and needs to
+ * free() it
+ * @param out_src_topic Caller takes the ownership of the pointer and needs to
+ * free() it
+ * @param out_dst_topic Caller takes the ownership of the pointer and needs to
+ * free() it
+ */
+void parse_options(int argc, char *argv[], char **out_broker_list,
+                   char **out_src_topic, char **out_dst_topic) {
+  static struct option long_options[] = {
+      {"brokers", required_argument, 0, 'b'},
+      {"src-topic", required_argument, 0, 's'},
+      {"dst-topic", required_argument, 0, 'd'},
+      {"help", optional_argument, 0, 'h'},
+      {0, 0, 0, 0}};
+
+  int option_index = 0, opt;
+
+  while ((opt = getopt_long(argc, argv, "b:s:d:h", long_options,
+                            &option_index)) != -1) {
+    switch (opt) {
+    case 'b':
+      if (optarg != NULL) {
+        *out_broker_list = strdup(optarg);
+      }
+      break;
+    case 's':
+      if (optarg != NULL) {
+        *out_src_topic = strdup(optarg);
+      }
+      break;
+    case 'd':
+      if (optarg != NULL) {
+        *out_dst_topic = strdup(optarg);
+      }
+      break;
+    default:
+      print_usage(argv[0]);
+    }
+  }
+}
 
 char *get_iso_datetime(char *buf) {
   time_t now;
@@ -66,34 +130,50 @@ static void dr_msg_cb(__attribute__((unused)) rd_kafka_t *kafka_handle,
 }
 
 int main(int argc, char **argv) {
+  int retval = 0;
+  char *broker_list;
+  char *src_topic;
+  char *dst_topic;
+  char iso_dt[iso_dt_len];
+  char errstr[PATH_MAX];
+
+  install_signal_handler();
+  parse_options(argc, argv, &broker_list, &src_topic, &dst_topic);
+  if (broker_list == NULL || src_topic == NULL || dst_topic == NULL) {
+    print_usage(argv[1]);
+    goto err_parse_options;
+  }
+  if (strcmp(src_topic, dst_topic) == 0) {
+    fprintf(stderr, "--src-topic and --dst-topic canNOT be the same\n");
+    goto err_parse_options;
+  }
+
   rd_kafka_t *consumer;
   rd_kafka_t *producer;
   rd_kafka_conf_t *conf;
   rd_kafka_resp_err_t err;
-  char iso_dt[iso_dt_len];
-  char errstr[512];
-
-  if (argc != 4) {
-    fprintf(stderr,
-            "Usage: %s <broker1:port1,broker2:port2,...,brokerN::portN> "
-            "<src_topic> <dst_topic>\n",
-            argv[0]);
-    return 1;
-  }
-  if (strcmp(argv[2], argv[3]) == 0) {
-    fprintf(stderr, "src_topic and dst_topic canNOT be the same--the result "
-                    "will be DISASTROUS!\n");
-    return 1;
-  }
-  const char *src_topic = argv[2];
-  const char *dst_topic = argv[3];
 
   conf = rd_kafka_conf_new();
   // See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
-  rd_kafka_conf_set(conf, "bootstrap.servers", argv[1], errstr, sizeof(errstr));
-  rd_kafka_conf_set(conf, "group.id", "forwarder", errstr, sizeof(errstr));
-  rd_kafka_conf_set(conf, "auto.offset.reset", "latest", errstr,
-                    sizeof(errstr));
+
+  if (rd_kafka_conf_set(conf, "bootstrap.servers", broker_list, errstr,
+                        sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+    fprintf(stderr, "%s", errstr);
+    retval = -1;
+    goto err_rd_kafka_conf_set;
+  }
+  if (rd_kafka_conf_set(conf, "group.id", "forwarder", errstr,
+                        sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+    fprintf(stderr, "%s", errstr);
+    retval = -1;
+    goto err_rd_kafka_conf_set;
+  }
+  if (rd_kafka_conf_set(conf, "auto.offset.reset", "latest", errstr,
+                        sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+    fprintf(stderr, "%s", errstr);
+    retval = -1;
+    goto err_rd_kafka_conf_set;
+  }
 
   consumer = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr));
   if (!consumer) {
@@ -106,7 +186,8 @@ int main(int argc, char **argv) {
                // rd_kafka_t instance.
 
   conf = rd_kafka_conf_new();
-  rd_kafka_conf_set(conf, "bootstrap.servers", argv[1], errstr, sizeof(errstr));
+  rd_kafka_conf_set(conf, "bootstrap.servers", broker_list, errstr,
+                    sizeof(errstr));
   rd_kafka_conf_set_dr_msg_cb(conf, dr_msg_cb);
   // Create the Producer instance.
   producer = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
@@ -204,9 +285,15 @@ int main(int argc, char **argv) {
   }
 
   printf("[%s] Closing consumer and producer\n", get_iso_datetime(iso_dt));
+
+  rd_kafka_destroy(producer);
   rd_kafka_consumer_close(consumer);
   rd_kafka_destroy(consumer);
-  rd_kafka_destroy(producer);
 
-  return 0;
+err_rd_kafka_conf_set:
+err_parse_options:
+  free(broker_list);
+  free(src_topic);
+  free(dst_topic);
+  return retval;
 }
