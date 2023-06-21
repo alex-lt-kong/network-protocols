@@ -1,4 +1,5 @@
 {
+    "editor.formatOnSave": true,
     "makefile.extensionOutputFolder": "./.vscode",
     "gitlens.blame.line.enabled": false,// was working in previous versions
     "gitlens.currentLine.enabled": false,// in modern version

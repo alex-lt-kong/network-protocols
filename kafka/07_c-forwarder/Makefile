@@ -1,12 +1,15 @@
+CC = gcc
 INCS = -I/usr/include/librdkafka
-LIBS = -lrdkafka
+CFLAGS = -O2 -Wall -pedantic -Wextra -Wc++-compat
+LDFLAGS = -lrdkafka
 
-main: forwarder.o
-	gcc forwarder.o -o forwarder.out $(INCS) $(LIBS)
 
-forwarder.o: forwarder.c
-	gcc -c forwarder.c $(INCS) $(LIBS)
+main: forwarder.out
 
+forwarder.out: forwarder.c
+	$(CC) -c forwarder.c $(INCS) $(LDFLAGS) $(CFLAGS)
+
+.PHONY:
 clean:
 	rm *.o
 	rm *.out
