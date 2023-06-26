@@ -31,7 +31,8 @@ void print_usage(char *binary_name) {
   printf(
       "  -d, --dst-topic <topic>                                        "
       "Destination Kafka topic, it can't be the same as source Kafka topic\n");
-  printf("  -h, --help                     Print this help message\n");
+  printf("  -h, --help                                                     "
+         "Print this help message\n");
 }
 
 /**
@@ -235,9 +236,9 @@ void event_loop(rd_kafka_t *consumer, rd_kafka_t *producer,
 
 int main(int argc, char **argv) {
   int retval = 0;
-  char *broker_list;
-  char *src_topic;
-  char *dst_topic;
+  char *broker_list = NULL;
+  char *src_topic = NULL;
+  char *dst_topic = NULL;
   char iso_dt[ISO_DATETIME_LEN];
   char errstr[PATH_MAX];
 
