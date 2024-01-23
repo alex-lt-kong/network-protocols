@@ -223,11 +223,12 @@ void event_loop(rd_kafka_t *consumer, rd_kafka_t *producer,
                                              consumer_message->len),
                             RD_KAFKA_V_OPAQUE(NULL), RD_KAFKA_V_END);
 
-    // We always rd_kafka_poll() to avoid Local: Queue full error;
+    
     if (err) {
       MY_FPRINTF_ERR("FAILED to produce to dst_topic [%s]: %s\n", dst_topic,
                      rd_kafka_err2str(err));
     } else {
+      // Need to call rd_kafka_poll() to avoid "Local: Queue full error";
       while (rd_kafka_outq_len(producer) > 50000) {
         rd_kafka_poll(producer, 1000);
       }
