@@ -24,8 +24,12 @@ void print_usage(char *binary_name) {
   printf("Description:\n");
   printf("  Forwards Kafka messages from one topic to another\n\n");
   printf("Options:\n");
-  printf("  -b, --brokers <broker1:port1,broker2:port2,...,brokerN::portN> A "
-         "comma-separate list of brokers\n");
+  printf(
+      "  -S, --src-brokers <broker1:port1,broker2:port2,...,brokerN::portN> A "
+      "comma-separate list of brokers\n");
+  printf(
+      "  -D, --dst-brokers <broker1:port1,broker2:port2,...,brokerN::portN> A "
+      "comma-separate list of brokers\n");
   printf("  -s, --src-topic <topic>                                        "
          "Source Kafka topic\n");
   printf(
@@ -40,17 +44,21 @@ void print_usage(char *binary_name) {
  *
  * @param argc
  * @param argv
- * @param out_broker_list Caller takes the ownership of the pointer and needs to
+ * @param out_src_brokers Caller takes the ownership of the pointer and needs to
+ * free() it
+ * @param out_dst_brokers Caller takes the ownership of the pointer and needs to
  * free() it
  * @param out_src_topic Caller takes the ownership of the pointer and needs to
  * free() it
  * @param out_dst_topic Caller takes the ownership of the pointer and needs to
  * free() it
  */
-void parse_options(int argc, char *argv[], char **out_broker_list,
-                   char **out_src_topic, char **out_dst_topic) {
+void parse_options(int argc, char *argv[], char **out_src_brokers,
+                   char **out_dst_brokers, char **out_src_topic,
+                   char **out_dst_topic) {
   static struct option long_options[] = {
-      {"brokers", required_argument, 0, 'b'},
+      {"src-brokers", required_argument, 0, 'S'},
+      {"dst-brokers", required_argument, 0, 'D'},
       {"src-topic", required_argument, 0, 's'},
       {"dst-topic", required_argument, 0, 'd'},
       {"help", optional_argument, 0, 'h'},
@@ -58,12 +66,17 @@ void parse_options(int argc, char *argv[], char **out_broker_list,
 
   int option_index = 0, opt;
 
-  while ((opt = getopt_long(argc, argv, "b:s:d:h", long_options,
+  while ((opt = getopt_long(argc, argv, "S:D:s:d:h", long_options,
                             &option_index)) != -1) {
     switch (opt) {
-    case 'b':
+    case 'S':
       if (optarg != NULL) {
-        *out_broker_list = strdup(optarg);
+        *out_src_brokers = strdup(optarg);
+      }
+      break;
+    case 'D':
+      if (optarg != NULL) {
+        *out_dst_brokers = strdup(optarg);
       }
       break;
     case 's':
@@ -137,13 +150,13 @@ static void dr_msg_cb(__attribute__((unused)) rd_kafka_t *kafka_handle,
 /**
  * @brief
  *
- * @param broker_list
+ * @param src_brokers
  * @return rd_kafka_conf_t* or NULL on error. If rd_kafka_conf_t* is returned,
  * the caller takes the ownership of the pointer and needs to call either
  * rd_kafka_conf_destroy() to free() the object or call rd_kafka_new() to
  * pass the ownership to a consumer object.
  */
-rd_kafka_conf_t *config_consumer(const char *broker_list) {
+rd_kafka_conf_t *prepare_consumer_config(const char *src_brokers) {
   char errstr[PATH_MAX];
   char iso_dt[ISO_DATETIME_LEN];
   // The doc doesn't say it could return NULL on error.
@@ -153,7 +166,7 @@ rd_kafka_conf_t *config_consumer(const char *broker_list) {
   // rd_kafka_conf_destroy() should only be called when an error is detected;
   // otherwise the ownership of conf will be passed to rd_kafka_new() and
   // rd_kafka_new() free()s it internally.
-  if (rd_kafka_conf_set(conf, "bootstrap.servers", broker_list, errstr,
+  if (rd_kafka_conf_set(conf, "bootstrap.servers", src_brokers, errstr,
                         sizeof(errstr)) != RD_KAFKA_CONF_OK) {
     MY_FPRINTF_ERR("rd_kafka_conf_set() failed: %s", errstr);
     (void)rd_kafka_conf_destroy(conf);
@@ -175,12 +188,12 @@ rd_kafka_conf_t *config_consumer(const char *broker_list) {
 }
 
 void event_loop(rd_kafka_t *consumer, rd_kafka_t *producer,
-                const char *src_topic, const char *dst_topic) {
+                const char *dst_topic) {
   size_t count = 0;
   char iso_dt[ISO_DATETIME_LEN];
   rd_kafka_resp_err_t err;
+  rd_kafka_message_t *consumer_message;
   while (keep_running) {
-    rd_kafka_message_t *consumer_message;
 
     consumer_message = rd_kafka_consumer_poll(consumer, 3 * 1000);
     if (consumer_message == NULL) {
@@ -198,58 +211,62 @@ void event_loop(rd_kafka_t *consumer, rd_kafka_t *producer,
         fprintf(stderr, "[%s] Consumer error: %s\n", get_iso_datetime(iso_dt),
                 rd_kafka_message_errstr(consumer_message));
       }
-    } else {
-      MY_PRINTF("CONSUMED event from src_topic [%s]\n",
-                rd_kafka_topic_name(consumer_message->rkt));
-      err =
-          rd_kafka_producev(producer, RD_KAFKA_V_TOPIC(dst_topic),
+      goto finalize_consumer_message;
+    }
+    MY_PRINTF("CONSUMED event from src_topic [%s]\n",
+              rd_kafka_topic_name(consumer_message->rkt));
+    err = rd_kafka_producev(producer, RD_KAFKA_V_TOPIC(dst_topic),
                             RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
                             RD_KAFKA_V_KEY((void *)consumer_message->key,
                                            consumer_message->key_len),
                             RD_KAFKA_V_VALUE((void *)consumer_message->payload,
                                              consumer_message->len),
                             RD_KAFKA_V_OPAQUE(NULL), RD_KAFKA_V_END);
-      if (err) {
-        MY_FPRINTF_ERR("FAILED to produce to dst_topic [%s]: %s\n", src_topic,
-                       rd_kafka_err2str(err));
+
+    // We always rd_kafka_poll() to avoid Local: Queue full error;
+    if (err) {
+      MY_FPRINTF_ERR("FAILED to produce to dst_topic [%s]: %s\n", dst_topic,
+                     rd_kafka_err2str(err));
+    } else {
+      while (rd_kafka_outq_len(producer) > 50000) {
+        rd_kafka_poll(producer, 1000);
+      }
+      MY_PRINTF("PRODUCED event to dst_topic [%s]: ", dst_topic);
+      for (size_t i = 0;
+           i < strlen((char *)consumer_message->payload) && i < MAX_PRINT;
+           ++i) {
+        printf("%c", ((char *)(consumer_message->payload))[i]);
+      }
+      if (strlen((char *)consumer_message->payload) < MAX_PRINT) {
+        printf("\n");
       } else {
-        MY_PRINTF("PRODUCED event to dst_topic [%s]: ", dst_topic);
-        for (size_t i = 0;
-             i < strlen((char *)consumer_message->payload) && i < MAX_PRINT;
-             ++i) {
-          printf("%c", ((char *)(consumer_message->payload))[i]);
-        }
-        if (strlen((char *)consumer_message->payload) < MAX_PRINT) {
-          printf("\n");
-        } else {
-          printf("...[truncated at %d]\n", MAX_PRINT);
-        }
+        printf("...[truncated at %d]\n", MAX_PRINT);
       }
     }
 
+  finalize_consumer_message:
     // Free the message when we're done.
     rd_kafka_message_destroy(consumer_message);
-
-    rd_kafka_poll(producer, 0);
   }
 }
 
 int main(int argc, char **argv) {
   int retval = 0;
-  char *broker_list = NULL;
+  char *src_brokers = NULL;
+  char *dst_brokers = NULL;
   char *src_topic = NULL;
   char *dst_topic = NULL;
   char iso_dt[ISO_DATETIME_LEN];
   char errstr[PATH_MAX];
 
   install_signal_handler();
-  parse_options(argc, argv, &broker_list, &src_topic, &dst_topic);
-  if (broker_list == NULL || src_topic == NULL || dst_topic == NULL) {
+  parse_options(argc, argv, &src_brokers, &dst_brokers, &src_topic, &dst_topic);
+  if (src_brokers == NULL || src_topic == NULL || dst_topic == NULL) {
     print_usage(argv[1]);
     goto err_parse_options;
   }
-  if (strcmp(src_topic, dst_topic) == 0) {
-    MY_FPRINTF_ERR("--src-topic and --dst-topic canNOT be the same\n");
+  if (strcmp(src_topic, dst_topic) == 0 && strcmp(src_brokers, dst_brokers)) {
+    MY_FPRINTF_ERR("Dead loop detected\n");
     goto err_parse_options;
   }
 
@@ -258,7 +275,7 @@ int main(int argc, char **argv) {
   rd_kafka_conf_t *conf;
   rd_kafka_resp_err_t err;
 
-  conf = config_consumer(broker_list);
+  conf = prepare_consumer_config(src_brokers);
   if (conf == NULL) {
     retval = -1;
     goto err_rd_kafka_con_conf_set;
@@ -282,7 +299,7 @@ int main(int argc, char **argv) {
 
   // The doc doesn't say it could return NULL on error.
   conf = rd_kafka_conf_new();
-  if (rd_kafka_conf_set(conf, "bootstrap.servers", broker_list, errstr,
+  if (rd_kafka_conf_set(conf, "bootstrap.servers", dst_brokers, errstr,
                         sizeof(errstr)) != RD_KAFKA_CONF_OK) {
     MY_FPRINTF_ERR("%s", errstr);
     (void)rd_kafka_conf_destroy(conf);
@@ -319,7 +336,7 @@ int main(int argc, char **argv) {
   }
   (void)rd_kafka_topic_partition_list_destroy(subscription);
 
-  event_loop(consumer, producer, src_topic, dst_topic);
+  event_loop(consumer, producer, dst_topic);
 
   // Block until the messages are all sent.
   printf("[%s] Flushing final messages..\n", get_iso_datetime(iso_dt));
@@ -347,7 +364,8 @@ err_rd_kafka_poll_set_consumer:
 err_rd_kafka_new_consumer:
 err_rd_kafka_con_conf_set:
 err_parse_options:
-  free(broker_list);
+  free(dst_brokers);
+  free(src_brokers);
   free(src_topic);
   free(dst_topic);
   return retval;
