@@ -229,7 +229,7 @@ void event_loop(rd_kafka_t *consumer, rd_kafka_t *producer,
                      rd_kafka_err2str(err));
     } else {
       // Need to call rd_kafka_poll() to avoid "Local: Queue full error";
-      while (rd_kafka_outq_len(producer) > 50000) {
+      while (rd_kafka_outq_len(producer) > 10000) {
         rd_kafka_poll(producer, 1000);
       }
       MY_PRINTF("PRODUCED event to dst_topic [%s]: ", dst_topic);
@@ -341,7 +341,7 @@ int main(int argc, char **argv) {
 
   // Block until the messages are all sent.
   printf("[%s] Flushing final messages..\n", get_iso_datetime(iso_dt));
-  err = rd_kafka_flush(producer, 10 * 1000);
+  err = rd_kafka_flush(producer, 60 * 1000);
   if (err) {
     MY_FPRINTF_ERR("rd_kafka_flush() failed: %s. But we will not take any "
                    "action here LOL.",
