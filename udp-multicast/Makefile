@@ -1,7 +1,8 @@
 CC = gcc
 CXX = g++
-LDFLAGS = -lzmq
+LDFLAGS = 
 CXXFLAGS = -O2 -Wall -pedantic -Wextra
+CFLAGS = -O2 -Wall -pedantic -Wextra
 INC = 
 
 RM = rm
@@ -17,7 +18,7 @@ prebuild:
 	@mkdir -p $(BUILD_DIR)
 
 $(BUILD_DIR)/%: %.c
-	$(CC) $(INC) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+	$(CC) $(INC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 clean:
 	rm -rf $(BUILD_DIR)
