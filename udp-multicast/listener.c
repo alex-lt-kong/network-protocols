@@ -1,9 +1,10 @@
 // Modeled after:
 // https://gist.github.com/hostilefork/f7cae3dc33e7416f2dd25a402857b6c6
 
+#include "common.h"
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <sys/socket.h>
 #include <sys/types.h>
 #include <time.h>
 
@@ -13,16 +14,7 @@
 
 #define BUFSIZE 512
 
-int main(int argc, char *argv[]) {
-  if (argc != 3) {
-    printf("Command line args should be multicast group and port\n");
-    printf("(e.g. for SSDP, `listener 239.255.255.250 1900`)\n");
-    return 1;
-  }
-
-  char *group = argv[1];    // e.g. 239.255.255.250 for SSDP
-  int port = atoi(argv[2]); // 0 if error, which is an invalid port
-
+int main() {
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd < 0) {
     perror("socket");
