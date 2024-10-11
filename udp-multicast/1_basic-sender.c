@@ -3,13 +3,9 @@
 
 #include "common.h"
 
-#include <netinet/in.h>
 #include <sys/time.h>
-#include <sys/types.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+volatile sig_atomic_t ev_flag;
 
 long long get_epoch_time_milliseconds() {
   struct timeval tv;
@@ -22,7 +18,7 @@ int main() {
   size_t msg_count = 0;
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd < 0) {
-    perror("socket");
+    perror("socket()");
     return 1;
   }
 
@@ -32,7 +28,10 @@ int main() {
   addr.sin_addr.s_addr = inet_addr(group);
   addr.sin_port = htons(port);
 
-  while (1) {
+  ev_flag = 0;
+  (void)signal(SIGTERM, signal_handler);
+  (void)signal(SIGINT, signal_handler);
+  while (!ev_flag) {
     sprintf(
         message,
         "[%zu] Hello, World  from 0xDEADBEEF at %lld! This is a relative long "
@@ -41,9 +40,11 @@ int main() {
     int nbytes = sendto(fd, message, strlen(message), 0,
                         (struct sockaddr *)&addr, sizeof(addr));
     if (nbytes < 0) {
-      perror("sendto");
+      perror("sendto()");
       return 1;
     }
   }
+  printf("event loop exited gracefully\n");
+  close(fd);
   return 0;
 }
