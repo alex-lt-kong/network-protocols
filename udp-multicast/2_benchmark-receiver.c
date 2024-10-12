@@ -59,11 +59,15 @@ int main() {
     }
 
     if (msg != prev_msg + 1) {
-      if (msg > prev_msg)
+      if (msg > prev_msg) {
         missed_msgs += (msg - prev_msg - 1);
-      else
+        // printf("%lu - %lu = %lu\n", msg, prev_msg, msg - prev_msg);
+      } else {
         fprintf(stderr, "msg < prev_msg (%lu vs %lu), sender restarted?\n", msg,
                 prev_msg);
+        t0 = get_epoch_time_milliseconds();
+        t0_msg = msg;
+      }
     }
 
     prev_msg = msg;
@@ -74,8 +78,11 @@ int main() {
         continue;
       }
       t1 = get_epoch_time_milliseconds();
-      printf("%luK, %lld msg/s, missed: %lu\n", msg / 1000,
-             (msg - t0_msg) * 1000 / (t1 - t0), missed_msgs);
+      printf("%luK, estimated sent: %lld msg/s, received: %lld msg/s, lost: "
+             "%llu msg/s\n",
+             msg / 1000, (msg - t0_msg) * 1000 / (t1 - t0),
+             (msg - t0_msg - missed_msgs) * 1000 / (t1 - t0),
+             missed_msgs * 1000 / (t1 - t0));
       t0 = get_epoch_time_milliseconds();
       t0_msg = msg;
       missed_msgs = 0;
