@@ -63,8 +63,10 @@ int main() {
         missed_msgs += (msg - prev_msg - 1);
         // printf("%lu - %lu = %lu\n", msg, prev_msg, msg - prev_msg);
       } else {
-        fprintf(stderr, "msg < prev_msg (%lu vs %lu), sender restarted?\n", msg,
-                prev_msg);
+        fprintf(stderr,
+                "msg < prev_msg (%" PRIu64 " vs %" PRIu64
+                "), sender restarted?\n",
+                msg, prev_msg);
         t0 = get_epoch_time_milliseconds();
         t0_msg = msg;
         missed_msgs = 0;
@@ -81,7 +83,8 @@ int main() {
       t1 = get_epoch_time_milliseconds();
       // missed_msgs > msg - t0_msg means receiver starts later than sender
       if (missed_msgs < msg - t0_msg)
-        printf("%luK, estimated sent: %lld msg/s, received: %lld msg/s, lost: "
+        printf("%" PRIu64
+               "K, estimated sent: %lld msg/s, received: %lld msg/s, lost: "
                "%llu msg/s\n",
                msg / 1000, (msg - t0_msg) * 1000 / (t1 - t0),
                (msg - t0_msg - missed_msgs) * 1000 / (t1 - t0),
