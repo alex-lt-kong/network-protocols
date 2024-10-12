@@ -67,6 +67,7 @@ int main() {
                 prev_msg);
         t0 = get_epoch_time_milliseconds();
         t0_msg = msg;
+        missed_msgs = 0;
       }
     }
 
@@ -78,14 +79,18 @@ int main() {
         continue;
       }
       t1 = get_epoch_time_milliseconds();
-      printf("%luK, estimated sent: %lld msg/s, received: %lld msg/s, lost: "
-             "%llu msg/s\n",
-             msg / 1000, (msg - t0_msg) * 1000 / (t1 - t0),
-             (msg - t0_msg - missed_msgs) * 1000 / (t1 - t0),
-             missed_msgs * 1000 / (t1 - t0));
-      t0 = get_epoch_time_milliseconds();
-      t0_msg = msg;
-      missed_msgs = 0;
+      // missed_msgs > msg - t0_msg means receiver starts later than sender
+      if (missed_msgs < msg - t0_msg)
+        printf("%luK, estimated sent: %lld msg/s, received: %lld msg/s, lost: "
+               "%llu msg/s\n",
+               msg / 1000, (msg - t0_msg) * 1000 / (t1 - t0),
+               (msg - t0_msg - missed_msgs) * 1000 / (t1 - t0),
+               missed_msgs * 1000 / (t1 - t0));
+      else {
+        t0 = get_epoch_time_milliseconds();
+        t0_msg = msg;
+        missed_msgs = 0;
+      }
     }
   }
   printf("event loop exited gracefully\n");
