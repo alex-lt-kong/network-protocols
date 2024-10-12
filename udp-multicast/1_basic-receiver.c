@@ -35,6 +35,10 @@ int main() {
     perror("setsockopt");
     return 1;
   }
+  struct timeval tv = {.tv_sec = 1, .tv_usec = 0};
+  if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+    perror("setsockopt");
+  }
 
   ev_flag = 0;
   (void)signal(SIGTERM, signal_handler);
@@ -46,7 +50,7 @@ int main() {
         recvfrom(fd, msgbuf, BUFSIZE, 0, (struct sockaddr *)&addr, &addrlen);
     if (nbytes < 0) {
       perror("recvfrom()");
-      break;
+      continue;
     }
     msgbuf[nbytes] = '\0';
     puts(msgbuf);
