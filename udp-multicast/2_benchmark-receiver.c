@@ -8,7 +8,7 @@ volatile sig_atomic_t ev_flag;
 int main() {
   uint64_t msg = 0;
   uint64_t prev_msg = 0;
-  uint64_t first_msg;
+  uint64_t t0_msg;
   long long t0, t1;
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd < 0) {
@@ -39,31 +39,44 @@ int main() {
     perror("setsockopt");
     return 1;
   }
+  struct timeval tv = {.tv_sec = 1, .tv_usec = 0};
+  if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+    perror("setsockopt");
+  }
 
   ev_flag = 0;
   (void)signal(SIGTERM, signal_handler);
   (void)signal(SIGINT, signal_handler);
-  t0 = get_epoch_time_milliseconds();
+  t0 = -1;
   while (!ev_flag) {
     socklen_t addrlen = sizeof(addr);
     int nbytes =
         recvfrom(fd, &msg, sizeof(msg), 0, (struct sockaddr *)&addr, &addrlen);
     if (nbytes < 0) {
       perror("recvfrom()");
-      break;
+      continue;
     }
-    if (msg == 0) {
-      first_msg = msg;
-    } else {
-      if (msg != prev_msg + 1) {
-        fprintf(stderr, "Missed\n");
-      }
+    if (msg != prev_msg + 1) {
+      if (msg > prev_msg)
+        fprintf(stderr, "Missed %lu updates (%lu vs %lu)\n", msg - prev_msg - 1,
+                msg, prev_msg);
+      else
+        fprintf(stderr, "msg < prev_msg (%lu vs %lu), sender restarted?\n", msg,
+                prev_msg);
     }
+
     prev_msg = msg;
     if (msg % (10 * 1000) == 0) {
+      if (t0 == -1) {
+        t0 = get_epoch_time_milliseconds();
+        t0_msg = msg;
+        continue;
+      }
       t1 = get_epoch_time_milliseconds();
       printf("%luK, %lld msg/s\n", msg / 1000,
-             (msg - first_msg) * 1000 / (t1 - t0));
+             (msg - t0_msg) * 1000 / (t1 - t0));
+      t0 = get_epoch_time_milliseconds();
+      t0_msg = msg;
     }
   }
   printf("event loop exited gracefully\n");
