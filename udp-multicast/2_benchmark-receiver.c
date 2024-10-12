@@ -60,7 +60,7 @@ int main() {
       }
     }
     prev_msg = msg;
-    if (msg % (100 * 1000) == 0) {
+    if (msg % (10 * 1000) == 0) {
       t1 = get_epoch_time_milliseconds();
       printf("%luK, %lld msg/s\n", msg / 1000,
              (msg - first_msg) * 1000 / (t1 - t0));
