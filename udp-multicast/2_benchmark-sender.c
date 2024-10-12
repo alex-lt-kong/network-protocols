@@ -9,9 +9,8 @@
 volatile sig_atomic_t ev_flag;
 
 int main() {
-  long long t0, t1;
   uint64_t msg_count = 0;
-  int fd = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+  int fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd < 0) {
     perror("socket()");
     return 1;
@@ -21,15 +20,13 @@ int main() {
   ev_flag = 0;
   (void)signal(SIGTERM, signal_handler);
   (void)signal(SIGINT, signal_handler);
-  t0 = get_epoch_time_milliseconds();
   while (!ev_flag) {
     ++msg_count;
-    (void)sendto(fd, &msg_count, sizeof(msg_count), MSG_DONTWAIT,
-                 (struct sockaddr *)&addr, sizeof(addr));
-    if (msg_count % (1000 * 1000) == 0) {
-      t1 = get_epoch_time_milliseconds();
-      printf("%lu mil, %lld msg/s\n", msg_count / 1000 / 1000,
-             msg_count * 1000 / (t1 - t0));
+    int nbytes = sendto(fd, &msg_count, sizeof(msg_count), 0,
+                        (struct sockaddr *)&addr, sizeof(addr));
+    if (nbytes < 0) {
+      perror("sendto()");
+      break;
     }
   }
   printf("event loop exited gracefully\n");
