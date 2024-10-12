@@ -19,12 +19,7 @@ int main() {
     perror("Reusing ADDR failed");
     return 1;
   }
-  struct sockaddr_in addr;
-  memset(&addr, 0, sizeof(addr));
-  addr.sin_family = AF_INET;
-  // differs from sender, but group is still specified below
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  addr.sin_port = htons(port);
+  struct sockaddr_in addr = prepare_receiver_addr();
 
   if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
     perror("bind");
@@ -50,8 +45,8 @@ int main() {
     int nbytes =
         recvfrom(fd, msgbuf, BUFSIZE, 0, (struct sockaddr *)&addr, &addrlen);
     if (nbytes < 0) {
-      perror("recvfrom");
-      return 1;
+      perror("recvfrom()");
+      break;
     }
     msgbuf[nbytes] = '\0';
     puts(msgbuf);
