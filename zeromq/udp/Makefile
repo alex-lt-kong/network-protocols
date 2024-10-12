@@ -4,8 +4,6 @@ LDFLAGS = -lzmq
 CXXFLAGS = -O2 -Wall -pedantic -Wextra
 INC = 
 
-RM = rm
-
 SRC_FILES := $(wildcard *.c)
 TARGETS := $(basename $(notdir $(SRC_FILES)))
 BUILD_DIR = build

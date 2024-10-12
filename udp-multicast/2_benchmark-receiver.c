@@ -8,6 +8,7 @@ volatile sig_atomic_t ev_flag;
 int main() {
   uint64_t msg = 0;
   uint64_t prev_msg = 0;
+  uint64_t missed_msgs = 0;
   uint64_t t0_msg;
   long long t0, t1;
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -56,10 +57,10 @@ int main() {
       perror("recvfrom()");
       continue;
     }
+
     if (msg != prev_msg + 1) {
       if (msg > prev_msg)
-        fprintf(stderr, "Missed %lu updates (%lu vs %lu)\n", msg - prev_msg - 1,
-                msg, prev_msg);
+        missed_msgs += (msg - prev_msg - 1);
       else
         fprintf(stderr, "msg < prev_msg (%lu vs %lu), sender restarted?\n", msg,
                 prev_msg);
@@ -73,10 +74,11 @@ int main() {
         continue;
       }
       t1 = get_epoch_time_milliseconds();
-      printf("%luK, %lld msg/s\n", msg / 1000,
-             (msg - t0_msg) * 1000 / (t1 - t0));
+      printf("%luK, %lld msg/s, missed: %lu\n", msg / 1000,
+             (msg - t0_msg) * 1000 / (t1 - t0), missed_msgs);
       t0 = get_epoch_time_milliseconds();
       t0_msg = msg;
+      missed_msgs = 0;
     }
   }
   printf("event loop exited gracefully\n");
