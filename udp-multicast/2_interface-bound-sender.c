@@ -5,10 +5,13 @@
 
 volatile sig_atomic_t ev_flag;
 
-int main() {
+int main(int argc, char **argv) {
   struct sockaddr_in in_addr;
   struct sockaddr_in sock_addr; /* Output structure from getsockname */
-  const char interface[] = "10.1.9.19";
+  if (argc != 2) {
+    fprintf(stderr, "Usage:\n  %s interface\n", argv[0]);
+    fprintf(stderr, "e.g., %s 192.168.0.100", argv[0]);
+  }
   char message[BUFSIZE];
   size_t msg_count = 0;
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -20,9 +23,9 @@ int main() {
 
   // Set up socket end-point info for binding
   memset(&in_addr, 0, sizeof(in_addr));
-  in_addr.sin_family = AF_INET;                   /* Protocol domain */
-  in_addr.sin_addr.s_addr = inet_addr(interface); /* bind to interface */
-  in_addr.sin_port = 0;                           /* Use any UDP port */
+  in_addr.sin_family = AF_INET;                 /* Protocol domain */
+  in_addr.sin_addr.s_addr = inet_addr(argv[1]); /* bind to interface */
+  in_addr.sin_port = 0;                         /* Use any UDP port */
   if (bind(fd, (struct sockaddr *)&in_addr, sizeof(in_addr)) < 0) {
     perror("bind()");
     close(fd);

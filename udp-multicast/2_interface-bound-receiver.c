@@ -6,10 +6,13 @@
 
 volatile sig_atomic_t ev_flag;
 
-int main() {
+int main(int argc, char **argv) {
   int ret = 0;
   struct sockaddr_in src_addr;
-  const char interface[] = "10.1.9.19";
+  if (argc != 2) {
+    fprintf(stderr, "Usage:\n  %s interface\n", argv[0]);
+    fprintf(stderr, "e.g., %s 192.168.0.100", argv[0]);
+  }
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd < 0) {
     perror("socket()");
@@ -34,7 +37,7 @@ int main() {
   // use setsockopt() to request the kernel to join a multicast group
   struct ip_mreq mreq;
   mreq.imr_multiaddr.s_addr = inet_addr(mc_addr);
-  mreq.imr_interface.s_addr = inet_addr(interface);
+  mreq.imr_interface.s_addr = inet_addr(argv[1]);
   // Add multicast membership...
   if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&mreq,
                  sizeof(mreq)) < 0) {
