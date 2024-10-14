@@ -21,11 +21,15 @@ const int port = 5555;
 extern volatile sig_atomic_t ev_flag;
 
 static inline void signal_handler(int signum) {
-  signum %= 100;
+  // This design canNOT handle more than 99 signal types
+  if (_NSIG > 99) {
+    fprintf(stderr, "signal_handler() can't handle more than 99 signals\n");
+    abort();
+  }
   char msg[] = "Signal [  ] caught\n";
   msg[8] = '0' + (char)(signum / 10);
   msg[9] = '0' + (char)(signum % 10);
-  write(STDIN_FILENO, msg, strlen(msg));
+  (void)write(STDIN_FILENO, msg, strlen(msg));
   ev_flag = 1;
 }
 
