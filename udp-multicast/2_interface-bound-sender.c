@@ -6,8 +6,9 @@
 volatile sig_atomic_t ev_flag;
 
 int main() {
-  struct sockaddr_in in_addr;		
-  struct sockaddr_in sock_addr;	/* Output structure from getsockname */
+  struct sockaddr_in in_addr;
+  struct sockaddr_in sock_addr; /* Output structure from getsockname */
+  const char interface[] = "10.1.9.19";
   char message[BUFSIZE];
   size_t msg_count = 0;
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -18,18 +19,19 @@ int main() {
   struct sockaddr_in addr = prepare_sender_addr();
 
   // Set up socket end-point info for binding
-  in_addr.sin_family = AF_INET;                           /* Protocol domain */
-  in_addr.sin_addr.s_addr = inet_addr("192.168.199.2");   /* Use wildcard IP address */
-  in_addr.sin_port = 0;	           	                      /* Use any UDP port */
+  memset(&in_addr, 0, sizeof(in_addr));
+  in_addr.sin_family = AF_INET;                   /* Protocol domain */
+  in_addr.sin_addr.s_addr = inet_addr(interface); /* bind to interface */
+  in_addr.sin_port = 0;                           /* Use any UDP port */
   if (bind(fd, (struct sockaddr *)&in_addr, sizeof(in_addr)) < 0) {
     perror("bind()");
     close(fd);
     return 1;
   }
   socklen_t len = sizeof(sock_addr);
-  getsockname(fd, (struct sockaddr *) &sock_addr, &len);
-  printf("Socket s is bind to:\n");
-  printf("  addr = %u\n", sock_addr.sin_addr.s_addr);
+  getsockname(fd, (struct sockaddr *)&sock_addr, &len);
+  printf("Socket fd is bound to:\n");
+  printf("  addr = %s\n", inet_ntoa(sock_addr.sin_addr));
   printf("  port = %d\n", sock_addr.sin_port);
   ev_flag = 0;
   (void)signal(SIGTERM, signal_handler);
@@ -46,6 +48,8 @@ int main() {
       perror("sendto()");
       break;
     }
+    printf("msg sent: %s\n", message);
+    sleep(1);
   }
   printf("event loop exited gracefully\n");
   close(fd);

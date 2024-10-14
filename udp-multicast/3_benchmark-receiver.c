@@ -31,9 +31,9 @@ int main() {
     return 1;
   }
 
-  // use setsockopt() to request the kernel to join a multicast group
+  // use setsockopt() to request the kernel to join a multicast mc_addr
   struct ip_mreq mreq;
-  mreq.imr_multiaddr.s_addr = inet_addr(group);
+  mreq.imr_multiaddr.s_addr = inet_addr(mc_addr);
   mreq.imr_interface.s_addr = htonl(INADDR_ANY);
   if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&mreq,
                  sizeof(mreq)) < 0) {

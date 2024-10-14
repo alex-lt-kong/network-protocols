@@ -14,7 +14,7 @@
 
 #define BUFSIZE 512
 
-const char group[] = "239.0.0.1";
+const char mc_addr[] = "239.0.0.1";
 // const char group[] = "127.0.0.1";
 const int port = 5555;
 
@@ -33,7 +33,7 @@ static inline struct sockaddr_in prepare_sender_addr() {
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = inet_addr(group);
+  addr.sin_addr.s_addr = inet_addr(mc_addr);
   addr.sin_port = htons(port);
   return addr;
 }

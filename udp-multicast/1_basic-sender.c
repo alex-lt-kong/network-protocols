@@ -30,6 +30,7 @@ int main() {
       perror("sendto()");
       break;
     }
+    sleep(1);
   }
   printf("event loop exited gracefully\n");
   close(fd);
