@@ -3,12 +3,15 @@
 ## Foundmentals
 
 - IP packet format
+
   ![udp in IP](./assets/udp-in-IP1.gif)
 
 - UDP packet format
+
   ![udp-header.gif](./assets/udp-header.gif)
 
-- UDP in IP:
+- UDP in IP
+
   ![udp in IP](./assets/udp-in-IP1a.gif)
 
 ## Test
