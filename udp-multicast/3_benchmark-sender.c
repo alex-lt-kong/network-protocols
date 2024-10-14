@@ -32,7 +32,7 @@ int main() {
     }
     if (msg_count % (10 * 1000) == 0) {
       t1 = get_epoch_time_milliseconds();
-      printf("%luK, %lld msg/s\n", msg_count / 1000,
+      printf("%" PRIu64 "K, %lld msg/s\n", msg_count / 1000,
              msg_count * 1000 / (t1 - t0));
     }
   }

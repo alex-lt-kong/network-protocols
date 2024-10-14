@@ -8,7 +8,6 @@ volatile sig_atomic_t ev_flag;
 
 int main() {
   int ret = 0;
-  struct sockaddr_in in_addr;
   struct sockaddr_in src_addr;
   const char interface[] = "10.1.9.19";
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -26,10 +25,7 @@ int main() {
     goto finalization;
   }
   src_addr = prepare_receiver_addr();
-
-  /* Use wildcard IP address */
-  in_addr.sin_port = htons(port); /* Use any UDP port */
-  if (bind(fd, (struct sockaddr *)&in_addr, sizeof(in_addr)) < 0) {
+  if (bind(fd, (struct sockaddr *)&src_addr, sizeof(src_addr)) < 0) {
     perror("bind()");
     ret = 2;
     goto finalization;

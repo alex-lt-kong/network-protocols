@@ -25,7 +25,7 @@ int main() {
                  (struct sockaddr *)&addr, sizeof(addr));
     if (msg_count % (1000 * 1000) == 0) {
       t1 = get_epoch_time_milliseconds();
-      printf("%lu mil, %lld msg/s\n", msg_count / 1000 / 1000,
+      printf("%" PRIu64 " mil, %lld msg/s\n", msg_count / 1000 / 1000,
              msg_count * 1000 / (t1 - t0));
     }
   }
