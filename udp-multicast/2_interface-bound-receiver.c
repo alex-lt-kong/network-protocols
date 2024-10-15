@@ -11,7 +11,8 @@ int main(int argc, char **argv) {
   struct sockaddr_in src_addr;
   if (argc != 2) {
     fprintf(stderr, "Usage:\n  %s interface\n", argv[0]);
-    fprintf(stderr, "e.g., %s 192.168.0.100", argv[0]);
+    fprintf(stderr, "e.g., %s 192.168.0.100\n", argv[0]);
+    return 1;
   }
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd < 0) {

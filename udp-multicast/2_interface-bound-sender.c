@@ -6,15 +6,18 @@
 volatile sig_atomic_t ev_flag;
 
 int main(int argc, char **argv) {
+  int ret = 0;
   struct sockaddr_in in_addr;
   struct sockaddr_in sock_addr; /* Output structure from getsockname */
+  int fd;
   if (argc != 2) {
     fprintf(stderr, "Usage:\n  %s interface\n", argv[0]);
-    fprintf(stderr, "e.g., %s 192.168.0.100", argv[0]);
+    fprintf(stderr, "e.g., %s 192.168.0.100\n", argv[0]);
+    return 1;
   }
   char message[BUFSIZE];
   size_t msg_count = 0;
-  int fd = socket(AF_INET, SOCK_DGRAM, 0);
+  fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd < 0) {
     perror("socket()");
     return 1;
@@ -28,14 +31,15 @@ int main(int argc, char **argv) {
   in_addr.sin_port = 0;                         /* Use any UDP port */
   if (bind(fd, (struct sockaddr *)&in_addr, sizeof(in_addr)) < 0) {
     perror("bind()");
-    close(fd);
-    return 1;
+    ret = 1;
+    goto finalization;
   }
   socklen_t len = sizeof(sock_addr);
   getsockname(fd, (struct sockaddr *)&sock_addr, &len);
   printf("Socket fd is bound to:\n");
   printf("  addr = %s\n", inet_ntoa(sock_addr.sin_addr));
   printf("  port = %d\n", sock_addr.sin_port);
+
   ev_flag = 0;
   (void)signal(SIGTERM, signal_handler);
   (void)signal(SIGINT, signal_handler);
@@ -55,6 +59,7 @@ int main(int argc, char **argv) {
     sleep(1);
   }
   printf("event loop exited gracefully\n");
+finalization:
   close(fd);
-  return 0;
+  return ret;
 }

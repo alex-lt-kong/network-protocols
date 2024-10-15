@@ -5,12 +5,18 @@
 
 volatile sig_atomic_t ev_flag;
 
-int main() {
+int main(int argc, char **argv) {
+  int ret = 0;
   uint64_t msg = 0;
   uint64_t prev_msg = 0;
   uint64_t missed_msgs = 0;
   uint64_t t0_msg;
   long long t0, t1;
+  if (argc != 2) {
+    fprintf(stderr, "Usage:\n  %s interface\n", argv[0]);
+    fprintf(stderr, "e.g., %s 192.168.0.100\n", argv[0]);
+    return 1;
+  }
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd < 0) {
     perror("socket");
@@ -21,28 +27,33 @@ int main() {
   // allow multiple applications to receive datagrams that are destined to the
   // same local port number.
   if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes)) < 0) {
-    perror("Reusing ADDR failed");
-    return 1;
+    perror("setsockopt(SO_REUSEADDR)");
+    ret = 1;
+    goto finalization;
   }
   struct sockaddr_in addr = prepare_receiver_addr();
 
   if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
     perror("bind");
-    return 1;
+    ret = 2;
+    goto finalization;
   }
 
   // use setsockopt() to request the kernel to join a multicast mc_addr
   struct ip_mreq mreq;
   mreq.imr_multiaddr.s_addr = inet_addr(mc_addr);
-  mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+  mreq.imr_interface.s_addr = inet_addr(argv[1]);
   if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&mreq,
                  sizeof(mreq)) < 0) {
-    perror("setsockopt");
-    return 1;
+    perror("setsockopt(IP_ADD_MEMBERSHIP)");
+    ret = 3;
+    goto finalization;
   }
   struct timeval tv = {.tv_sec = 1, .tv_usec = 0};
   if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
-    perror("setsockopt");
+    perror("setsockopt(SO_RCVTIMEO)");
+    ret = 3;
+    goto finalization;
   }
 
   ev_flag = 0;
@@ -97,6 +108,7 @@ int main() {
     }
   }
   printf("event loop exited gracefully\n");
+finalization:
   close(fd);
-  return 0;
+  return ret;
 }
