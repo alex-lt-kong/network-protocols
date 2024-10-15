@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
       }
       t1 = get_epoch_time_milliseconds();
       // missed_msgs > msg - t0_msg means receiver starts later than sender
-      if (missed_msgs < msg - t0_msg)
+      if (missed_msgs < msg - t0_msg && t1 > t0)
         printf("%" PRIu64
                "K, estimated sent: %lld msg/s, received: %lld msg/s, lost: "
                "%llu msg/s\n",
