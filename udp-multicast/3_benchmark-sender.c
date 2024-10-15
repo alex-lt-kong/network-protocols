@@ -15,12 +15,21 @@ int main(int argc, char **argv) {
   long long t0, t1;
   int fd;
   uint64_t msg_count = 0;
-  if (argc != 2) {
-    fprintf(stderr, "Usage:\n  %s interface\n", argv[0]);
+  if (argc != 2 && argc != 3) {
+    fprintf(stderr, "Usage:\n  %s interface [--non-blocking, -n]\n", argv[0]);
     fprintf(stderr, "e.g., %s 192.168.0.100\n", argv[0]);
     return 1;
   }
-  fd = socket(AF_INET, SOCK_DGRAM, 0);
+  int non_blocking = (argc == 3 && (strcmp(argv[2], "--non-blocking") == 0 ||
+                                    strcmp(argv[2], "-n") == 0));
+
+  if (non_blocking) {
+    printf("Sender in non-blocking mode\n");
+    fd = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+  } else {
+    printf("Sender in blocking mode\n");
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+  }
   if (fd < 0) {
     perror("socket()");
     return 1;
@@ -49,9 +58,10 @@ int main(int argc, char **argv) {
   t0 = get_epoch_time_milliseconds();
   while (!ev_flag) {
     ++msg_count;
-    int nbytes = sendto(fd, &msg_count, sizeof(msg_count), 0,
+    int nbytes = sendto(fd, &msg_count, sizeof(msg_count),
+                        non_blocking ? MSG_DONTWAIT : 0,
                         (struct sockaddr *)&addr, sizeof(addr));
-    if (nbytes < 0) {
+    if (nbytes < 0 && !non_blocking) {
       perror("sendto()");
       break;
     }
