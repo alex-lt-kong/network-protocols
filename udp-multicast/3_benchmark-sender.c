@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
   struct sockaddr_in in_addr;
   struct sockaddr_in sock_addr; /* Output structure from getsockname */
   int ret = 0;
-  long long t0, t1;
+  long long t0, t1 = get_epoch_time_milliseconds();
   int fd;
   uint64_t msg_count = 0;
   if (argc != 2 && argc != 3) {
@@ -65,7 +65,8 @@ int main(int argc, char **argv) {
       perror("sendto()");
       break;
     }
-    if (msg_count % (10 * 1000) == 0) {
+    long long t = get_epoch_time_milliseconds();
+    if (t - t1 > 1000) {
       t1 = get_epoch_time_milliseconds();
       printf("%" PRIu64 "K, %lld msg/s\n", msg_count / 1000,
              msg_count * 1000 / (t1 - t0));

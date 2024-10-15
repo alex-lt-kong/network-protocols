@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   uint64_t prev_msg = 0;
   uint64_t missed_msgs = 0;
   uint64_t t0_msg;
-  long long t0, t1;
+  long long t0, t1 = get_epoch_time_milliseconds();
   if (argc != 2) {
     fprintf(stderr, "Usage:\n  %s interface\n", argv[0]);
     fprintf(stderr, "e.g., %s 192.168.0.100\n", argv[0]);
@@ -85,7 +85,8 @@ int main(int argc, char **argv) {
     }
 
     prev_msg = msg;
-    if (msg % (10 * 1000) == 0) {
+    long long t = get_epoch_time_milliseconds();
+    if (t - t1 > 1000) {
       if (t0 == -1) {
         t0 = get_epoch_time_milliseconds();
         t0_msg = msg;
