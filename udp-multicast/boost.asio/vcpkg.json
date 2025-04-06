@@ -1,9 +1,0 @@
-{
-  "dependencies" : [ "boost-asio", "cxxopts", "spdlog", "nlohmann-json", {
-    "name" : "protobuf",
-    "version>=" : "5.29.1"
-  } ],
-  "builtin-baseline" : "65be7019941e1401e02daaba0738cab2c8a4a355",
-  "version": "0.0.1",
-  "name": "poc"
-}
