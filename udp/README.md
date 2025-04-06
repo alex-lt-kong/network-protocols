@@ -1,6 +1,6 @@
-# UDP multicast
+# UDP
 
-## Foundmentals
+## Fundamentals
 
 - IP packet format
 

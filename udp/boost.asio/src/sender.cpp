@@ -54,7 +54,7 @@ int main(const int argc, char *argv[]) {
     auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     auto lgr = std::make_shared<spdlog::async_logger>("", stdout_sink, spdlog::thread_pool(),
                                                       spdlog::async_overflow_policy::overrun_oldest);
-    lgr->set_pattern("%Y-%m-%dT%T.%f%z|%5t|%8l| %v");
+    lgr->set_pattern("%Y-%m-%dT%T.%f|%5t|%8l| %v");
     lgr->info("Starting sender with method={}, interface={}, address={}, port={}",
               is_multicast ? "multicast" : "unicast", interface_ip, address, port);
     try {

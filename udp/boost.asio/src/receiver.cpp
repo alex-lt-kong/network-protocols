@@ -7,7 +7,7 @@
 #include <spdlog/spdlog.h>
 
 #include <iostream>
-//#include <print>
+// #include <print>
 
 using boost::asio::ip::udp;
 
@@ -24,7 +24,7 @@ int main(const int argc, char *argv[]) {
         // clang-format on
         auto result = options.parse(argc, argv);
         if (result.count("help")) {
-	    std::cerr << options.help() << std::endl;
+            std::cerr << options.help() << std::endl;
             // std::println("{}", options.help());
             return 0;
         }
@@ -44,7 +44,7 @@ int main(const int argc, char *argv[]) {
             port = result["port"].as<int>();
             address = result["address"].as<std::string>();
         } catch (const cxxopts::exceptions::exception &e) {
-	    std::cerr << options.help() << "\nError: " << e.what() << std::endl;
+            std::cerr << options.help() << "\nError: " << e.what() << std::endl;
             // std::println("{}", options.help());
             // std::println("Error: {}", e.what());
             return 1;
@@ -55,7 +55,7 @@ int main(const int argc, char *argv[]) {
         auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         auto lgr = std::make_shared<spdlog::async_logger>("", stdout_sink, spdlog::thread_pool(),
                                                           spdlog::async_overflow_policy::overrun_oldest);
-        lgr->set_pattern("%Y-%m-%dT%T.%f%z|%5t|%8l| %v");
+        lgr->set_pattern("%Y-%m-%dT%T.%f|%5t|%8l| %v");
         lgr->info("Starting receiver with method={}, interface={}, address={}, port={}",
                   is_multicast ? "multicast" : "unicast", interface_ip, address, port);
 
