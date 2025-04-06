@@ -1,0 +1,11 @@
+syntax = "proto3";
+// Define a package name (optional for organization)
+package boost_udp_multicast_poc;
+
+message TestMessage {
+    int64 unix_time_us = 1;
+    uint32 seq_num = 2;
+    bool is_active = 3;
+    string message_text = 4;
+    float temperature_reading = 5;
+}
