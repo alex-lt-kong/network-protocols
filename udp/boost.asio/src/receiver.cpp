@@ -6,7 +6,8 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-#include <print>
+#include <iostream>
+//#include <print>
 
 using boost::asio::ip::udp;
 
@@ -23,7 +24,8 @@ int main(const int argc, char *argv[]) {
         // clang-format on
         auto result = options.parse(argc, argv);
         if (result.count("help")) {
-            std::println("{}", options.help());
+	    std::cerr << options.help() << std::endl;
+            // std::println("{}", options.help());
             return 0;
         }
         std::string interface_ip;
@@ -42,8 +44,9 @@ int main(const int argc, char *argv[]) {
             port = result["port"].as<int>();
             address = result["address"].as<std::string>();
         } catch (const cxxopts::exceptions::exception &e) {
-            std::println("{}", options.help());
-            std::println("Error: {}", e.what());
+	    std::cerr << options.help() << "\nError: " << e.what() << std::endl;
+            // std::println("{}", options.help());
+            // std::println("Error: {}", e.what());
             return 1;
         }
 

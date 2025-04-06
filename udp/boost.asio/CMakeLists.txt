@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.25)
 project(boost_asio)
 
 set(CMAKE_CXX_STANDARD 23)
 
+find_package(cxxopts REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(Protobuf REQUIRED)
 #include_directories(${Protobuf_INCLUDE_DIRS})
