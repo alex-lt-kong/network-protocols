@@ -1,0 +1,27 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "GNU",
+	"compiler-id" : "GNU",
+	"compiler-simulate-id" : "",
+	"config" : "Release",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp/cmake-build-release",
+	"dir-cur-src" : "/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp",
+	"dir-top-bld" : "/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp/cmake-build-release",
+	"dir-top-src" : "/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : [],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp/cmake-build-release/CMakeFiles/echo_tcp.dir",
+	"sources" : 
+	{
+		"CMakeFiles/echo_tcp.dir/main.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp/main.cpp"
+		}
+	}
+}

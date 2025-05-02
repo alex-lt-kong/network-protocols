@@ -1,0 +1,3 @@
+/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp/cmake-build-debug/CMakeFiles/echo_tcp.dir
+/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/mamsds/repos/network-protocols/tcp-udp/echo-tcp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
