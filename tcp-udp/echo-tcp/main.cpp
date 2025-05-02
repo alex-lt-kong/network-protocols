@@ -24,18 +24,23 @@ void log_received_data(int port, const char* data, size_t length) {
         }
     }
 
-    spdlog::info("Received on port {} (Hex   ): [{}]", port, hex_stream.str());
-    spdlog::info("Received on port {} (String): [{}]", port, str_stream.str());
+    spdlog::info("Received {} bytes on port {}", length, port);
+    spdlog::info("Hex   : [{}]", hex_stream.str());
+    spdlog::info("String: [{}]", str_stream.str());
 }
 
 void handle_connection(ip::tcp::socket& socket, int port) {
     try {
-        spdlog::info("Client connected on port {}", port);
+        auto remote_endpoint = socket.remote_endpoint();
+        std::string source_ip = remote_endpoint.address().to_string();
+        int source_port = remote_endpoint.port();
+        spdlog::info("Client {}:{} connected on port {}", source_ip, source_port, port);
 
         while (true) {
-            char buffer[1024];
+            char buffer[65536];
             boost::system::error_code error;
             size_t bytes_received = socket.read_some(boost::asio::buffer(buffer), error);
+
 
             if (error == error::eof) {
                 spdlog::info("Connection closed on port {}", port);
@@ -54,6 +59,8 @@ void handle_connection(ip::tcp::socket& socket, int port) {
 void listen_on_port(io_context& io_context, int port) {
     try {
         ip::tcp::acceptor acceptor(io_context, ip::tcp::endpoint(ip::tcp::v4(), port));
+        //boost::asio::ip::tcp::acceptor::reuse_address option(false);
+        //acceptor.set_option(option);
         spdlog::info("Listening on port {}...", port);
 
         while (true) {
@@ -62,6 +69,12 @@ void listen_on_port(io_context& io_context, int port) {
             std::thread([socket = std::move(socket), port]() mutable {
                 handle_connection(socket, port);
             }).detach();
+        }
+    } catch (const boost::system::system_error& e) {
+        if (e.code() == boost::asio::error::address_in_use) {
+            spdlog::error("Port {} is already in use. Another instance may be listening.", port);
+        } else {
+            spdlog::error("Error on port {}: {}", port, e.what());
         }
     } catch (const std::exception& e) {
         spdlog::error("Error on port {}: {}", port, e.what());
@@ -85,7 +98,7 @@ vector<int> parse_ports(const string& port_string) {
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        spdlog::error("Usage: {} <port_list>", argv[0]);
+        spdlog::error("Usage: {} <port1,port2,port3,port4>", argv[0]);
         return 1;
     }
 
