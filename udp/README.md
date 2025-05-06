@@ -14,6 +14,15 @@
 
   ![udp in IP](./assets/udp-in-IP1a.gif)
 
+  - You may compare UDP message format with TCP segment
+      format [here](https://github.com/alex-lt-kong/network-protocols/blob/main/tcp/README.md)
+
+- Note that source IP and destination IP are two values recorded in an IP
+  packet's header, i.e., they are recognized by all the (IP-compliant) network
+  devices and useful when routing the packet. On the contrary, destination port
+  and source port are not, they are defined by TCP/UDP protocol only, for an ip
+  packet, they are nothing but a part of the payload
+
 ## Test
 
 ### iperf

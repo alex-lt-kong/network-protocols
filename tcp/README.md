@@ -2,7 +2,11 @@
 
 ## Basics
 
-- IP packet and TCP segment
+- IP packet format
+
+  ![](./assets/ip-packet-format.svg "ip-packet-format.svg")
+
+- TCP segment
   format <sup>[[Transmission Control Protocol (TCP)](https://www.khanacademy.org/computing/computers-and-internet/xcae6f4a7ff015e7d:the-internet/xcae6f4a7ff015e7d:transporting-packets/a/transmission-control-protocol--tcp)]</sup>
 
   ![](./assets/tcp-packet-format.svg "tcp-packet-format.svg")
@@ -10,9 +14,16 @@
     - You may compare TCP segment format with UDP message
       format [here](https://github.com/alex-lt-kong/network-protocols/blob/main/udp/README.md)
 
+- Note that source IP and destination IP are two values recorded in an IP
+  packet's header, i.e., they are recognized by all the (IP-compliant) network
+  devices and useful when routing the packet. On the contrary, destination port
+  and source port are not, they are defined by TCP/UDP protocol only, for an ip
+  packet, they are nothing but a part of the payload
+
 - Question: Does TCP use another port for sending data?
 
-  Answer: [No, it uses the same port](https://stackoverflow.com/questions/15761776/does-tcp-use-another-port-for-sending-data)
+  Answer: [No, it uses the same port](https://stackoverflow.com/questions/15761776/does-tcp-use-another-port-for-sending-data),
+  if you think it uses another port, you might be confused by FTP's design
 
 ## Socket programming
 
