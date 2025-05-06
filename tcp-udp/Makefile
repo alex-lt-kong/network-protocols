@@ -1,33 +1,21 @@
-main: tcp-server.o tcp-client.o tcp-client-multiple-sends.o udp-server.o udp-client.o tcp-client-check-order.o tcp-server-check-order.o
-	gcc tcp-server.o -o tcp-server.out
-	gcc tcp-client.o -o tcp-client.out
-	gcc tcp-client-multiple-sends.o -o tcp-client-multiple-sends.out
-	gcc udp-server.o -o udp-server.out
-	gcc udp-client.o -o udp-client.out
-	gcc tcp-client-check-order.o -o tcp-client-check-order.out
-	gcc tcp-server-check-order.o -o tcp-server-check-order.out
+CC = clang
+#LDFLAGS = -lpthread -lglib-2.0
+CFLAGS = -O2 -Wall -pedantic -Wextra -Wc++-compat
+#INC = -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/
 
-tcp-client-check-order.o: tcp-client-check-order.c
-	gcc -c tcp-client-check-order.c
+TARGETS = tcp-client tcp-client-check-order tcp-client-multiple-sends tcp-server tcp-server-check-order
+# Directory to store the built targets
+BUILD_DIR = build
 
-tcp-server-check-order.o: tcp-server-check-order.c
-	gcc -c tcp-server-check-order.c
+# The paths to the built targets
+TARGET_PATHS = $(addprefix $(BUILD_DIR)/,$(TARGETS))
 
-tcp-server.o: tcp-server.c
-	gcc -c tcp-server.c
+all: $(TARGET_PATHS)
 
-tcp-client.o: tcp-client.c
-	gcc -c tcp-client.c
+$(BUILD_DIR)/%: %.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(INC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-tcp-client-multiple-sends.o: tcp-client-multiple-sends.c
-	gcc -c tcp-client-multiple-sends.c
-
-udp-server.o: udp-server.c
-	gcc -c udp-server.c
-
-udp-client.o: udp-client.c
-	gcc -c udp-client.c
-
+.PHONY: clean
 clean:
-	rm *.out
-	rm *.o
+	rm  $(TARGET_PATHS)
