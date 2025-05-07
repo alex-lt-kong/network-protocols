@@ -5,20 +5,42 @@
 - IP packet format
 
   ![](./assets/ip-packet-format.svg "ip-packet-format.svg")
+    - Transport: a one-byte long field indicating the protocol of the payload.
+      Typical values
+      are<sup>[[List of IP protocol numbers](https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers)]</sup>:
+        - 0x01: ICMP
+        - 0x06: TCP
+        - 0x11: UDP
+    - Source IP Address/Destination IP Address: are actually nothing more than a
+      320bit number, just it is usually expressed in dotted-decimal format, like
+      192.168.0.1<sup>[[Understand TCP/IP addressing and subnetting basics](https://learn.microsoft.com/en-us/troubleshoot/windows-client/networking/tcpip-addressing-and-subnetting)]</sup>.
 
 - TCP segment
   format <sup>[[Transmission Control Protocol (TCP)](https://www.khanacademy.org/computing/computers-and-internet/xcae6f4a7ff015e7d:the-internet/xcae6f4a7ff015e7d:transporting-packets/a/transmission-control-protocol--tcp)]</sup>
 
   ![](./assets/tcp-packet-format.svg "tcp-packet-format.svg")
 
+    - TCP standard specifies that both source port and destination port are
+      16-bit long only, so it is no coincidence that there are only 65536 ports
+      across all platforms.
+    - Sequence number: a counter used to keep track of
+      every byte sent outward by a host. If a TCP packet contains 1400 bytes of
+      data, then the sequence number will be increased by 1400 after the packet
+      is
+      transmitted. <sup>[[Transmission Control Protocol (TCP)](https://www.ibm.com/docs/en/zos-basic-skills?topic=4-transmission-control-protocol-tcp)]</sup>
+    - Acknowledgement number: a counter to keep track of every byte that has
+      been received. If 1000 bytes are received by a host, it increases the
+      acknowledgement number by 1000 when it sends out a packet in
+      response. <sup>[[Transmission Control Protocol (TCP)](https://www.ibm.com/docs/en/zos-basic-skills?topic=4-transmission-control-protocol-tcp)]</sup>
     - You may compare TCP segment format with UDP message
       format [here](https://github.com/alex-lt-kong/network-protocols/blob/main/udp/README.md)
 
 - Note that source IP and destination IP are two values recorded in an IP
-  packet's header, i.e., they are recognized by all the (IP-compliant) network
-  devices and useful when routing the packet. On the contrary, destination port
-  and source port are not, they are defined by TCP/UDP protocol only, for an ip
-  packet, they are nothing but a part of the payload
+  packet's header, i.e., they are recognized by all the (IP-compliant)
+  network devices and useful when routing the packet. On the contrary,
+  destination port and source port are not, they are defined by TCP/UDP protocol
+  only, for an ip packet, they are nothing but a part of the payload
+
 
 - Question: Does TCP use another port for sending data?
 
