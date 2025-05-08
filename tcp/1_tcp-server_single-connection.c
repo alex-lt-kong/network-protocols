@@ -2,6 +2,7 @@
  * the first client disconnects */
 #include   "common.h"
 
+#include <signal.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdio.h>
@@ -15,13 +16,19 @@ int server_fd;
 
 void handle_signal(int sig) {
     ev_flag = 1;
+    // for a POSIX compliant system, shutdown() is guaranteed to be async-signal-safe
+    // https://man7.org/linux/man-pages/man7/signal-safety.7.html
     shutdown(server_fd, SHUT_RDWR);
 }
 
 int main() {
-    // _fd stands for file descriptor.
     char iso_dt[iso_dt_len];
+    if (signal(SIGINT, handle_signal) == SIG_ERR) {
+        perror("signal()");
+        goto err_signal;
+    }
 
+    // _fd stands for file descriptor.
     /*
      * domain: AF_INET means the IP address family. AF means "Address Family".
                Some other common AFs include AF_UNIX (unix socket)  and
@@ -38,7 +45,7 @@ int main() {
         return 1;
     }
 
-    /* Bing a socket */
+    /* Bind a socket */
     struct sockaddr_in addr; // _in stands for INternet
     socklen_t addr_len = sizeof(addr);
     /* Because sockets were designed to work with various different types of
@@ -67,7 +74,7 @@ int main() {
          * operation is called binding an address.
          */
         perror("bind()");
-        return 0;
+        goto err_bind;
     }
 
     if (listen(server_fd, 10) < 0) {
@@ -81,17 +88,17 @@ int main() {
          * automatically bound to a random free port with the local address set to
          * INADDR_ANY.
          */
-        perror("In listen()");
-        exit(EXIT_FAILURE);
+        perror("listen()");
+        goto err_listen;
     }
     printf("[%s] Listening on 0.0.0.0:%d\n", get_iso_datetime(iso_dt), PORT);
     struct sockaddr_in from;
     socklen_t from_len = sizeof(from);
-    const char resp[128] = "Acknowledged";
-    char buffer[RW_BUF_SIZE];
-    ssize_t bytes = -1;
+    const char resp[] = "Acknowledged";
+    char read_buffer[RW_BUF_SIZE];
+
     while (!ev_flag) {
-        memset(buffer, 0, RW_BUF_SIZE);
+        memset(read_buffer, 0, RW_BUF_SIZE);
 
         /* The accept system call grabs the first connection request on the queue of
          * pending connections (known as an "accept queue" in Linux) and creates a
@@ -109,18 +116,19 @@ int main() {
                 continue;
             }
             printf("accept() returned\n");
+            break;
         }
 
         if (getsockname(new_socket_fd, (struct sockaddr *) &addr, &addr_len) == -1) {
             perror("In getsockname()");
-            exit(EXIT_FAILURE);
+            break;
         }
         struct sockaddr_in client_addr;
         addr_len = sizeof(client_addr);
         if (getpeername(new_socket_fd, (struct sockaddr *) &client_addr,
                         &addr_len) == -1) {
             perror("In getpeername()");
-            exit(EXIT_FAILURE);
+            break;
         }
 
         printf("[%s] Connection accept()'ed. server: %s:%d <-> client %s:%d, fd: %d\n",
@@ -132,24 +140,29 @@ int main() {
          * and recv() receive an extra parameter flag, giving us more flexibility
          */
         do {
-            // recv() blocks the loop until any data is readable.
-            bytes = read(new_socket_fd, buffer, RW_BUF_SIZE);
-            if (bytes > 0) {
-                printf("[%s] Received: %s\n", get_iso_datetime(iso_dt), buffer);
+            // read() blocks the loop until any data is readable.
+            const ssize_t read_bytes = read(new_socket_fd, read_buffer, RW_BUF_SIZE);
+            if (read_bytes > 0) {
+                printf("[%s] Received: %s\n", get_iso_datetime(iso_dt), read_buffer);
+                // Note that read()/write() share the same fd
                 write(new_socket_fd, resp, strlen(resp));
-            } else if (bytes == 0) {
+            } else if (read_bytes == 0) {
                 break;
                 // If no messages are available to be received and the peer has
                 // performed an orderly shutdown, recv() shall return 0
             } else {
-                perror("In recv()");
+                perror("read()");
             }
-        } while (1);
+        } while (!ev_flag);
 
         printf("[%s] Connection close()'ed\n", get_iso_datetime(iso_dt));
 
         close(new_socket_fd);
     }
+    printf("event loop exited gracefully\n");
+err_listen:
+err_bind:
     close(server_fd);
+err_signal:
     return 0;
 }

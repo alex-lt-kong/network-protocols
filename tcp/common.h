@@ -1,6 +1,9 @@
-#define RW_BUF_SIZE 65432
+#ifndef COMMON_H
+#define COMMON_H
+
+#define RW_BUF_SIZE 64
 #define MSG_BUF_SIZE 65432
-#define PORT 32109
+#define PORT 43210
 
 
 #include <time.h>
@@ -13,3 +16,4 @@ char *get_iso_datetime(char *buf) {
     strftime(buf, iso_dt_len, "%Y-%m-%dT%H:%M:%SZ", gmtime(&now));
     return buf;
 }
+#endif // COMMON_H

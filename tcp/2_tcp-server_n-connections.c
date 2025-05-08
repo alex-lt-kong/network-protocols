@@ -10,21 +10,35 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-static volatile uint32_t connection_count;
+// For global/static mutex, we use PTHREAD_MUTEX_INITIALIZER to replace pthread_mutex_init()
+pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
+static uint32_t connection_count;
 static volatile int ev_flag = 0;
 int server_fd;
 
 void handle_signal(int sig) {
     ev_flag = 1;
+    // for a POSIX compliant system, shutdown() is guaranteed to be async-signal-safe
+    // https://man7.org/linux/man-pages/man7/signal-safety.7.html
     shutdown(server_fd, SHUT_RDWR);
 }
 
 void *handle_client(void *arg) {
     const int client_fd = *(int *) arg;
-    char buffer[RW_BUF_SIZE];
+    char read_buffer[RW_BUF_SIZE];
     char write_buffer[RW_BUF_SIZE];
     free(arg);
-    uint32_t conn_count = ++connection_count;
+    int res;
+    if ((res = pthread_mutex_lock(&connection_mutex)) != 0) {
+        fprintf(stderr, "pthread_mutex_lock() failed: %s\n", strerror(res));
+        return NULL;
+    }
+    const uint32_t conn_count = ++connection_count;
+    if ((res = pthread_mutex_unlock(&connection_mutex)) != 0) {
+        fprintf(stderr, "pthread_mutex_unlock() failed: %s\n", strerror(res));
+        ev_flag = 1;
+        return NULL;
+    }
 
     struct sockaddr_in server_addr;
 
@@ -41,19 +55,38 @@ void *handle_client(void *arg) {
         return NULL;
     }
 
-    printf("Connection accept()'ed. server: %s:%d <-> client %s:%d, fd: %d\n",
+    printf("%d-th connection accept()'ed. server: %s:%d <-> client %s:%d, fd: %d\n", conn_count,
            inet_ntoa(server_addr.sin_addr),
            ntohs(server_addr.sin_port), inet_ntoa(client_addr.sin_addr),
            ntohs(client_addr.sin_port), client_fd);
     while (1) {
-        memset(buffer, 0, RW_BUF_SIZE);
-        const ssize_t bytes = read(client_fd, buffer, RW_BUF_SIZE);
-        if (bytes > 0) {
-            printf("Received from %d-th connection: %s\n", conn_count, buffer);
-            snprintf(write_buffer, RW_BUF_SIZE, "Message received, you sent me: [%s] and you are %d-th connection",
-                     buffer, conn_count);
-            write(client_fd, write_buffer, strnlen(write_buffer, RW_BUF_SIZE));
-        } else if (bytes == 0) {
+        memset(read_buffer, 0, RW_BUF_SIZE);
+        const ssize_t read_size = read(client_fd, read_buffer, RW_BUF_SIZE);
+
+        /* Think about it: what would be the expected behavior if we dont discard the remaining bytes?
+        while (read_size == RW_BUF_SIZE) {
+            char discard_buffer[RW_BUF_SIZE];
+            const ssize_t discard_size = read(client_fd, discard_buffer, RW_BUF_SIZE);
+            if (discard_size <= 0) {
+                break;
+            }
+        }
+        */
+
+        if (read_size == RW_BUF_SIZE)
+            printf("Warning: more bytes could have been discarded in read()\n");
+        if (read_size > 0) {
+            printf("Received from %d-th connection: %s\n", conn_count, read_buffer);
+            memset(write_buffer, 0, RW_BUF_SIZE);
+            snprintf(write_buffer, RW_BUF_SIZE, "Message received from %d-th connection, you sent me: ", conn_count);
+            ssize_t expected_write_size = strlen(write_buffer);
+            memcpy(write_buffer + expected_write_size, read_buffer, RW_BUF_SIZE - expected_write_size - 1);
+            expected_write_size += RW_BUF_SIZE - expected_write_size - 1;
+            write_buffer[expected_write_size] = '\0'; // Not strictly needed, but can make life easier for client
+            if (write(client_fd, write_buffer, expected_write_size) != expected_write_size) {
+                fprintf(stderr, "write() error");
+            }
+        } else if (read_size == 0) {
             printf("%d-th client disconnected.\n", conn_count);
             break;
         } else {
@@ -67,7 +100,10 @@ void *handle_client(void *arg) {
 }
 
 int main() {
-    signal(SIGINT, handle_signal);
+    if (signal(SIGINT, handle_signal) == SIG_ERR) {
+        perror("signal()");
+        goto err_signal;
+    }
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_len = sizeof(client_addr);
 
@@ -108,13 +144,23 @@ int main() {
         int *client_sock = malloc(sizeof(int));
         *client_sock = new_socket_fd;
 
-        pthread_create(&tid, NULL, handle_client, client_sock);
-        pthread_detach(tid);
+        const int res = pthread_create(&tid, NULL, handle_client, client_sock);
+        if (res == 0)
+            pthread_detach(tid);
+        else {
+            // Easy-to-miss manual release--spotted by Bing Copilot
+            fprintf(stderr, "pthread_create() failed: %s\n", strerror(res));
+            free(client_sock);
+        }
     }
     printf("event loop exited gracefully\n");
 
 err_bind:
 err_listen:
     close(server_fd);
+    // Current flow is problematic--if we interrupt the event loop before all connections are closed, some existing
+    // connections could try to lock the mutex that has been destroyed
+    pthread_mutex_destroy(&connection_mutex);
+err_signal:
     return 0;
 }
