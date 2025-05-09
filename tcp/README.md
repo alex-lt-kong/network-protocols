@@ -49,11 +49,30 @@
 
 ## Socket programming
 
-The basic building block for communication is the socket. A socket is an
-endpoint of communication to which a name may be bound. Each socket in use has a
-type and one or more associated processes. Sockets exist within communication
-domains. A communication domain is an abstraction introduced to bundle common
-properties of processes communicating through sockets.
+### TCP Socket API<sup>[[CS 50 Software Design and Implementation](https://www.cs.dartmouth.edu/~campbell/cs50/socketprogramming)]</sup>
+
+![](./assets/tcp-sockets.jpg "./assets/tcp-sockets.jpg")
+
+- The steps involved in establishing a TCP socket on the server side are as follows:
+
+    - Create a socket with the `socket()` function;
+    - Bind the socket to an address using the `bind()` function;
+    - Listen for connections with the `listen()` function;
+    - Accept a connection with the `accept()` function system call. This call typically blocks until a client connects
+      with the server.
+
+
+- As shown in the figure, the steps for establishing a TCP socket on the client side are the following:
+
+    - Create a socket using the `socket()` function;
+    - Connect the socket to the address of the server using the `connect()` function;
+    - Send and receive data by means of the `read()` and `write()` functions.
+
+- The basic building block for communication is the socket. A socket is an
+  endpoint of communication to which a name may be bound. Each socket in use has a
+  type and one or more associated processes. Sockets exist within communication
+  domains. A communication domain is an abstraction introduced to bundle common
+  properties of processes communicating through sockets.
 
 ### Socket types
 

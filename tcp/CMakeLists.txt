@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 project(tcp)
 
-# Set the compiler
-#set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 
-set(TARGETS 1_tcp-client 1_tcp-client-multiple-sends 1_tcp-server_single-connection
-        2_tcp-server_n-connections
-        3_tcp-server_epoll)
+set(TARGETS 1_client_1-send 1_client_n-sends 1_server_1-connection
+        2_server_n-connections
+        3_server_epoll)
 
 foreach (TARGET ${TARGETS})
     add_executable(${TARGET} ${TARGET}.c)

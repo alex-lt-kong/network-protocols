@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define RW_BUF_SIZE 64
+#define RW_BUF_SIZE 1024
 #define MSG_BUF_SIZE 65432
 #define PORT 43210
 
